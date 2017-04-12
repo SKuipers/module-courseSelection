@@ -29,8 +29,60 @@ $version="0.0.01" ; //Verson number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers" ; //Your URL
 
-//Module tables
-// $moduleTables[0]="" ;
+// Module tables
+$moduleTables[0]="CREATE TABLE `courseSelectionAccess` (
+  `courseSelectionAccessID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
+  `gibbonRollGroupIDList` varchar(255) DEFAULT NULL,
+  `dateStart` date DEFAULT NULL,
+  `dateEnd` date DEFAULT NULL,
+  `accessType` enum('View','Request') NOT NULL DEFAULT 'Request',
+  PRIMARY KEY (`courseSelectionAccessID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
+$moduleTables[1]="CREATE TABLE `courseSelectionBlock` (
+  `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
+  `gibbonDepartmentID` int(4) unsigned zerofill DEFAULT NULL,
+  `name` varchar(90) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `minSelect` smallint(3) DEFAULT NULL,
+  `maxSelect` smallint(3) DEFAULT NULL,
+  `sequenceNumber` smallint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`courseSelectionBlockID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
+$moduleTables[2]="CREATE TABLE `courseSelectionBlockCourse` (
+  `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
+  `gibbonCourseID` int(8) unsigned zerofill NOT NULL,
+  PRIMARY KEY (`courseSelectionBlockID`,`gibbonCourseID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
+$moduleTables[3]="CREATE TABLE `courseSelectionOffering` (
+  `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
+  `gibbonYearGroupIDList` varchar(255) DEFAULT NULL,
+  `name` varchar(90) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `minSelect` smallint(3) DEFAULT NULL,
+  `maxSelect` smallint(3) DEFAULT NULL,
+  `sequenceNumber` smallint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`courseSelectionOfferingID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
+$moduleTables[4]="CREATE TABLE `courseSelectionOfferingBlock` (
+  `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
+  `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
+  PRIMARY KEY (`courseSelectionOfferingID`,`courseSelectionBlockID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
+
+// courseSelectionRequisite (Ruleset/Rule)
+// courseSelectionMeta
+// courseSelectionRequest
+// courseSelectionRequestOffering
+// courseSelectionRequestLog
+
 
 //gibbonSettings entries
 // $gibbonSetting[0]=""; //One array entry for every gibbonSetting entry you need to create. The scope field for the setting should be your module name.
@@ -59,4 +111,3 @@ $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be availabl
 
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
-?>
