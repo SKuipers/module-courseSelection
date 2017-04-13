@@ -36,7 +36,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionAccess` (
   `gibbonRollGroupIDList` varchar(255) DEFAULT NULL,
   `dateStart` date DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
-  `accessType` enum('View','Request') NOT NULL DEFAULT 'Request',
+  `accessType` enum('View','Request','Select') NOT NULL DEFAULT 'Request',
   PRIMARY KEY (`courseSelectionAccessID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
@@ -91,11 +91,11 @@ $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`
 //Action rows
 //One array per action
 $actionRows[] = array(
-    'name'                      => 'Course Selection Dates',
+    'name'                      => 'Course Selection Access',
     'precedence'                => '0',
     'category'                  => 'Administration',
     'description'               => '',
-    'URLList'                   => 'access_manage.php',
+    'URLList'                   => 'access_manage.php,access_manage_addEdit.php,access_manage_delete.php',
     'entryURL'                  => 'access_manage.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
@@ -115,7 +115,7 @@ $actionRows[] = array(
     'precedence'                => '0',
     'category'                  => 'Administration',
     'description'               => '',
-    'URLList'                   => 'offerings_manage.php',
+    'URLList'                   => 'offerings_manage.php,offerings_manage_addEdit.php,offerings_manage_delete.php',
     'entryURL'                  => 'offerings_manage.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
@@ -135,7 +135,7 @@ $actionRows[] = array(
     'precedence'                => '0',
     'category'                  => 'Administration',
     'description'               => '',
-    'URLList'                   => 'blocks_manage.php',
+    'URLList'                   => 'blocks_manage.php,blocks_manage_addEdit.php,blocks_manage_delete.php',
     'entryURL'                  => 'blocks_manage.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
@@ -155,7 +155,7 @@ $actionRows[] = array(
     'precedence'                => '0',
     'category'                  => 'Administration',
     'description'               => '',
-    'URLList'                   => 'rules_manage.php',
+    'URLList'                   => 'rules_manage.php,rules_manage_addEdit.php,rules_manage_delete.php',
     'entryURL'                  => 'rules_manage.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
