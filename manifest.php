@@ -20,17 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //This file describes the module, including database tables
 
 //Basic variables
-$name="Course Selection" ; //The name of the variable as it appears to users. Needs to be unique to installation. Also the name of the folder that holds the unit.
-$description="Student Course Request and Approval System" ; //Short text description
-$entryURL="index.php" ; //The landing page for the unit, used in the main menu
-$type="Additional" ; //Do not change.
-$category="Learn" ; //The main menu area to place the module in
-$version="0.0.01" ; //Verson number
-$author="Sandra Kuipers" ; //Your name
-$url="https://github.com/SKuipers" ; //Your URL
+$name="Course Selection" ;
+$description="Student Course Request and Approval System" ;
+$entryURL="selection.php" ;
+$type="Additional" ;
+$category="Learn" ;
+$version="0.0.01" ;
+$author="Sandra Kuipers" ;
+$url="https://github.com/SKuipers" ;
 
 // Module tables
-$moduleTables[0]="CREATE TABLE `courseSelectionAccess` (
+$moduleTables[]="CREATE TABLE `courseSelectionAccess` (
   `courseSelectionAccessID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonRollGroupIDList` varchar(255) DEFAULT NULL,
@@ -40,7 +40,7 @@ $moduleTables[0]="CREATE TABLE `courseSelectionAccess` (
   PRIMARY KEY (`courseSelectionAccessID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[1]="CREATE TABLE `courseSelectionBlock` (
+$moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonDepartmentID` int(4) unsigned zerofill DEFAULT NULL,
@@ -52,13 +52,13 @@ $moduleTables[1]="CREATE TABLE `courseSelectionBlock` (
   PRIMARY KEY (`courseSelectionBlockID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[2]="CREATE TABLE `courseSelectionBlockCourse` (
+$moduleTables[]="CREATE TABLE `courseSelectionBlockCourse` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   `gibbonCourseID` int(8) unsigned zerofill NOT NULL,
   PRIMARY KEY (`courseSelectionBlockID`,`gibbonCourseID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[3]="CREATE TABLE `courseSelectionOffering` (
+$moduleTables[]="CREATE TABLE `courseSelectionOffering` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonYearGroupIDList` varchar(255) DEFAULT NULL,
@@ -70,7 +70,7 @@ $moduleTables[3]="CREATE TABLE `courseSelectionOffering` (
   PRIMARY KEY (`courseSelectionOfferingID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[4]="CREATE TABLE `courseSelectionOfferingBlock` (
+$moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   PRIMARY KEY (`courseSelectionOfferingID`,`courseSelectionBlockID`)
@@ -85,29 +85,252 @@ $moduleTables[4]="CREATE TABLE `courseSelectionOfferingBlock` (
 
 
 //gibbonSettings entries
-// $gibbonSetting[0]=""; //One array entry for every gibbonSetting entry you need to create. The scope field for the setting should be your module name.
-// $gibbonSetting[1]="";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'requireApproval', 'Require Course Selection Approval', 'Require a staff member to approve course selections.', 'Y');";
 
 
 //Action rows
 //One array per action
-$actionRows[0]["name"]="Course Selection" ; //The name of the action (appears to user in the right hand side module menu)
-$actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[0]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
-$actionRows[0]["description"]="" ; //Text description
-$actionRows[0]["URLList"]="index.php" ; //List of pages included in this action
-$actionRows[0]["entryURL"]="index.php" ; //The landing action for the page.
-$actionRows[0]["entrySidebar"]="Y" ;
-$actionRows[0]["menuShow"]="Y" ;
-$actionRows[0]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
-$actionRows[0]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
-$actionRows[0]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
-$actionRows[0]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
-$actionRows[0]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-$actionRows[0]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
-$actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
-$actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
-$actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionRows[] = array(
+    'name'                      => 'Course Selection Dates',
+    'precedence'                => '0',
+    'category'                  => 'Administration',
+    'description'               => '',
+    'URLList'                   => 'access_manage.php',
+    'entryURL'                  => 'access_manage.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Manage Course Offerings',
+    'precedence'                => '0',
+    'category'                  => 'Administration',
+    'description'               => '',
+    'URLList'                   => 'offerings_manage.php',
+    'entryURL'                  => 'offerings_manage.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Manage Course Blocks',
+    'precedence'                => '0',
+    'category'                  => 'Administration',
+    'description'               => '',
+    'URLList'                   => 'blocks_manage.php',
+    'entryURL'                  => 'blocks_manage.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Manage Prerequisites',
+    'precedence'                => '0',
+    'category'                  => 'Administration',
+    'description'               => '',
+    'URLList'                   => 'rules_manage.php',
+    'entryURL'                  => 'rules_manage.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+
+$actionRows[] = array(
+    'name'                      => 'Course Selection_all',
+    'precedence'                => '1',
+    'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'selection.php,selectionProcess.php',
+    'entryURL'                  => 'selection.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Course Selection_my',
+    'precedence'                => '0',
+    'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'selection.php,selectionProcess.php',
+    'entryURL'                  => 'selection.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'N',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'Y',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'N',
+    'categoryPermissionStudent' => 'Y',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Course Approval by Class',
+    'precedence'                => '0',
+    'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'approval_byClass.php',
+    'entryURL'                  => 'approval_byClass.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Course Approval by Student',
+    'precedence'                => '0',
+    'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'approval_byPerson.php',
+    'entryURL'                  => 'approval_byPerson.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Course Selection Numbers',
+    'precedence'                => '0',
+    'category'                  => 'Reports',
+    'description'               => '',
+    'URLList'                   => 'report_courseSelection.php',
+    'entryURL'                  => 'report_courseSelection.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Students Not Selected',
+    'precedence'                => '0',
+    'category'                  => 'Reports',
+    'description'               => '',
+    'URLList'                   => 'report_studentsNotSelected.php',
+    'entryURL'                  => 'report_studentsNotSelected.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Students Not Approved',
+    'precedence'                => '0',
+    'category'                  => 'Reports',
+    'description'               => '',
+    'URLList'                   => 'report_studentsNotApproved.php',
+    'entryURL'                  => 'report_studentsNotApproved.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Course Selection Settings',
+    'precedence'                => '0',
+    'category'                  => 'Settings',
+    'description'               => '',
+    'URLList'                   => 'settings.php,settingsProcess.php',
+    'entryURL'                  => 'settings.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
 
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.

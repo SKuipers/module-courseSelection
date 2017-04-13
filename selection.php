@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isModuleAccessible($guid, $connection2)==FALSE) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection.php') == false) {
     //Acess denied
     echo "<div class='error'>" ;
         echo "You do not have access to this action." ;
