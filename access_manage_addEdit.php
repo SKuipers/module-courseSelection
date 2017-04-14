@@ -25,13 +25,14 @@ $loader->addNameSpace('Modules\CourseSelection\\', 'modules/Course Selection/src
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_manage_addEdit.php') == false) {
-	//Acess denied
-	echo "<div class='error'>" ;
-		echo "You do not have access to this action." ;
-	echo "</div>" ;
+    //Acess denied
+    echo "<div class='error'>" ;
+        echo "You do not have access to this action." ;
+    echo "</div>" ;
 } else {
+    $gateway = new AccessGateway($pdo);
 
-    $record = array(
+    $values = array(
         'courseSelectionAccessID' => '',
         'gibbonSchoolYearID'      => '',
         'dateStart'               => '',
@@ -41,11 +42,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     );
 
     if (isset($_GET['courseSelectionAccessID'])) {
-        $gateway = new AccessGateway($pdo);
 
         $result = $gateway->selectOne($_GET['courseSelectionAccessID']);
         if ($result && $result->rowCount() == 1) {
-            $record = $result->fetch();
+            $values = $result->fetch();
         }
 
         $actionName = __('Edit Access');
@@ -66,7 +66,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $form = Form::create('accessRecord', $actionURL);
 
-    $form->addHiddenValue('courseSelectionAccessID', $record['courseSelectionAccessID']);
+    $form->addHiddenValue('courseSelectionAccessID', $values['courseSelectionAccessID']);
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
     $sql = "SELECT gibbonSchoolYearID as value, name FROM gibbonSchoolYear WHERE status='Current' OR status='Upcoming' ORDER BY sequenceNumber";
@@ -76,15 +76,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
             ->fromQuery($pdo, $sql)
             ->isRequired()
             ->placeholder(__('Please select...'))
-            ->selected($record['gibbonSchoolYearID']);
+            ->selected($values['gibbonSchoolYearID']);
 
     $row = $form->addRow();
         $row->addLabel('dateStart', __('Start Date'));
-        $row->addDate('dateStart')->isRequired()->setValue(dateConvertBack($guid, $record['dateStart']));
+        $row->addDate('dateStart')->isRequired()->setValue(dateConvertBack($guid, $values['dateStart']));
 
     $row = $form->addRow();
         $row->addLabel('dateEnd', __('End Date'));
-        $row->addDate('dateEnd')->isRequired()->setValue(dateConvertBack($guid, $record['dateEnd']));
+        $row->addDate('dateEnd')->isRequired()->setValue(dateConvertBack($guid, $values['dateEnd']));
 
     $row = $form->addRow();
         $row->addLabel('accessType', __('Access Type'));
@@ -92,7 +92,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
                 'View' => __('View'),
                 'Request' => __('Request Courses (approval)'),
                 'Select' => __('Select Courses (no approval)')
-            ))->isRequired()->selected($record['accessType']);
+            ))->isRequired()->selected($values['accessType']);
 
     $sql = "SELECT gibbonRoleID as value, name FROM gibbonRole ORDER BY name";
     $row = $form->addRow();
@@ -101,7 +101,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
             ->fromQuery($pdo, $sql)
             ->isRequired()
             ->selectMultiple()
-            ->selected(explode(',', $record['gibbonRollGroupIDList']));
+            ->selected(explode(',', $values['gibbonRollGroupIDList']));
 
     $row = $form->addRow();
         $row->addFooter();
