@@ -39,8 +39,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         'gibbonDepartmentID'     => '',
         'name'                   => '',
         'description'            => '',
-        'minSelect'              => '',
-        'maxSelect'              => ''
+        'minSelect'              => '0',
+        'maxSelect'              => '1'
     );
 
     if (isset($_GET['courseSelectionBlockID'])) {
@@ -77,17 +77,21 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $form->addHiddenValue('gibbonSchoolYearID', $values['gibbonSchoolYearID']);
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
-            $row->addTextField('gibbonSchoolYearID')->readonly()->setValue($values['gibbonSchoolYearName']);
+            $row->addTextField('gibbonSchoolYearID')->readonly()->setValue($values['schoolYearName']);
+
+        $form->addHiddenValue('gibbonDepartmentID', $values['gibbonDepartmentID']);
+        $row = $form->addRow();
+            $row->addLabel('gibbonDepartmentID', __('Department'));
+            $row->addTextField('gibbonDepartmentID')->readonly()->setValue($values['departmentName']);
     } else {
-        $sql = "SELECT gibbonSchoolYearID as value, name FROM gibbonSchoolYear WHERE status='Current' OR status='Upcoming' ORDER BY sequenceNumber";
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
             $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
-    }
 
-    $row = $form->addRow();
-        $row->addLabel('gibbonDepartmentID', __('Department'));
-        $row->addSelectDepartment('gibbonDepartmentID')->selected($values['gibbonDepartmentID']);
+        $row = $form->addRow();
+            $row->addLabel('gibbonDepartmentID', __('Department'));
+            $row->addSelectDepartment('gibbonDepartmentID')->selected($values['gibbonDepartmentID']);
+    }
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
@@ -110,6 +114,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $row->addSubmit();
 
     echo $form->getOutput();
+
+    echo '<script type="text/javascript">'; // Prefill the department name into the name field
+        echo '$("#gibbonDepartmentID").change(function(){ $("#name").val($("#gibbonDepartmentID").find("option:selected").text()); });';
+    echo '</script>';
 
     if ($action == 'edit' && !empty($values['courseSelectionBlockID'])) {
         echo '<h3>';
@@ -156,7 +164,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $form->addHiddenValue('courseSelectionBlockID', $values['courseSelectionBlockID']);
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-        $courseList = $gateway->selectAvailableCoursesByDepartment($values['courseSelectionBlockID'], $values['gibbonDepartmentID']);
+        if (!empty($values['gibbonDepartmentID']) && $values['gibbonDepartmentID'] > 0) {
+            $courseList = $gateway->selectAvailableCoursesByDepartment($values['courseSelectionBlockID'], $values['gibbonDepartmentID']);
+        } else {
+            $courseList = $gateway->selectAvailableCourses($values['courseSelectionBlockID']);
+        }
 
         $row = $form->addRow();
             $row->addLabel('gibbonCourseID', __('Course'));

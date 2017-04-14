@@ -54,9 +54,10 @@ class BlocksGateway
     public function selectOne($courseSelectionBlockID)
     {
         $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
-        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as gibbonSchoolYearName
+        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
+                LEFT JOIN gibbonDepartment ON (courseSelectionBlock.gibbonDepartmentID=gibbonDepartment.gibbonDepartmentID)
                 WHERE courseSelectionBlockID=:courseSelectionBlockID ";
 
         return $this->pdo->executeQuery($data, $sql);
@@ -129,6 +130,22 @@ class BlocksGateway
     }
 
     // FORM QUERIES
+
+    public function selectAvailableCourses($courseSelectionBlockID)
+    {
+        $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
+        $sql = "SELECT gibbonCourse.gibbonCourseID AS value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
+                FROM gibbonCourse
+                JOIN courseSelectionBlock ON (gibbonCourse.gibbonSchoolYearID=courseSelectionBlock.gibbonSchoolYearID)
+                LEFT JOIN courseSelectionBlockCourse ON (
+                    courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID
+                    AND courseSelectionBlockCourse.courseSelectionBlockID=:courseSelectionBlockID)
+                WHERE courseSelectionBlock.courseSelectionBlockID=:courseSelectionBlockID
+                AND courseSelectionBlockCourse.gibbonCourseID IS NULL
+                ORDER BY nameShort, name";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
 
     public function selectAvailableCoursesByDepartment($courseSelectionBlockID, $gibbonDepartmentID)
     {

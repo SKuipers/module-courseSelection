@@ -70,7 +70,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
             echo '<tr>';
                 echo '<td>'.$access['gibbonSchoolYearName'].'</td>';
                 echo '<td>';
-                    echo dateConvertBack($guid, $access['dateStart']).' - '.dateConvertBack($guid, $access['dateEnd']);
+                    echo date('M j', strtotime($access['dateStart'])).' - '.date('M j, Y', strtotime($access['dateEnd']));
                 echo '</td>';
                 echo '<td>'.$access['roleGroupNames'].'</td>';
                 echo '<td>';

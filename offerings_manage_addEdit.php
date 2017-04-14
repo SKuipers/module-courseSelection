@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 use Modules\CourseSelection\Domain\OfferingsGateway;
 
 // Autoloader & Module includes
@@ -38,8 +39,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         'gibbonYearGroupIDList'     => '',
         'name'                      => '',
         'description'               => '',
-        'minSelect'                 => '',
-        'maxSelect'                 => '',
+        'minSelect'                 => '0',
+        'maxSelect'                 => '1',
         'sequenceNumber'            => $gateway->getNextSequenceNumber()
     );
 
@@ -66,18 +67,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     }
 
     $form = Form::create('offeringsAddEdit', $actionURL);
+    $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-    $sql = "SELECT gibbonSchoolYearID as value, name FROM gibbonSchoolYear WHERE status='Current' OR status='Upcoming' ORDER BY sequenceNumber";
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearID', __('School Year'));
-        $row->addSelect('gibbonSchoolYearID')
-            ->fromQuery($pdo, $sql)
-            ->isRequired()
-            ->placeholder(__('Please select...'))
-            ->selected($values['gibbonSchoolYearID']);
+        $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
@@ -95,13 +92,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         $row->addLabel('maxSelect', __('Max Selections'));
         $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
 
-    $sql = "SELECT gibbonYearGroupID as `value`, name FROM gibbonYearGroup ORDER BY sequenceNumber";
-    $result = $pdo->executeQuery(array(), $sql);
-    $yearGroups = $result->fetchAll(\PDO::FETCH_KEY_PAIR); // Get the yearGroups in a $key => $value array
-
-     $row = $form->addRow();
+    $row = $form->addRow();
         $row->addLabel('gibbonYearGroupIDList', __('Year Groups'));
-        $row->addCheckbox('gibbonYearGroupIDList')->fromArray($yearGroups)->checked(explode(',', $values['gibbonYearGroupIDList']));
+        $row->addCheckboxYearGroup('gibbonYearGroupIDList')->checked(explode(',', $values['gibbonYearGroupIDList']));
 
     $row = $form->addRow();
         $row->addLabel('sequenceNumber', __('Sequence Number'));

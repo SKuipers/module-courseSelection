@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 use Modules\CourseSelection\Domain\AccessGateway;
 
 // Autoloader & Module includes
@@ -64,18 +65,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     }
 
     $form = Form::create('accessAddEdit', $actionURL);
+    $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('courseSelectionAccessID', $values['courseSelectionAccessID']);
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-    $sql = "SELECT gibbonSchoolYearID as value, name FROM gibbonSchoolYear WHERE status='Current' OR status='Upcoming' ORDER BY sequenceNumber";
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearID', __('School Year'));
-        $row->addSelect('gibbonSchoolYearID')
-            ->fromQuery($pdo, $sql)
-            ->isRequired()
-            ->placeholder(__('Please select...'))
-            ->selected($values['gibbonSchoolYearID']);
+        $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
 
     $row = $form->addRow();
         $row->addLabel('dateStart', __('Start Date'));
@@ -93,11 +90,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
                 'Select' => __('Select Courses (no approval)')
             ))->isRequired()->selected($values['accessType']);
 
-    $sql = "SELECT gibbonRoleID as value, name FROM gibbonRole ORDER BY name";
     $row = $form->addRow();
         $row->addLabel('gibbonRollGroupIDList', __('Available to Roles'));
-        $row->addSelect('gibbonRollGroupIDList')
-            ->fromQuery($pdo, $sql)
+        $row->addSelectRole('gibbonRollGroupIDList')
             ->isRequired()
             ->selectMultiple()
             ->selected(explode(',', $values['gibbonRollGroupIDList']));
