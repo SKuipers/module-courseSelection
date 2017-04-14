@@ -37,8 +37,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     $data['gibbonDepartmentID'] = $_POST['gibbonDepartmentID'] ?? '';
     $data['name'] = $_POST['name'] ?? '';
     $data['description'] = $_POST['description'] ?? '';
-    $data['minSelect'] = intval($_POST['minSelect']) ?? 0;
-    $data['maxSelect'] = intval($_POST['maxSelect']) ?? 0;
 
     if (empty($data['gibbonSchoolYearID']) || empty($data['name'])) {
         $URL .= '&return=error1';

@@ -102,14 +102,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $row->addTextField('description')->maxLength(255)->setValue($values['description']);
 
     $row = $form->addRow();
-        $row->addLabel('minSelect', __('Min Selections'));
-        $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['minSelect']);
-
-    $row = $form->addRow();
-        $row->addLabel('maxSelect', __('Max Selections'));
-        $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
-
-    $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();
 
@@ -124,7 +116,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         echo __('Manage Courses');
         echo '</h3>';
 
-        $gateway = new BlocksGateway($pdo);
         $courses = $gateway->selectAllCoursesByBlock($values['courseSelectionBlockID']);
 
         if ($courses->rowCount() == 0) {

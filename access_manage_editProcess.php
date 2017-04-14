@@ -35,10 +35,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     $data = array();
     $data['courseSelectionAccessID'] = $_POST['courseSelectionAccessID'] ?? '';
     $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
-    $data['dateStart'] = dateConvert($guid, $_POST['dateStart']) ?? '';
-    $data['dateEnd'] = dateConvert($guid, $_POST['dateEnd']) ?? '';
+    $data['dateStart'] = $_POST['dateStart'] ?? '';
+    $data['dateEnd'] = $_POST['dateEnd'] ?? '';
     $data['accessType'] = $_POST['accessType'] ?? '';
-    $data['gibbonRollGroupIDList'] = implode(',', $_POST['gibbonRollGroupIDList']) ?? '';
+    $data['gibbonRollGroupIDList'] = $_POST['gibbonRollGroupIDList'] ?? array();
+
+    $data['dateStart'] = dateConvert($guid, $data['dateStart']);
+    $data['dateEnd'] = dateConvert($guid, $data['dateEnd']);
+    $data['gibbonRollGroupIDList'] = implode(',', $data['gibbonRollGroupIDList']);
 
     if (empty($data['courseSelectionAccessID']) || empty($data['gibbonSchoolYearID']) || empty($data['dateStart']) || empty($data['dateEnd']) || empty($data['accessType']) || empty($data['gibbonRollGroupIDList'])) {
         $URL .= '&return=error1';
