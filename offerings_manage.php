@@ -70,7 +70,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             echo '<tr>';
                 echo '<td>'.$offering['gibbonSchoolYearName'].'</td>';
                 echo '<td>'.$offering['name'].'</td>';
-                echo '<td>'.$offering['gibbonYearGroupIDList'].'</td>';
+                echo '<td>'.$offering['yearGroupNames'].'</td>';
                 echo '<td>';
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/offerings_manage_addEdit.php&courseSelectionOfferingID=".$offering['courseSelectionOfferingID']."'><img title='".__('Edit')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/config.png'/></a> &nbsp;";
 

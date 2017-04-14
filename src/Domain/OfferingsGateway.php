@@ -38,7 +38,12 @@ class OfferingsGateway
     public function selectAll()
     {
         $data = array();
-        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as gibbonSchoolYearName FROM courseSelectionOffering JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID) ORDER BY sequenceNumber";
+        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as gibbonSchoolYearName, GROUP_CONCAT(DISTINCT gibbonYearGroup.nameShort SEPARATOR ', ') as yearGroupNames
+                FROM courseSelectionOffering
+                JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
+                LEFT JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID IN (courseSelectionOffering.gibbonYearGroupIDList))
+                GROUP BY courseSelectionOfferingID
+                ORDER BY sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;

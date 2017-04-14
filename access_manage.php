@@ -72,7 +72,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
                 echo '<td>';
                     echo dateConvertBack($guid, $access['dateStart']).' - '.dateConvertBack($guid, $access['dateEnd']);
                 echo '</td>';
-                echo '<td>'.$access['gibbonRollGroupIDList'].'</td>';
+                echo '<td>'.$access['roleGroupNames'].'</td>';
                 echo '<td>';
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/access_manage_addEdit.php&courseSelectionAccessID=".$access['courseSelectionAccessID']."'><img title='".__('Edit')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/config.png'/></a> &nbsp;";
 
