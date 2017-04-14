@@ -48,7 +48,6 @@ $moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   `description` varchar(255) NOT NULL,
   `minSelect` smallint(3) DEFAULT NULL,
   `maxSelect` smallint(3) DEFAULT NULL,
-  `sequenceNumber` smallint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`courseSelectionBlockID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
