@@ -42,7 +42,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     );
 
     if (isset($_GET['courseSelectionAccessID'])) {
-
         $result = $gateway->selectOne($_GET['courseSelectionAccessID']);
         if ($result && $result->rowCount() == 1) {
             $values = $result->fetch();
@@ -56,7 +55,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     }
 
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__($guid, 'Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__($guid, getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/access_manage.php'>".__($guid, 'Course Selection Access')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
+    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__('Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/access_manage.php'>".__('Course Selection Access')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -64,7 +63,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
-    $form = Form::create('accessRecord', $actionURL);
+    $form = Form::create('accessAddEdit', $actionURL);
 
     $form->addHiddenValue('courseSelectionAccessID', $values['courseSelectionAccessID']);
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);

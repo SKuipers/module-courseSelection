@@ -37,11 +37,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     $data['gibbonYearGroupIDList'] = implode(',', $_POST['gibbonYearGroupIDList']) ?? '';
     $data['name'] = $_POST['name'] ?? '';
     $data['description'] = $_POST['description'] ?? '';
-    $data['minSelect'] = $_POST['minSelect'] ?? '';
-    $data['maxSelect'] = $_POST['maxSelect'] ?? '';
-    $data['sequenceNumber'] = $_POST['sequenceNumber'] ?? '';
+    $data['minSelect'] = intval($_POST['minSelect']) ?? 0;
+    $data['maxSelect'] = intval($_POST['maxSelect']) ?? 0;
+    $data['sequenceNumber'] = $_POST['sequenceNumber'] ?? 1;
 
-    if (empty($data['gibbonSchoolYearID']) || empty($data['gibbonYearGroupIDList']) || empty($data['name']) || empty($data['sequenceNumber'])) {
+    if (empty($data['gibbonSchoolYearID']) || empty($data['gibbonYearGroupIDList']) || empty($data['name']) || !isset($data['sequenceNumber'])) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
