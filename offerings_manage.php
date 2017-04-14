@@ -68,7 +68,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
         while ($offering = $offerings->fetch()) {
             echo '<tr>';
-                echo '<td>'.$offering['gibbonSchoolYearName'].'</td>';
+                echo '<td>'.$offering['schoolYearName'].'</td>';
                 echo '<td>'.$offering['name'].'</td>';
                 echo '<td>'.$offering['yearGroupNames'].'</td>';
                 echo '<td>';

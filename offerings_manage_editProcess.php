@@ -35,12 +35,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     $data = array();
     $data['courseSelectionOfferingID'] = $_POST['courseSelectionOfferingID'] ?? '';
     $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
-    $data['gibbonYearGroupIDList'] = implode(',', $_POST['gibbonYearGroupIDList']) ?? '';
+    $data['gibbonYearGroupIDList'] = $_POST['gibbonYearGroupIDList'] ?? array();
     $data['name'] = $_POST['name'] ?? '';
     $data['description'] = $_POST['description'] ?? '';
-    $data['minSelect'] = intval($_POST['minSelect']) ?? 0;
-    $data['maxSelect'] = intval($_POST['maxSelect']) ?? 0;
+    $data['minSelect'] = $_POST['minSelect'] ?? 0;
+    $data['maxSelect'] = $_POST['maxSelect'] ?? 0;
     $data['sequenceNumber'] = $_POST['sequenceNumber'] ?? 1;
+
+    $data['gibbonYearGroupIDList'] = implode(',', $data['gibbonYearGroupIDList']);
+    $data['minSelect'] = intval($data['minSelect']);
+    $data['maxSelect'] = intval($data['maxSelect']);
 
     if (empty($data['courseSelectionOfferingID']) || empty($data['gibbonSchoolYearID']) || empty($data['gibbonYearGroupIDList']) || empty($data['name']) || !isset($data['sequenceNumber'])) {
         $URL .= '&return=error1';

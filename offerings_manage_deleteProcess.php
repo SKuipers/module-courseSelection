@@ -49,9 +49,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             header("Location: {$URL}");
             exit;
         } else {
-            $URL .= "&return=success0";
-            header("Location: {$URL}");
-            exit;
+
+            $deleted = $gateway->deleteAllBlocksByOffering($courseSelectionOfferingID);
+
+            if ($deleted == false) {
+                $URL .= "&return=warning2";
+                header("Location: {$URL}");
+                exit;
+            } else {
+                $URL .= "&return=success0";
+                header("Location: {$URL}");
+                exit;
+            }
         }
     }
 }

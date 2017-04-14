@@ -50,9 +50,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             $values = $result->fetch();
         }
 
+        $action = 'edit';
         $actionName = __('Edit Course Offering');
         $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_editProcess.php';
     } else {
+        $action = 'add';
         $actionName = __('Add Course Offering');
         $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_addProcess.php';
     }
@@ -72,9 +74,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-    $row = $form->addRow();
-        $row->addLabel('gibbonSchoolYearID', __('School Year'));
-        $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
+    if ($action == 'edit') {
+        $form->addHiddenValue('gibbonSchoolYearID', $values['gibbonSchoolYearID']);
+        $row = $form->addRow();
+            $row->addLabel('gibbonSchoolYearID', __('School Year'));
+            $row->addTextField('gibbonSchoolYearID')->readonly()->setValue($values['schoolYearName']);
+    } else {
+        $row = $form->addRow();
+            $row->addLabel('gibbonSchoolYearID', __('School Year'));
+            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
+    }
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
@@ -85,11 +94,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         $row->addTextField('description')->maxLength(255)->setValue($values['description']);
 
     $row = $form->addRow();
-        $row->addLabel('minSelect', __('Min Selections'));
+        $row->addLabel('minSelect', __('Min Selections'))->description(__('Across all course blocks.'));
         $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['minSelect']);
 
     $row = $form->addRow();
-        $row->addLabel('maxSelect', __('Max Selections'));
+        $row->addLabel('maxSelect', __('Max Selections'))->description(__('Across all course blocks.'));
         $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
 
     $row = $form->addRow();
@@ -105,4 +114,75 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         $row->addSubmit();
 
     echo $form->getOutput();
+
+    if ($action == 'edit' && !empty($values['courseSelectionOfferingID'])) {
+        echo '<h3>';
+        echo __('Manage Blocks');
+        echo '</h3>';
+
+        $blocks = $gateway->selectAllBlocksByOffering($values['courseSelectionOfferingID']);
+
+        if ($blocks->rowCount() == 0) {
+            echo '<div class="error">';
+            echo __("There are no records to display.") ;
+            echo '</div>';
+        } else {
+            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+
+            echo '<tr class="head">';
+                echo '<th>';
+                    echo __('Course Block');
+                echo '</th>';
+                echo '<th>';
+                    echo __('Min Selections');
+                echo '</th>';
+                echo '<th>';
+                    echo __('Max Selections');
+                echo '</th>';
+                echo '<th style="width: 80px;">';
+                    echo __('Actions');
+                echo '</th>';
+            echo '</tr>';
+
+            while ($block = $blocks->fetch()) {
+                echo '<tr>';
+                    echo '<td>'.$block['blockName'].'</td>';
+                    echo '<td>'.$block['minSelect'].'</td>';
+                    echo '<td>'.$block['maxSelect'].'</td>';
+                    echo '<td>';
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/offerings_manage_block_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionBlockID=".$block['courseSelectionBlockID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                    echo '</td>';
+                echo '</tr>';
+            }
+
+            echo '</table>';
+        }
+
+        $form = Form::create('offeringsBlockAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_block_addProcess.php');
+
+        $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
+        $blockList = $gateway->selectAvailableBlocksBySchoolYear($values['courseSelectionOfferingID'], $values['gibbonSchoolYearID']);
+
+        $row = $form->addRow();
+            $row->addLabel('courseSelectionBlockID', __('Course Block'));
+            $row->addSelect('courseSelectionBlockID')
+                ->fromResults($blockList)
+                ->isRequired()
+                ->selectMultiple();
+
+        $row = $form->addRow();
+            $row->addLabel('minSelect', __('Min Selections'));
+            $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['minSelect']);
+
+        $row = $form->addRow();
+            $row->addLabel('maxSelect', __('Max Selections'));
+            $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
+
+        $row = $form->addRow();
+            $row->addSubmit(__('Add'));
+
+        echo $form->getOutput();
+    }
 }

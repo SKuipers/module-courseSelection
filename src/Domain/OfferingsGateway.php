@@ -35,10 +35,12 @@ class OfferingsGateway
         $this->pdo = $pdo;
     }
 
+    // OFFERINGS
+
     public function selectAll()
     {
         $data = array();
-        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as gibbonSchoolYearName, GROUP_CONCAT(DISTINCT gibbonYearGroup.nameShort SEPARATOR ', ') as yearGroupNames
+        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT gibbonYearGroup.nameShort SEPARATOR ', ') as yearGroupNames
                 FROM courseSelectionOffering
                 JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID IN (courseSelectionOffering.gibbonYearGroupIDList))
@@ -52,7 +54,7 @@ class OfferingsGateway
     public function selectOne($courseSelectionOfferingID)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
-        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as gibbonSchoolYearName FROM courseSelectionOffering JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID) WHERE courseSelectionOfferingID=:courseSelectionOfferingID ";
+        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName FROM courseSelectionOffering JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID) WHERE courseSelectionOfferingID=:courseSelectionOfferingID ";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
@@ -89,5 +91,61 @@ class OfferingsGateway
         $result = $this->pdo->executeQuery(array(), $sql);
 
         return ($result && $result->rowCount() > 0)? $result->fetchColumn(0)+1 : 1;
+    }
+
+    // OFFERING BLOCKS
+
+    public function selectAllBlocksByOffering($courseSelectionOfferingID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
+        $sql = "SELECT courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName
+                FROM courseSelectionOfferingBlock
+                JOIN courseSelectionBlock ON (courseSelectionBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
+                WHERE courseSelectionOfferingID=:courseSelectionOfferingID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function insertBlock(array $data)
+    {
+        $sql = "INSERT INTO courseSelectionOfferingBlock SET courseSelectionOfferingID=:courseSelectionOfferingID, courseSelectionBlockID=:courseSelectionBlockID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
+
+    public function deleteBlock($courseSelectionOfferingID, $courseSelectionBlockID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'courseSelectionBlockID' => $courseSelectionBlockID);
+        $sql = "DELETE FROM courseSelectionOfferingBlock WHERE courseSelectionOfferingID=:courseSelectionOfferingID AND courseSelectionBlockID=:courseSelectionBlockID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    public function deleteAllBlocksByOffering($courseSelectionOfferingID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
+        $sql = "DELETE FROM courseSelectionOfferingBlock WHERE courseSelectionOfferingID=:courseSelectionOfferingID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    // FORM QUERIES
+
+    public function selectAvailableBlocksBySchoolYear($courseSelectionOfferingID, $gibbonSchoolYearID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT courseSelectionBlock.courseSelectionBlockID as value, courseSelectionBlock.name as name
+                FROM courseSelectionBlock
+                JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
+                LEFT JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID AND courseSelectionOfferingID=:courseSelectionOfferingID)
+                WHERE gibbonSchoolYear.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND courseSelectionOfferingBlock.courseSelectionBlockID IS NULL
+                ORDER BY name";
+
+        return $this->pdo->executeQuery($data, $sql);
     }
 }
