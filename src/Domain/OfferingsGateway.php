@@ -109,7 +109,7 @@ class OfferingsGateway
 
     public function insertBlock(array $data)
     {
-        $sql = "INSERT INTO courseSelectionOfferingBlock SET courseSelectionOfferingID=:courseSelectionOfferingID, courseSelectionBlockID=:courseSelectionBlockID";
+        $sql = "INSERT INTO courseSelectionOfferingBlock SET courseSelectionOfferingID=:courseSelectionOfferingID, courseSelectionBlockID=:courseSelectionBlockID, minSelect=:minSelect, maxSelect=:maxSelect";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
