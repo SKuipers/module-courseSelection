@@ -65,7 +65,7 @@ class BlocksGateway
 
     public function insert(array $data)
     {
-        $sql = "INSERT INTO courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentID=:gibbonDepartmentID, name=:name, description=:description, minSelect=:minSelect, maxSelect=:maxSelect";
+        $sql = "INSERT INTO courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentID=:gibbonDepartmentID, name=:name, description=:description";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -73,7 +73,7 @@ class BlocksGateway
 
     public function update(array $data)
     {
-        $sql = "UPDATE courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentID=:gibbonDepartmentID, name=:name, description=:description, minSelect=:minSelect, maxSelect=:maxSelect WHERE courseSelectionBlockID=:courseSelectionBlockID";
+        $sql = "UPDATE courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentID=:gibbonDepartmentID, name=:name, description=:description WHERE courseSelectionBlockID=:courseSelectionBlockID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
