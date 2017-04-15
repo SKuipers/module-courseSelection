@@ -43,7 +43,7 @@ class OfferingsGateway
         $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT gibbonYearGroup.nameShort SEPARATOR ', ') as yearGroupNames
                 FROM courseSelectionOffering
                 JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID IN (courseSelectionOffering.gibbonYearGroupIDList))
+                LEFT JOIN gibbonYearGroup ON (FIND_IN_SET(gibbonYearGroup.gibbonYearGroupID,courseSelectionOffering.gibbonYearGroupIDList))
                 GROUP BY courseSelectionOfferingID
                 ORDER BY sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);

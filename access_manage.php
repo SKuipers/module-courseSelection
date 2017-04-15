@@ -61,6 +61,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
             echo '<th>';
                 echo __('Roles');
             echo '</th>';
+            echo '<th>';
+                echo __('Type');
+            echo '</th>';
             echo '<th style="width: 80px;">';
                 echo __('Actions');
             echo '</th>';
@@ -73,6 +76,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
                     echo date('M j', strtotime($access['dateStart'])).' - '.date('M j, Y', strtotime($access['dateEnd']));
                 echo '</td>';
                 echo '<td>'.$access['roleGroupNames'].'</td>';
+                echo '<td>'.$access['accessType'].'</td>';
                 echo '<td>';
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/access_manage_addEdit.php&courseSelectionAccessID=".$access['courseSelectionAccessID']."'><img title='".__('Edit')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/config.png'/></a> &nbsp;";
 

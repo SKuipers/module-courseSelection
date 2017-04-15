@@ -41,7 +41,7 @@ class AccessGateway
         $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as gibbonSchoolYearName, GROUP_CONCAT(DISTINCT gibbonRole.name SEPARATOR ', ') as roleGroupNames
                 FROM courseSelectionAccess
                 JOIN gibbonSchoolYear ON (courseSelectionAccess.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN gibbonRole ON (gibbonRole.gibbonRoleID IN (courseSelectionAccess.gibbonRollGroupIDList) )
+                LEFT JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
                 GROUP BY courseSelectionAccessID
                 ORDER BY dateStart, dateEnd";
         $result = $this->pdo->executeQuery($data, $sql);
@@ -60,7 +60,7 @@ class AccessGateway
 
     public function insert(array $data)
     {
-        $sql = "INSERT INTO courseSelectionAccess SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonRollGroupIDList=:gibbonRollGroupIDList, dateStart=:dateStart, dateEnd=:dateEnd, accessType=:accessType";
+        $sql = "INSERT INTO courseSelectionAccess SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonRoleIDList=:gibbonRoleIDList, dateStart=:dateStart, dateEnd=:dateEnd, accessType=:accessType";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -68,7 +68,7 @@ class AccessGateway
 
     public function update(array $data)
     {
-        $sql = "UPDATE courseSelectionAccess SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonRollGroupIDList=:gibbonRollGroupIDList, dateStart=:dateStart, dateEnd=:dateEnd, accessType=:accessType WHERE courseSelectionAccessID=:courseSelectionAccessID";
+        $sql = "UPDATE courseSelectionAccess SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonRoleIDList=:gibbonRoleIDList, dateStart=:dateStart, dateEnd=:dateEnd, accessType=:accessType WHERE courseSelectionAccessID=:courseSelectionAccessID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
@@ -81,5 +81,26 @@ class AccessGateway
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
+    }
+
+    public function getAccessRolesWithoutSelectionPermission($courseSelectionAccessID)
+    {
+        $data = array('courseSelectionAccessID' => $courseSelectionAccessID);
+        $sql = "SELECT gibbonRole.name as roleName
+                FROM courseSelectionAccess 
+                JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID,courseSelectionAccess.gibbonRoleIDList)) 
+                JOIN (
+                    SELECT gibbonAction.gibbonActionID 
+                    FROM gibbonAction 
+                    JOIN gibbonModule ON (gibbonModule.gibbonModuleID=gibbonAction.gibbonModuleID) 
+                    WHERE LEFT(gibbonAction.name, 17)='Course Selection_' 
+                    AND gibbonModule.name='Course Selection') AS actions
+                LEFT JOIN gibbonPermission ON (gibbonPermission.gibbonRoleID=gibbonRole.gibbonRoleID AND gibbonPermission.gibbonActionID=actions.gibbonActionID) 
+                WHERE courseSelectionAccessID=:courseSelectionAccessID
+                GROUP BY gibbonRole.gibbonRoleID 
+                HAVING COUNT(DISTINCT gibbonPermission.permissionID) = 0";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
     }
 }

@@ -37,13 +37,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     $data['dateStart'] = $_POST['dateStart'] ?? '';
     $data['dateEnd'] = $_POST['dateEnd'] ?? '';
     $data['accessType'] = $_POST['accessType'] ?? '';
-    $data['gibbonRollGroupIDList'] = $_POST['gibbonRollGroupIDList'] ?? array();
+    $data['gibbonRoleIDList'] = $_POST['gibbonRoleIDList'] ?? array();
 
     $data['dateStart'] = dateConvert($guid, $data['dateStart']);
     $data['dateEnd'] = dateConvert($guid, $data['dateEnd']);
-    $data['gibbonRollGroupIDList'] = implode(',', $data['gibbonRollGroupIDList']);
+    $data['gibbonRoleIDList'] = implode(',', $data['gibbonRoleIDList']);
 
-    if (empty($data['gibbonSchoolYearID']) || empty($data['dateStart']) || empty($data['dateEnd']) || empty($data['accessType']) || empty($data['gibbonRollGroupIDList'])) {
+    if (empty($data['gibbonSchoolYearID']) || empty($data['dateStart']) || empty($data['dateEnd']) || empty($data['accessType']) || empty($data['gibbonRoleIDList'])) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;

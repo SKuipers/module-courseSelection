@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         'dateStart'               => '',
         'dateEnd'                 => '',
         'accessType'              => '',
-        'gibbonRollGroupIDList'   => ''
+        'gibbonRoleIDList'   => ''
     );
 
     if (isset($_GET['courseSelectionAccessID'])) {
@@ -91,11 +91,22 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
             ))->isRequired()->selected($values['accessType']);
 
     $row = $form->addRow();
-        $row->addLabel('gibbonRollGroupIDList', __('Available to Roles'));
-        $row->addSelectRole('gibbonRollGroupIDList')
+        $row->addLabel('gibbonRoleIDList', __('Available to Roles'));
+        $row->addSelectRole('gibbonRoleIDList')
             ->isRequired()
             ->selectMultiple()
-            ->selected(explode(',', $values['gibbonRollGroupIDList']));
+            ->placeholder(null)
+            ->selected(explode(',', $values['gibbonRoleIDList']));
+
+    $rolePermissionResults = $gateway->getAccessRolesWithoutSelectionPermission($values['courseSelectionAccessID'] );
+
+    if ($rolePermissionResults && $rolePermissionResults->rowCount() > 0) {
+        $rolePermissionsMissingList = $rolePermissionResults->fetchAll(\PDO::FETCH_COLUMN, 0);
+
+        $row = $form->addRow();
+            $row->addAlert(sprintf(__('Without access to the Course Selection action the role(s) %1$s will not be able to make course selections. Adjust the role permissions in Admin > User Admin > Manage Permissions.'), '<b>'.implode(',', $rolePermissionsMissingList).'</b>' ), 'warning');
+    }
+
 
     $row = $form->addRow();
         $row->addFooter();

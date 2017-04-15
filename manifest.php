@@ -33,7 +33,7 @@ $url="https://github.com/SKuipers" ;
 $moduleTables[]="CREATE TABLE `courseSelectionAccess` (
   `courseSelectionAccessID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
-  `gibbonRollGroupIDList` varchar(255) DEFAULT NULL,
+  `gibbonRoleIDList` varchar(255) DEFAULT NULL,
   `dateStart` date DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
   `accessType` enum('View','Request','Select') NOT NULL DEFAULT 'Request',
