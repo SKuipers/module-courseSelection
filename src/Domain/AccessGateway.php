@@ -103,4 +103,18 @@ class AccessGateway
 
         return $result;
     }
+
+    public function getAccessTypesByUser($gibbonPersonID)
+    {
+        $data = array('gibbonPersonID' => $gibbonPersonID, 'today' => date('Y-m-d'));
+        $sql = "SELECT courseSelectionAccess.accessType 
+                FROM courseSelectionAccess 
+                JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
+                JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonRoleIDAll)) 
+                WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID 
+                AND :today BETWEEN courseSelectionAccess.dateStart AND courseSelectionAccess.dateEnd";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
 }
