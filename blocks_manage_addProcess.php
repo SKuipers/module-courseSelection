@@ -19,10 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 
-use Modules\CourseSelection\Domain\BlocksGateway;
+use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 
 $URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/blocks_manage_addEdit.php';
 

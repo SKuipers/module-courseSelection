@@ -19,10 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
-use Modules\CourseSelection\Domain\BlocksGateway;
+use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_manage_addEdit.php') == false) {
