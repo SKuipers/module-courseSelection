@@ -76,13 +76,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     if ($action == 'edit') {
         $form->addHiddenValue('gibbonSchoolYearID', $values['gibbonSchoolYearID']);
         $row = $form->addRow();
-            $row->addLabel('gibbonSchoolYearID', __('School Year'));
-            $row->addTextField('gibbonSchoolYearID')->readonly()->setValue($values['schoolYearName']);
+            $row->addLabel('schoolYearName', __('School Year'));
+            $row->addTextField('schoolYearName')->readonly()->setValue($values['schoolYearName']);
 
         $form->addHiddenValue('gibbonDepartmentID', $values['gibbonDepartmentID']);
         $row = $form->addRow();
-            $row->addLabel('gibbonDepartmentID', __('Department'));
-            $row->addTextField('gibbonDepartmentID')->readonly()->setValue($values['departmentName']);
+            $row->addLabel('departmentName', __('Department'));
+            $row->addTextField('departmentName')->readonly()->setValue($values['departmentName']);
     } else {
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
