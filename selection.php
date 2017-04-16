@@ -76,7 +76,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $accessGateway = new AccessGateway($pdo);
     $offeringsGateway = new OfferingsGateway($pdo);    
 
-    $accessRequest = $accessGateway->getAccessByUser($gibbonPersonIDStudent);
+    $accessRequest = $accessGateway->getAccessByPerson($gibbonPersonIDStudent);
 
     if (!$accessRequest || $accessRequest->rowCount() == 0) {
         echo "<div class='error'>" ;
@@ -111,7 +111,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             if ($highestGroupedAction == 'Course Selection_all' || in_array('Select', $accessTypes) || in_array('Request', $accessTypes) )
             {
 
-                $offeringsRequest = $offeringsGateway->selectOfferingsByYearGroup($access['gibbonSchoolYearID'], $studentEnrolment['gibbonYearGroupID']);
+                $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($gibbonPersonIDStudent);
 
                 if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
 

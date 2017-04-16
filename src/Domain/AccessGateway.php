@@ -101,7 +101,7 @@ class AccessGateway
         return $result;
     }
 
-    public function getAccessByUser($gibbonPersonID)
+    public function getAccessByPerson($gibbonPersonID)
     {
         $data = array('gibbonPersonID' => $gibbonPersonID);
         $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT accessType SEPARATOR ',') AS accessTypes

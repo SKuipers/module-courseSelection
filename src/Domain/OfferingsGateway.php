@@ -62,14 +62,19 @@ class OfferingsGateway
         return $result;
     }
 
-    public function selectOfferingsByYearGroup($gibbonSchoolYearID, $gibbonYearGroupID)
+    public function selectOfferingsByStudentEnrolment($gibbonPersonID)
     {
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonYearGroupID' => $gibbonYearGroupID);
+        $data = array('gibbonPersonID' => $gibbonPersonID);
         $sql = "SELECT *
                 FROM courseSelectionOffering
-                WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
-                AND FIND_IN_SET(:gibbonYearGroupID,courseSelectionOffering.gibbonYearGroupIDList) 
-                ORDER BY sequenceNumber";
+                LEFT JOIN courseSelectionOfferingRestriction ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                LEFT JOIN gibbonStudentEnrolment ON (
+                    gibbonStudentEnrolment.gibbonPersonID=:gibbonPersonID
+                    AND gibbonStudentEnrolment.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID 
+                    AND gibbonStudentEnrolment.gibbonYearGroupID=courseSelectionOfferingRestriction.gibbonYearGroupID)
+                GROUP BY courseSelectionOffering.courseSelectionOfferingID 
+                HAVING (COUNT(courseSelectionOfferingRestrictionID) = 0 OR COUNT(gibbonStudentEnrolmentID) > 0)
+                ORDER BY courseSelectionOffering.sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
