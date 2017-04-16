@@ -83,12 +83,10 @@ class AccessGateway
         return $this->pdo->getQuerySuccess();
     }
 
-    public function getAccessRolesWithoutSelectionPermission($courseSelectionAccessID)
+    public function getAccessRolesWithSelectionPermission()
     {
-        $data = array('courseSelectionAccessID' => $courseSelectionAccessID);
-        $sql = "SELECT gibbonRole.name as roleName
-                FROM courseSelectionAccess 
-                JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID,courseSelectionAccess.gibbonRoleIDList)) 
+        $sql = "SELECT gibbonRole.gibbonRoleID as value, gibbonRole.name as name
+                FROM gibbonRole
                 JOIN (
                     SELECT gibbonAction.gibbonActionID 
                     FROM gibbonAction 
@@ -96,10 +94,9 @@ class AccessGateway
                     WHERE LEFT(gibbonAction.name, 17)='Course Selection_' 
                     AND gibbonModule.name='Course Selection') AS actions
                 LEFT JOIN gibbonPermission ON (gibbonPermission.gibbonRoleID=gibbonRole.gibbonRoleID AND gibbonPermission.gibbonActionID=actions.gibbonActionID) 
-                WHERE courseSelectionAccessID=:courseSelectionAccessID
                 GROUP BY gibbonRole.gibbonRoleID 
-                HAVING COUNT(DISTINCT gibbonPermission.permissionID) = 0";
-        $result = $this->pdo->executeQuery($data, $sql);
+                HAVING COUNT(DISTINCT gibbonPermission.permissionID) > 0";
+        $result = $this->pdo->executeQuery(array(), $sql);
 
         return $result;
     }

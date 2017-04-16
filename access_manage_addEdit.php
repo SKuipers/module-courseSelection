@@ -90,23 +90,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
                 'Select' => __('Select Courses (no approval)')
             ))->isRequired()->selected($values['accessType']);
 
+    $roleResults = $gateway->getAccessRolesWithSelectionPermission();
+    $roles = ($roleResults && $roleResults->rowCount() > 0)? $roleResults->fetchAll(\PDO::FETCH_KEY_PAIR) : array();
+
     $row = $form->addRow();
-        $row->addLabel('gibbonRoleIDList', __('Available to Roles'));
-        $row->addSelectRole('gibbonRoleIDList')
+        $row->addLabel('gibbonRoleIDList', __('Roles'))->description(__('Available to roles with access to Course Selection page.'));
+        $row->addSelect('gibbonRoleIDList')
+            ->fromArray($roles)
             ->isRequired()
             ->selectMultiple()
             ->placeholder(null)
             ->selected(explode(',', $values['gibbonRoleIDList']));
-
-    $rolePermissionResults = $gateway->getAccessRolesWithoutSelectionPermission($values['courseSelectionAccessID'] );
-
-    if ($rolePermissionResults && $rolePermissionResults->rowCount() > 0) {
-        $rolePermissionsMissingList = $rolePermissionResults->fetchAll(\PDO::FETCH_COLUMN, 0);
-
-        $row = $form->addRow();
-            $row->addAlert(sprintf(__('Without access to the Course Selection action the role(s) %1$s will not be able to make course selections. Adjust the role permissions in Admin > User Admin > Manage Permissions.'), '<b>'.implode(',', $rolePermissionsMissingList).'</b>' ), 'warning');
-    }
-
 
     $row = $form->addRow();
         $row->addFooter();
