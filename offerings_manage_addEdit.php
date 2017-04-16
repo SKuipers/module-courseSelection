@@ -77,8 +77,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     if ($action == 'edit') {
         $form->addHiddenValue('gibbonSchoolYearID', $values['gibbonSchoolYearID']);
         $row = $form->addRow();
-            $row->addLabel('gibbonSchoolYearID', __('School Year'));
-            $row->addTextField('gibbonSchoolYearID')->readonly()->setValue($values['schoolYearName']);
+            $row->addLabel('schoolYearName', __('School Year'));
+            $row->addTextField('schoolYearName')->readonly()->setValue($values['schoolYearName']);
     } else {
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
@@ -134,6 +134,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
                     echo __('Course Block');
                 echo '</th>';
                 echo '<th>';
+                    echo __('Courses');
+                echo '</th>';
+                echo '<th>';
                     echo __('Min Selections');
                 echo '</th>';
                 echo '<th>';
@@ -147,6 +150,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             while ($block = $blocks->fetch()) {
                 echo '<tr>';
                     echo '<td>'.$block['blockName'].'</td>';
+                    echo '<td>'.$block['courseCount'].'</td>';
                     echo '<td>'.$block['minSelect'].'</td>';
                     echo '<td>'.$block['maxSelect'].'</td>';
                     echo '<td>';
