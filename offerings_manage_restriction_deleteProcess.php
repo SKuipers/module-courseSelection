@@ -24,7 +24,9 @@ use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage.php';
+$courseSelectionOfferingID = $_GET['courseSelectionOfferingID'] ?? '';
+
+$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$courseSelectionOfferingID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings_manage_addEdit.php') == false) {
     $URL .= '&return=error0';
@@ -32,31 +34,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     exit;
 } else {
     //Proceed!
-    $data = array();
-    $data['courseSelectionOfferingID'] = $_POST['courseSelectionOfferingID'] ?? '';
-    $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
-    $data['gibbonYearGroupIDList'] = $_POST['gibbonYearGroupIDList'] ?? array();
-    $data['name'] = $_POST['name'] ?? '';
-    $data['description'] = $_POST['description'] ?? '';
-    $data['minSelect'] = $_POST['minSelect'] ?? 0;
-    $data['maxSelect'] = $_POST['maxSelect'] ?? 0;
-    $data['sequenceNumber'] = $_POST['sequenceNumber'] ?? 1;
+    $courseSelectionOfferingRestrictionID = $_GET['courseSelectionOfferingRestrictionID'] ?? '';
 
-    $data['gibbonYearGroupIDList'] = implode(',', $data['gibbonYearGroupIDList']);
-    $data['minSelect'] = intval($data['minSelect']);
-    $data['maxSelect'] = intval($data['maxSelect']);
-
-    if (empty($data['courseSelectionOfferingID']) || empty($data['gibbonSchoolYearID']) || empty($data['name']) || !isset($data['sequenceNumber'])) {
+    if (empty($courseSelectionOfferingID) || empty($courseSelectionOfferingRestrictionID)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
     } else {
-
         $gateway = new OfferingsGateway($pdo);
 
-        $updated = $gateway->update($data);
+        $deleted = $gateway->deleteRestriction($courseSelectionOfferingRestrictionID);
 
-        if ($updated == false) {
+        if ($deleted == false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit;

@@ -69,6 +69,14 @@ $moduleTables[]="CREATE TABLE `courseSelectionOffering` (
   PRIMARY KEY (`courseSelectionOfferingID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
+$moduleTables[]="CREATE TABLE `courseSelectionOfferingRestriction` (
+  `courseSelectionOfferingRestrictionID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
+  `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
+  `gibbonYearGroupID` int(3) unsigned zerofill DEFAULT NULL,
+  PRIMARY KEY (`courseSelectionOfferingRestrictionID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
 $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,

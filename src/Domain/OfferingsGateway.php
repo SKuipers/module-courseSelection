@@ -40,10 +40,12 @@ class OfferingsGateway
     public function selectAll()
     {
         $data = array();
-        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT gibbonYearGroup.nameShort SEPARATOR ', ') as yearGroupNames
+        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(CONCAT(restrictYear.name, ' - ', gibbonYearGroup.nameShort) SEPARATOR '<br/>') as yearGroupNames
                 FROM courseSelectionOffering
                 JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN gibbonYearGroup ON (FIND_IN_SET(gibbonYearGroup.gibbonYearGroupID,courseSelectionOffering.gibbonYearGroupIDList))
+                LEFT JOIN courseSelectionOfferingRestriction ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                LEFT JOIN gibbonSchoolYear AS restrictYear ON (restrictYear.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID)
+                LEFT JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=courseSelectionOfferingRestriction.gibbonYearGroupID)
                 GROUP BY courseSelectionOfferingID
                 ORDER BY sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);
@@ -104,6 +106,47 @@ class OfferingsGateway
         $result = $this->pdo->executeQuery(array(), $sql);
 
         return ($result && $result->rowCount() > 0)? $result->fetchColumn(0)+1 : 1;
+    }
+
+    // OFFERING RESTRICTIONS
+
+    public function selectAllRestrictionsByOffering($courseSelectionOfferingID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
+        $sql = "SELECT courseSelectionOfferingRestriction.*, gibbonSchoolYear.name as schoolYearName, gibbonYearGroup.name as yearGroupName
+                FROM courseSelectionOfferingRestriction
+                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID)
+                JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=courseSelectionOfferingRestriction.gibbonYearGroupID)
+                WHERE courseSelectionOfferingID=:courseSelectionOfferingID ";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function insertRestriction(array $data)
+    {
+        $sql = "INSERT INTO courseSelectionOfferingRestriction SET courseSelectionOfferingID=:courseSelectionOfferingID, gibbonSchoolYearID=:gibbonSchoolYearID, gibbonYearGroupID=:gibbonYearGroupID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
+
+    public function deleteRestriction($courseSelectionOfferingRestrictionID)
+    {
+        $data = array('courseSelectionOfferingRestrictionID' => $courseSelectionOfferingRestrictionID);
+        $sql = "DELETE FROM courseSelectionOfferingRestriction WHERE courseSelectionOfferingRestrictionID=:courseSelectionOfferingRestrictionID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    public function deleteAllRestrictionsByOffering($courseSelectionOfferingID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
+        $sql = "DELETE FROM courseSelectionOfferingRestriction WHERE courseSelectionOfferingID=:courseSelectionOfferingID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
     }
 
     // OFFERING BLOCKS

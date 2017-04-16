@@ -45,7 +45,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     $data['minSelect'] = intval($data['minSelect']);
     $data['maxSelect'] = intval($data['maxSelect']);
 
-    if (empty($data['gibbonSchoolYearID']) || empty($data['gibbonYearGroupIDList']) || empty($data['name']) || !isset($data['sequenceNumber'])) {
+    if (empty($data['gibbonSchoolYearID']) || empty($data['name']) || !isset($data['sequenceNumber'])) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;

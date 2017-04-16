@@ -102,10 +102,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
 
     $row = $form->addRow();
-        $row->addLabel('gibbonYearGroupIDList', __('Year Groups'));
-        $row->addCheckboxYearGroup('gibbonYearGroupIDList')->checked(explode(',', $values['gibbonYearGroupIDList']));
-
-    $row = $form->addRow();
         $row->addLabel('sequenceNumber', __('Sequence Number'));
         $row->addNumber('sequenceNumber')->isRequired()->minimum(0)->maximum(999)->setValue($values['sequenceNumber']);
 
@@ -116,6 +112,63 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     echo $form->getOutput();
 
     if ($action == 'edit' && !empty($values['courseSelectionOfferingID'])) {
+        // RESTRICTIONS
+        echo '<h3>';
+        echo __('Manage Enrolment Restrictions');
+        echo '</h3>';
+
+        $blocks = $gateway->selectAllRestrictionsByOffering($values['courseSelectionOfferingID']);
+
+        if ($blocks->rowCount() == 0) {
+            echo '<div class="message">';
+            echo __('There are currently no enrolment rescrictions applied to this course offering; any active student will be able to make course selections. Use the fields below if you wish to restrict this course offering to students enroled in a specific year group.') ;
+            echo '</div>';
+        } else {
+            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+
+            echo '<tr class="head">';
+                echo '<th>';
+                    echo __('School Year');
+                echo '</th>';
+                echo '<th>';
+                    echo __('Year Group');
+                echo '</th>';
+                echo '<th style="width: 80px;">';
+                    echo __('Actions');
+                echo '</th>';
+            echo '</tr>';
+
+            while ($block = $blocks->fetch()) {
+                echo '<tr>';
+                    echo '<td>'.$block['schoolYearName'].'</td>';
+                    echo '<td>'.$block['yearGroupName'].'</td>';
+                    echo '<td>';
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/offerings_manage_restriction_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionOfferingRestrictionID=".$block['courseSelectionOfferingRestrictionID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                    echo '</td>';
+                echo '</tr>';
+            }
+
+            echo '</table>';
+        }
+
+        $form = Form::create('offeringsRestrictionAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_restriction_addProcess.php');
+        $form->setFactory(DatabaseFormFactory::create($pdo));
+
+        $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
+        $row = $form->addRow();
+            $row->addLabel('gibbonSchoolYearID', __('Student Enrolment'));
+            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->setClass('mediumWidth');
+            $row->addSelectYearGroup('gibbonYearGroupID')->isRequired()->setClass('mediumWidth');
+
+        $row = $form->addRow();
+            $row->addSubmit(__('Add'));
+
+        echo $form->getOutput();
+
+
+        // BLOCKS
         echo '<h3>';
         echo __('Manage Blocks');
         echo '</h3>';
