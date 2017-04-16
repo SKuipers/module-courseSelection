@@ -60,6 +60,19 @@ class OfferingsGateway
         return $result;
     }
 
+    public function selectOfferingsByYearGroup($gibbonSchoolYearID, $gibbonYearGroupID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonYearGroupID' => $gibbonYearGroupID);
+        $sql = "SELECT *
+                FROM courseSelectionOffering
+                WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND FIND_IN_SET(:gibbonYearGroupID,courseSelectionOffering.gibbonYearGroupIDList) 
+                ORDER BY sequenceNumber";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
     public function insert(array $data)
     {
         $sql = "INSERT INTO courseSelectionOffering SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonYearGroupIDList=:gibbonYearGroupIDList, name=:name, description=:description, minSelect=:minSelect, maxSelect=:maxSelect, sequenceNumber=:sequenceNumber";
