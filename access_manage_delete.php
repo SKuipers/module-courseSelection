@@ -26,7 +26,7 @@ include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_manage_delete.php') == false) {
 	//Acess denied
 	echo "<div class='error'>" ;
-		echo "You do not have access to this action." ;
+		echo __('You do not have access to this action.');
 	echo "</div>" ;
 } else {
     $courseSelectionAccessID = $_GET['courseSelectionAccessID'] ?? '';
