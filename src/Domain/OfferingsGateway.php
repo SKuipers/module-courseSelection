@@ -98,10 +98,12 @@ class OfferingsGateway
     public function selectAllBlocksByOffering($courseSelectionOfferingID)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
-        $sql = "SELECT courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName
+        $sql = "SELECT courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName, COUNT(gibbonCourseID) as courseCount
                 FROM courseSelectionOfferingBlock
                 JOIN courseSelectionBlock ON (courseSelectionBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
-                WHERE courseSelectionOfferingID=:courseSelectionOfferingID";
+                LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID) 
+                WHERE courseSelectionOfferingID=:courseSelectionOfferingID 
+                GROUP BY courseSelectionBlock.courseSelectionBlockID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
@@ -138,12 +140,14 @@ class OfferingsGateway
     public function selectAvailableBlocksBySchoolYear($courseSelectionOfferingID, $gibbonSchoolYearID)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionBlock.courseSelectionBlockID as value, courseSelectionBlock.name as name
+        $sql = "SELECT courseSelectionBlock.courseSelectionBlockID as value, CONCAT(courseSelectionBlock.name, ' (', COUNT(courseSelectionBlockCourse.gibbonCourseID), ' courses)') as name
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID AND courseSelectionOfferingID=:courseSelectionOfferingID)
+                LEFT JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID AND courseSelectionOfferingID=:courseSelectionOfferingID) 
+                LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID) 
                 WHERE gibbonSchoolYear.gibbonSchoolYearID=:gibbonSchoolYearID
-                AND courseSelectionOfferingBlock.courseSelectionBlockID IS NULL
+                AND courseSelectionOfferingBlock.courseSelectionBlockID IS NULL 
+                GROUP BY courseSelectionBlock.courseSelectionBlockID 
                 ORDER BY name";
 
         return $this->pdo->executeQuery($data, $sql);
