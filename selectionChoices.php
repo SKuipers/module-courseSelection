@@ -34,7 +34,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection', 'Course Selection Choices') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -89,6 +89,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $row->addContent(__('Department'));
             $row->addContent(__('Courses'));
             $row->addContent(__('Choices'));
+            $row->addContent(__('Done'));
 
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
@@ -98,7 +99,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 $departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
                 $department = $departmentRequest->fetch();
 
-                $row = $form->addRow()->addSubHeading($department['name']);
+                //$row = $form->addRow()->addSubHeading($department['name']);
 
                 foreach ($blocks as $block) {
                     $coursesRequest = $blocksGateway->selectAllCoursesByBlock($block['courseSelectionBlockID']);
@@ -112,6 +113,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                         $row->addLabel($fieldID, $block['blockName'])->description($block['blockDescription']);
                         $row->addContent('Marks go here');
                         $row->addCheckbox($fieldID)->fromArray($courseOptions);
+                        $row->addContent($block['minSelect'].' - '.$block['maxSelect']);
                     }
                 }
             }

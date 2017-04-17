@@ -160,7 +160,7 @@ class OfferingsGateway
     public function selectAllBlocksByOffering($courseSelectionOfferingID)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
-        $sql = "SELECT courseSelectionBlock.gibbonDepartmentID, courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName, courseSelectionBlock.description as blockDescription, COUNT(gibbonCourseID) as courseCount
+        $sql = "SELECT courseSelectionBlock.gibbonDepartmentID, courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName, courseSelectionBlock.description as blockDescription, courseSelectionOfferingBlock.minSelect, courseSelectionOfferingBlock.maxSelect, COUNT(gibbonCourseID) as courseCount
                 FROM courseSelectionOfferingBlock
                 JOIN courseSelectionBlock ON (courseSelectionBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
                 LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
