@@ -94,7 +94,10 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
 
 
 //gibbonSettings entries
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'requireApproval', 'Require Course Selection Approval', 'Require a staff member to approve course selections.', 'Y');";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'requireApproval', 'Require Course Approval', 'Require a staff member to approve course selections.', 'Y');";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextOfferings', 'Course Offerings Introduction', 'Information to display with the course offerings.', '');";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionBefore', 'Course Selection Introduction', 'Information to display before the course selections form.', '');";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextOSelectionAfter', 'Course Selection Postscript', 'Information to display after the course selections form.', '');";
 
 
 //Action rows
@@ -185,7 +188,7 @@ $actionRows[] = array(
     'precedence'                => '1',
     'category'                  => 'Courses',
     'description'               => '',
-    'URLList'                   => 'selection.php,selectionProcess.php',
+    'URLList'                   => 'selection.php',
     'entryURL'                  => 'selection.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
@@ -205,7 +208,7 @@ $actionRows[] = array(
     'precedence'                => '0',
     'category'                  => 'Courses',
     'description'               => '',
-    'URLList'                   => 'selection.php,selectionProcess.php',
+    'URLList'                   => 'selection.php',
     'entryURL'                  => 'selection.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
@@ -325,7 +328,7 @@ $actionRows[] = array(
     'precedence'                => '0',
     'category'                  => 'Settings',
     'description'               => '',
-    'URLList'                   => 'settings.php,settingsProcess.php',
+    'URLList'                   => 'settings.php',
     'entryURL'                  => 'settings.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
