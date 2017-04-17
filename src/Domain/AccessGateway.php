@@ -88,13 +88,13 @@ class AccessGateway
         $sql = "SELECT gibbonRole.gibbonRoleID as value, gibbonRole.name as name
                 FROM gibbonRole
                 JOIN (
-                    SELECT gibbonAction.gibbonActionID 
-                    FROM gibbonAction 
-                    JOIN gibbonModule ON (gibbonModule.gibbonModuleID=gibbonAction.gibbonModuleID) 
-                    WHERE LEFT(gibbonAction.name, 17)='Course Selection_' 
+                    SELECT gibbonAction.gibbonActionID
+                    FROM gibbonAction
+                    JOIN gibbonModule ON (gibbonModule.gibbonModuleID=gibbonAction.gibbonModuleID)
+                    WHERE LEFT(gibbonAction.name, 17)='Course Selection_'
                     AND gibbonModule.name='Course Selection') AS actions
-                LEFT JOIN gibbonPermission ON (gibbonPermission.gibbonRoleID=gibbonRole.gibbonRoleID AND gibbonPermission.gibbonActionID=actions.gibbonActionID) 
-                GROUP BY gibbonRole.gibbonRoleID 
+                LEFT JOIN gibbonPermission ON (gibbonPermission.gibbonRoleID=gibbonRole.gibbonRoleID AND gibbonPermission.gibbonActionID=actions.gibbonActionID)
+                GROUP BY gibbonRole.gibbonRoleID
                 HAVING COUNT(DISTINCT gibbonPermission.permissionID) > 0";
         $result = $this->pdo->executeQuery(array(), $sql);
 
@@ -105,12 +105,29 @@ class AccessGateway
     {
         $data = array('gibbonPersonID' => $gibbonPersonID);
         $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT accessType SEPARATOR ',') AS accessTypes
-                FROM courseSelectionAccess 
+                FROM courseSelectionAccess
                 JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionAccess.gibbonSchoolYearID)
                 JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
-                JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonRoleIDAll)) 
-                WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID 
+                JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonRoleIDAll))
+                WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID
                 GROUP BY courseSelectionAccess.gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function getAccessByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonID)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonID' => $gibbonPersonID);
+        $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT accessType SEPARATOR ',') AS accessTypes
+                FROM courseSelectionOffering
+                JOIN courseSelectionAccess  ON (courseSelectionAccess.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID)
+                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionAccess.gibbonSchoolYearID)
+                JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
+                JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonRoleIDAll))
+                WHERE courseSelectionOffering.courseSelectionOfferingID=:courseSelectionOfferingID
+                AND gibbonPerson.gibbonPersonID=:gibbonPersonID
+                GROUP BY courseSelectionOffering.courseSelectionOfferingID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;

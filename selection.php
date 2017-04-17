@@ -21,7 +21,6 @@ use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
-use Gibbon\Modules\CourseSelection\Domain\StudentsGateway;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
@@ -50,31 +49,25 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-        
+
         $row = $form->addRow();
             $row->addLabel('gibbonPersonIDStudent', __('Student'));
             $row->addSelectStudent('gibbonPersonIDStudent')->selected($gibbonPersonIDStudent);
-        
+
         $row = $form->addRow();
             $row->addFooter();
             $row->addSubmit();
-        
+
         echo $form->getOutput();
     } else if ($highestGroupedAction == 'Course Selection_my') {
         $gibbonPersonIDStudent = $_SESSION[$guid]['gibbonPersonID'];
     }
 
-    $studentsGateway = new StudentsGateway($pdo);
-    $studentEnrolmentRequest = $studentsGateway->selectStudentEnrolmentByID($_SESSION[$guid]['gibbonSchoolYearID'], $gibbonPersonIDStudent);
-    if ($studentEnrolmentRequest && $studentEnrolmentRequest->rowCount() > 0) {
-        $studentEnrolment = $studentEnrolmentRequest->fetch();
-    }
-
     // Cancel out early if there's no valid student selected
-    if (empty($gibbonPersonIDStudent) || empty($studentEnrolment)) return;
+    if (empty($gibbonPersonIDStudent)) return;
 
     $accessGateway = new AccessGateway($pdo);
-    $offeringsGateway = new OfferingsGateway($pdo);    
+    $offeringsGateway = new OfferingsGateway($pdo);
 
     $accessRequest = $accessGateway->getAccessByPerson($gibbonPersonIDStudent);
 
@@ -100,31 +93,34 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             }
 
             echo '<div class="'.$accessMessageClass.'">';
-                echo $accessMessageText.' '.sprintf(__('Access is available from %1$s to %2$s'), 
-                    date('M j', strtotime($access['dateStart'])), 
+                echo $accessMessageText.' '.sprintf(__('Access is available from %1$s to %2$s'),
+                    date('M j', strtotime($access['dateStart'])),
                     date('M j, Y', strtotime($access['dateEnd']))
                 );
             echo '</div>';
-            
+
+            $infoText = getSettingByScope($connection2, 'Course Selection', 'infoTextOfferings');
+            if (!empty($infoText)) {
+                echo '<p>'.$infoText.'</p>';
+            }
 
             $accessTypes = explode(',', $access['accessTypes']);
-            if ($highestGroupedAction == 'Course Selection_all' || in_array('Select', $accessTypes) || in_array('Request', $accessTypes) )
-            {
-
-                $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($gibbonPersonIDStudent);
+            if ($highestGroupedAction == 'Course Selection_all' || in_array('Select', $accessTypes) || in_array('Request', $accessTypes) ) {
+                $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
 
                 if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
 
-                    $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/location.php');
+                    $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
 
                     $form->setClass('fullWidth');
                     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-                    
+                    $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
+
                     $form->addRow()->addSubHeading(__('Course Offerings'));
 
                     while ($offering = $offeringsRequest->fetch()) {
                         $row = $form->addRow();
-                            $row->addLabel('courseSelectionOfferingID', $offering['name']);
+                            $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
                             $row->addRadio('courseSelectionOfferingID')
                                 ->setClass('')
                                 ->fromArray(array($offering['courseSelectionOfferingID'] => ''));
@@ -132,15 +128,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                     $row = $form->addRow();
                         $row->addSubmit();
-                    
+
                     echo $form->getOutput();
                 } else {
                     echo "<div class='error'>" ;
                         echo __('There are no course offerings available at this time.');
                     echo "</div>" ;
                 }
-
-
             } else {
                 echo "<div class='error'>" ;
                     echo __('The course selection interval is view-only at this time.');
@@ -148,8 +142,4 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             }
         }
     }
-
-    // echo '<pre>';
-    // print_r();
-    // echo '</pre>';
 }

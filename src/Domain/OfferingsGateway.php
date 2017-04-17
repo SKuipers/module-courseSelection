@@ -40,7 +40,7 @@ class OfferingsGateway
     public function selectAll()
     {
         $data = array();
-        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(CONCAT(restrictYear.name, ' - ', gibbonYearGroup.nameShort) SEPARATOR '<br/>') as yearGroupNames
+        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(CONCAT(restrictYear.name, ' - ', gibbonYearGroup.nameShort) ORDER BY restrictYear.sequenceNumber, gibbonYearGroup.sequenceNumber SEPARATOR '<br/>') as yearGroupNames
                 FROM courseSelectionOffering
                 JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN courseSelectionOfferingRestriction ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
@@ -62,17 +62,18 @@ class OfferingsGateway
         return $result;
     }
 
-    public function selectOfferingsByStudentEnrolment($gibbonPersonID)
+    public function selectOfferingsByStudentEnrolment($gibbonSchoolYearID, $gibbonPersonID)
     {
-        $data = array('gibbonPersonID' => $gibbonPersonID);
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonID' => $gibbonPersonID);
         $sql = "SELECT *
                 FROM courseSelectionOffering
                 LEFT JOIN courseSelectionOfferingRestriction ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
                 LEFT JOIN gibbonStudentEnrolment ON (
                     gibbonStudentEnrolment.gibbonPersonID=:gibbonPersonID
-                    AND gibbonStudentEnrolment.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID 
+                    AND gibbonStudentEnrolment.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID
                     AND gibbonStudentEnrolment.gibbonYearGroupID=courseSelectionOfferingRestriction.gibbonYearGroupID)
-                GROUP BY courseSelectionOffering.courseSelectionOfferingID 
+                WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
+                GROUP BY courseSelectionOffering.courseSelectionOfferingID
                 HAVING (COUNT(courseSelectionOfferingRestrictionID) = 0 OR COUNT(gibbonStudentEnrolmentID) > 0)
                 ORDER BY courseSelectionOffering.sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);
@@ -159,11 +160,11 @@ class OfferingsGateway
     public function selectAllBlocksByOffering($courseSelectionOfferingID)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
-        $sql = "SELECT courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName, COUNT(gibbonCourseID) as courseCount
+        $sql = "SELECT courseSelectionBlock.gibbonDepartmentID, courseSelectionOfferingBlock.*, courseSelectionBlock.name as blockName, courseSelectionBlock.description as blockDescription, COUNT(gibbonCourseID) as courseCount
                 FROM courseSelectionOfferingBlock
                 JOIN courseSelectionBlock ON (courseSelectionBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
-                LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID) 
-                WHERE courseSelectionOfferingID=:courseSelectionOfferingID 
+                LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
+                WHERE courseSelectionOfferingID=:courseSelectionOfferingID
                 GROUP BY courseSelectionBlock.courseSelectionBlockID";
         $result = $this->pdo->executeQuery($data, $sql);
 
@@ -204,13 +205,24 @@ class OfferingsGateway
         $sql = "SELECT courseSelectionBlock.courseSelectionBlockID as value, CONCAT(courseSelectionBlock.name, ' (', COUNT(courseSelectionBlockCourse.gibbonCourseID), ' courses)') as name
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID AND courseSelectionOfferingID=:courseSelectionOfferingID) 
-                LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID) 
+                LEFT JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID AND courseSelectionOfferingID=:courseSelectionOfferingID)
+                LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 WHERE gibbonSchoolYear.gibbonSchoolYearID=:gibbonSchoolYearID
-                AND courseSelectionOfferingBlock.courseSelectionBlockID IS NULL 
-                GROUP BY courseSelectionBlock.courseSelectionBlockID 
+                AND courseSelectionOfferingBlock.courseSelectionBlockID IS NULL
+                GROUP BY courseSelectionBlock.courseSelectionBlockID
                 ORDER BY name";
 
         return $this->pdo->executeQuery($data, $sql);
+    }
+
+    // MISC
+
+    public function selectDepartmentByID($gibbonDepartmentID)
+    {
+        $data = array('gibbonDepartmentID' => $gibbonDepartmentID);
+        $sql = "SELECT* FROM gibbonDepartment WHERE gibbonDepartmentID=:gibbonDepartmentID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
     }
 }
