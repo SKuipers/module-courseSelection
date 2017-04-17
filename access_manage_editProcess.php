@@ -24,7 +24,9 @@ use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/access_manage.php';
+$courseSelectionAccessID = $_POST['courseSelectionAccessID'] ?? '';
+
+$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/access_manage_addEdit.php&courseSelectionAccessID='.$courseSelectionAccessID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_manage_addEdit.php') == false) {
     $URL .= '&return=error0';
@@ -33,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 } else {
     //Proceed!
     $data = array();
-    $data['courseSelectionAccessID'] = $_POST['courseSelectionAccessID'] ?? '';
+    $data['courseSelectionAccessID'] = $courseSelectionAccessID;
     $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
     $data['dateStart'] = $_POST['dateStart'] ?? '';
     $data['dateEnd'] = $_POST['dateEnd'] ?? '';

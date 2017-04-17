@@ -24,7 +24,9 @@ use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/blocks_manage.php';
+$courseSelectionBlockID = $_POST['courseSelectionBlockID'] ?? '';
+
+$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/blocks_manage_addEdit.php&courseSelectionBlockID='.$courseSelectionBlockID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_manage_addEdit.php') == false) {
     $URL .= '&return=error0';
@@ -33,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 } else {
     //Proceed!
     $data = array();
-    $data['courseSelectionBlockID'] = $_POST['courseSelectionBlockID'] ?? '';
+    $data['courseSelectionBlockID'] = $courseSelectionBlockID;
     $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
     $data['gibbonDepartmentID'] = $_POST['gibbonDepartmentID'] ?? '';
     $data['name'] = $_POST['name'] ?? '';

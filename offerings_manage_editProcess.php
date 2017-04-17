@@ -24,7 +24,9 @@ use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage.php';
+$courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';
+
+$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$courseSelectionOfferingID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings_manage_addEdit.php') == false) {
     $URL .= '&return=error0';
@@ -33,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 } else {
     //Proceed!
     $data = array();
-    $data['courseSelectionOfferingID'] = $_POST['courseSelectionOfferingID'] ?? '';
+    $data['courseSelectionOfferingID'] = $courseSelectionOfferingID;
     $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
     $data['gibbonYearGroupIDList'] = $_POST['gibbonYearGroupIDList'] ?? array();
     $data['name'] = $_POST['name'] ?? '';
