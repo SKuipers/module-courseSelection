@@ -85,12 +85,25 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
   PRIMARY KEY (`courseSelectionOfferingID`,`courseSelectionBlockID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
+$moduleTables[]="CREATE TABLE `courseSelectionChoice` (
+    `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+    `gibbonPersonID` INT(10) UNSIGNED ZEROFILL NULL ,
+    `gibbonCourseID` INT(8) UNSIGNED NULL ,
+    `status` ENUM('Locked','Approved','Pending','Recommended','Waitlist','Declined') NOT NULL DEFAULT 'Pending',
+    `gibbonPersonIDSelected` INT(10) UNSIGNED ZEROFILL NULL ,
+    `timestampSelected` DATETIME NULL ,
+    `gibbonPersonIDStatusChange` INT(10) UNSIGNED ZEROFILL NULL ,
+    `timestampStatusChange` DATETIME NULL ,
+    `notes` VARCHAR(255) NULL ,
+    PRIMARY KEY (`courseSelectionChoiceID`),
+    UNIQUE KEY (`gibbonPersonID`, `gibbonCourseID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
+
 
 // courseSelectionRequisite (Ruleset/Rule)
 // courseSelectionMeta
-// courseSelectionRequest
-// courseSelectionRequestOffering
-// courseSelectionRequestLog
+// courseSelectionChoiceOffering
+// courseSelectionChoiceLog
 
 
 //gibbonSettings entries
