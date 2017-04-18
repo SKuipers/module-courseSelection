@@ -44,7 +44,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $data['timestampStatusChange'] = date('Y-m-d H:i:s');
     $data['notes'] = '';
 
-    if (empty($data['gibbonSchoolYearID']) || empty($data['gibbonPersonIDStudent']) || empty($data['gibbonPersonIDSelected'])) {
+    if (empty($courseSelectionOfferingID) || empty($data['gibbonSchoolYearID']) || empty($data['gibbonPersonIDStudent']) || empty($data['gibbonPersonIDSelected'])) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
@@ -68,6 +68,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $courseSelectionsList = implode(',', $courseSelections);
         $gateway->updateUnselectedChoicesBySchoolYearAndPerson($data['gibbonSchoolYearID'], $gibbonPersonIDStudent, $courseSelectionsList);
+
+        $data = array();
+        $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
+        $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+        $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
+
+        $insertID = $gateway->insertChoiceOffering($data);
+        $partialFail &= empty($insertID);
 
         if ($partialFail == true) {
             $URL .= '&return=error2';

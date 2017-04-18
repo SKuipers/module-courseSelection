@@ -115,7 +115,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                     $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
                     $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
 
-                    $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionProcess.php');
+                    $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
 
                     $form->setClass('fullWidth');
                     $form->addHiddenValue('address', $_SESSION[$guid]['address']);

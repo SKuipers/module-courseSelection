@@ -80,6 +80,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo '<p>'.$infoTextBefore.'</p>';
         }
 
+        $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($offering['gibbonSchoolYearID'], $gibbonPersonIDStudent);
+        $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
+
+        if (!empty($offeringChoice) && $offeringChoice != $courseSelectionOfferingID) {
+            echo '<div class="warning">';
+                echo __('You have changed your previous course offering selection. Submitting your course choices here will remove any choices selected in a previous course offering.');
+            echo '</div>';
+        }
+
         $form = Form::create('selectionChoices', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoicesProcess.php');
 
         $form->setClass('fullWidth');
