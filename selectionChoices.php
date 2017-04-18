@@ -85,7 +85,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         if (!empty($offeringChoice) && $offeringChoice != $courseSelectionOfferingID) {
             echo '<div class="warning">';
-                echo __('You have changed your previous course offering selection. Submitting your course choices here will remove any choices selected in a previous course offering.');
+                echo __('You have changed your previous course offering selection. Submitting your course choices here will replace any choices selected in a previous course offering.');
             echo '</div>';
         }
 
@@ -126,12 +126,22 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                         $courses = $coursesRequest->fetchAll();
                         $courseOptions = array_combine(array_column($courses, 'gibbonCourseID'), array_column($courses, 'courseName'));
 
+                        $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartment($gibbonDepartmentID, $gibbonPersonIDStudent);
+                        $grades = ($gradesRequest->rowCount() > 0)? $gradesRequest->fetchAll() : array();
+
+                        $gradesList = implode('<br/>', array_map(function ($grade) {
+                            $output = ($grade['schoolYearStatus'] == 'Current')? '<span style="background:#ffd800;">' : '<span>';
+                            $output .= $grade['courseNameShort'].' ('.$grade['schoolYearName'].'): ';
+                            $output .= intval($grade['grade']).'%';
+                            return $output;
+                        }, $grades));
+
                         $selectedChoices = $choicesByBlock[$block['courseSelectionBlockID']] ?? array();
                         $selectedChoiceIDList = array_column($selectedChoices, 'gibbonCourseID');
 
                         $row = $form->addRow();
                         $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                        $row->addContent('Marks go here');
+                        $row->addContent($gradesList);
                         $row->addCheckbox('courseSelection')->fromArray($courseOptions)->checked($selectedChoiceIDList);
                         $row->addContent($block['minSelect'].' - '.$block['maxSelect']);
                     }
