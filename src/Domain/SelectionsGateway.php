@@ -35,44 +35,91 @@ class SelectionsGateway
         $this->pdo = $pdo;
     }
 
-    public function selectAll()
+    // CHOICES
+
+    public function selectChoicesByOfferingBlockAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
     {
-        $data = array();
-        $sql = "SELECT * FROM courseSelectionChoice";
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $sql = "SELECT courseSelectionOfferingBlock.courseSelectionBlockID, courseSelectionChoice.*
+                FROM courseSelectionOfferingBlock
+                JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
+                JOIN courseSelectionChoice ON (courseSelectionBlockCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                WHERE courseSelectionOfferingBlock.courseSelectionOfferingID=:courseSelectionOfferingID
+                AND courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
+                AND courseSelectionChoice.status <> 'Removed'";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
     }
 
-    public function selectOne($courseSelectionChoiceID)
+    public function insertChoice(array $data)
     {
-        $data = array('courseSelectionChoiceID' => $courseSelectionChoiceID);
-        $sql = "SELECT * FROM courseSelectionChoice WHERE courseSelectionChoiceID=:courseSelectionChoiceID";
-        $result = $this->pdo->executeQuery($data, $sql);
-
-        return $result;
-    }
-
-    public function insert(array $data)
-    {
-        $sql = "INSERT INTO courseSelectionChoice SET gibbonPersonID=:gibbonPersonID, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes ON DUPLICATE KEY UPDATE status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes";
+        $sql = "INSERT INTO courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes ON DUPLICATE KEY UPDATE status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
     }
 
-    public function update(array $data)
+    public function updateChoice(array $data)
     {
-        $sql = "UPDATE courseSelectionChoice SET gibbonPersonID=:gibbonPersonID, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes";
+        $sql = "UPDATE courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
     }
 
-    public function delete($courseSelectionChoiceID)
+    public function deleteChoice($courseSelectionChoiceID)
     {
         $data = array('courseSelectionChoiceID' => $courseSelectionChoiceID);
         $sql = "DELETE FROM courseSelectionChoice WHERE courseSelectionChoiceID=:courseSelectionChoiceID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    public function updateUnselectedChoicesBySchoolYearAndPerson($gibbonSchoolYearID, $gibbonPersonIDStudent, $courseIDList)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+
+        if (!empty($courseIDList)) {
+            $sql = "UPDATE courseSelectionChoice SET status='Removed'
+                    WHERE gibbonSchoolYearID=:gibbonSchoolYearID
+                    AND gibbonPersonIDStudent=:gibbonPersonIDStudent
+                    AND gibbonCourseID NOT IN ({$courseIDList})";
+        } else {
+            $sql = "UPDATE courseSelectionChoice SET status='Removed'
+                    WHERE gibbonSchoolYearID=:gibbonSchoolYearID
+                    AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
+        }
+
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    // OFFERINGS
+
+    public function selectChoiceOffering($gibbonSchoolYearID, $gibbonPersonIDStudent)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $sql = "SELECT courseSelectionOfferingID, gibbonSchoolYearID, gibbonPersonIDStudent FROM courseSelectionChoiceOffering WHERE gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function insertChoiceOffering(array $data)
+    {
+        $sql = "INSERT INTO courseSelectionChoiceOffering SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, courseSelectionOfferingID=:courseSelectionOfferingID ON DUPLICATE KEY UPDATE courseSelectionOfferingID=:courseSelectionOfferingID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
+
+    public function deleteChoiceOffering($gibbonSchoolYearID, $gibbonPersonIDStudent)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $sql = "DELETE FROM courseSelectionChoiceOffering WHERE gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();

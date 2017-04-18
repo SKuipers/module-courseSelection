@@ -86,18 +86,26 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
-    `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
-    `gibbonPersonID` INT(10) UNSIGNED ZEROFILL NULL ,
-    `gibbonCourseID` INT(8) UNSIGNED NULL ,
-    `status` ENUM('Locked','Approved','Pending','Recommended','Waitlist','Declined') NOT NULL DEFAULT 'Pending',
-    `gibbonPersonIDSelected` INT(10) UNSIGNED ZEROFILL NULL ,
-    `timestampSelected` DATETIME NULL ,
-    `gibbonPersonIDStatusChange` INT(10) UNSIGNED ZEROFILL NULL ,
-    `timestampStatusChange` DATETIME NULL ,
-    `notes` VARCHAR(255) NULL ,
-    PRIMARY KEY (`courseSelectionChoiceID`),
-    UNIQUE KEY (`gibbonPersonID`, `gibbonCourseID`)
+  `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
+  `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `status` ENUM('Locked','Approved','Requested','Recommended','Waitlist','Declined','Removed') NOT NULL DEFAULT 'Requested',
+  `gibbonPersonIDSelected` INT(10) UNSIGNED ZEROFILL NULL ,
+  `timestampSelected` DATETIME NULL ,
+  `gibbonPersonIDStatusChange` INT(10) UNSIGNED ZEROFILL NULL ,
+  `timestampStatusChange` DATETIME NULL ,
+  `notes` VARCHAR(255) NULL ,
+  PRIMARY KEY (`courseSelectionChoiceID`),
+  UNIQUE KEY (`gibbonPersonID`, `gibbonCourseID`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
+
+$moduleTables[]="CREATE TABLE `courseSelectionChoiceOffering` (
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL,
+  `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
+  PRIMARY KEY (`gibbonSchoolYearID`,`gibbonPersonIDStudent`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
 
 // courseSelectionRequisite (Ruleset/Rule)
