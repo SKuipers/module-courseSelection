@@ -22,6 +22,7 @@ use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
+use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
@@ -34,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection', 'Course Selection Choices') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection Choices', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -43,8 +44,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
 
-    $gibbonPersonIDStudent = isset($_POST['gibbonPersonIDStudent'])? $_POST['gibbonPersonIDStudent'] : 0;
-    $courseSelectionOfferingID = isset($_POST['courseSelectionOfferingID'])? $_POST['courseSelectionOfferingID'] : 0;
+    $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
+    $courseSelectionOfferingID = isset($_REQUEST['courseSelectionOfferingID'])? $_REQUEST['courseSelectionOfferingID'] : 0;
 
     // Cancel out early if there's no valid student or course offering selected
     if (empty($courseSelectionOfferingID) || empty($gibbonPersonIDStudent)) {
@@ -57,6 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $accessGateway = new AccessGateway($pdo);
     $offeringsGateway = new OfferingsGateway($pdo);
     $blocksGateway = new BlocksGateway($pdo);
+    $selectionsGateway = new SelectionsGateway($pdo);
 
     $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
     $offeringRequest = $offeringsGateway->selectOne($courseSelectionOfferingID);
@@ -82,6 +84,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $form->setClass('fullWidth');
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('courseSelectionOfferingID', $courseSelectionOfferingID);
+        $form->addHiddenValue('gibbonSchoolYearID', $offering['gibbonSchoolYearID']);
+        $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
+        $form->addHiddenValue('gibbonPersonIDSelected', $_SESSION[$guid]['gibbonPersonID']);
 
         $form->addRow()->addHeading($offering['name'])->append($offering['description']);
 
@@ -94,6 +100,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
             $blocksByDepartment = $blocksRequest->fetchAll(\PDO::FETCH_GROUP);
+
+            $choicesRequest = $selectionsGateway->selectChoicesByOfferingBlockAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
+            $choicesByBlock = ($choicesRequest->rowCount() > 0)? $choicesRequest->fetchAll(\PDO::FETCH_GROUP) : array();
 
             foreach ($blocksByDepartment as $gibbonDepartmentID => $blocks) {
                 $departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
@@ -108,11 +117,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                         $courses = $coursesRequest->fetchAll();
                         $courseOptions = array_combine(array_column($courses, 'gibbonCourseID'), array_column($courses, 'courseName'));
 
-                        $fieldID = 'block['.$block['courseSelectionBlockID'].']';
+                        $selectedChoices = $choicesByBlock[$block['courseSelectionBlockID']] ?? array();
+                        $selectedChoiceIDList = array_column($selectedChoices, 'gibbonCourseID');
+
                         $row = $form->addRow();
-                        $row->addLabel($fieldID, $block['blockName'])->description($block['blockDescription']);
+                        $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
                         $row->addContent('Marks go here');
-                        $row->addCheckbox($fieldID)->fromArray($courseOptions);
+                        $row->addCheckbox('courseSelection')->fromArray($courseOptions)->checked($selectedChoiceIDList);
                         $row->addContent($block['minSelect'].' - '.$block['maxSelect']);
                     }
                 }
