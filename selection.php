@@ -21,6 +21,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
@@ -43,7 +44,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
 
     if ($highestGroupedAction == 'Course Selection_all') {
-        $gibbonPersonIDStudent = isset($_POST['gibbonPersonIDStudent'])? $_POST['gibbonPersonIDStudent'] : 0;
+        $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
 
         $form = Form::create('selectStudent', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selection.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
@@ -68,6 +69,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
     $accessGateway = new AccessGateway($pdo);
     $offeringsGateway = new OfferingsGateway($pdo);
+    $selectionsGateway = new SelectionsGateway($pdo);
 
     $accessRequest = $accessGateway->getAccessByPerson($gibbonPersonIDStudent);
 
@@ -110,10 +112,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
 
-                    $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
+                    $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
+                    $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
+
+                    $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionProcess.php');
 
                     $form->setClass('fullWidth');
                     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                    $form->addHiddenValue('gibbonSchoolYearID', $access['gibbonSchoolYearID']);
                     $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
 
                     $form->addRow()->addSubHeading(__('Course Offerings'));
@@ -123,7 +129,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                             $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
                             $row->addRadio('courseSelectionOfferingID')
                                 ->setClass('')
-                                ->fromArray(array($offering['courseSelectionOfferingID'] => ''));
+                                ->fromArray(array($offering['courseSelectionOfferingID'] => ''))
+                                ->checked($offeringChoice);
                     }
 
                     $row = $form->addRow();
