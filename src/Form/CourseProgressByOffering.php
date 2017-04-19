@@ -33,6 +33,7 @@ class CourseProgressByOffering extends Element
 
     public function __construct($offeringData)
     {
+        $this->setClass('right');
         $this->offering = $offeringData;
     }
 
@@ -40,7 +41,30 @@ class CourseProgressByOffering extends Element
     {
         $output = '';
 
-        $output .= 'Progress: min '.$this->offering['minSelect'].' max '.$this->offering['maxSelect'];
+        $this->setAttribute('title', 'Min '.$this->offering['minSelect'].' Max '.$this->offering['maxSelect']);
+        $this->setAttribute('data-min', $this->offering['minSelect']);
+        $this->setAttribute('data-max', $this->offering['maxSelect']);
+
+        $output .= '<div class="courseProgressByOffering" '.$this->getAttributeString().'>';
+
+            $output .= '<div class="progressBar" style="width:100%"><div class="complete" style="width:0%;"></div></div>';
+
+            $output .= '<div class="valid success hidden">';
+                //$output .= '<img title="'.__('Complete').'" src="./themes/Default/img/iconTick.png">';
+                $output .= 'Ready to submit.';
+            $output .= '</div>';
+
+            $output .= '<div class="invalid warning hidden">';
+                //$output .= '<img title="'.__('Incomplete').'" src="./themes/Default/img/iconCross.png">';
+                $output .= 'There are errors.';
+            $output .= '</div>';
+
+            $output .= '<div class="continue information hidden">';
+                //$output .= '<img title="'.__('Incomplete').'" src="./themes/Default/img/iconCross.png">';
+                $output .= 'Continue making selections.';
+            $output .= '</div>';
+
+        $output .= '</div>';
 
         return $output;
     }

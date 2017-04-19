@@ -16,3 +16,39 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+.hidden {
+    display: none;
+}
+
+.information {
+    border-left: 6px solid #666666;
+    color: #666666;
+    background-color: #eeeeee;
+    font-size: 12px;
+    padding: 10px;
+    margin: 10px 0px 15px 0px;
+    box-shadow: 2px 2px 2px rgba(50,50,50,0.15);
+}
+
+.courseChoice:not(:last-of-type) {
+    margin-bottom: 8px;
+}
+
+.courseProgressByOffering {
+    display: inline-block;
+    width: 554px;
+}
+
+.progressBar {
+    display: inline-block;
+    height:22px;
+    background: rgba(0,0,0,0.035);
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.5);
+}
+
+.progressBar .complete {
+    height: 100%;
+    background: #A88EDB;
+}

@@ -40,7 +40,32 @@ class CourseProgressByBlock extends Element
     {
         $output = '';
 
-        $output .= $this->block['minSelect'].' - '.$this->block['maxSelect'];
+
+
+        $this->setAttribute('data-block', $this->block['courseSelectionBlockID']);
+        $this->setAttribute('data-min', $this->block['minSelect']);
+        $this->setAttribute('data-max', $this->block['maxSelect']);
+
+        $output .= '<div class="courseProgressByBlock" '.$this->getAttributeString().'>';
+
+        // $output .= '<span class="minMax">';
+        // if ($this->block['minSelect'] > 0) {
+        //     $output .= 'Select '.$this->block['minSelect'].' ';
+        // } else {
+        //     $output .= 'Optional ';
+        // }
+
+        // if ($this->block['minSelect'] != $this->block['maxSelect']) {
+        //     $output .= '(max '.$this->block['maxSelect'].')</span>';
+        // }
+        // $output .= '</span>';
+
+        $output .= '<div class="indicator">';
+            $output .= '<img class="valid" title="'.__('Complete').'" src="./themes/Default/img/iconTick.png" style="display:none;">';
+            $output .= '<img class="invalid" title="'.__('Incomplete').'" src="./themes/Default/img/iconCross.png" style="display:none;">';
+        $output .= '</div>';
+
+        $output .= '</div>';
 
         return $output;
     }
