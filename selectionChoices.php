@@ -23,6 +23,7 @@ use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
 use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Modules\CourseSelection\Form\CourseSelectionFormFactory;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
@@ -90,6 +91,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         }
 
         $form = Form::create('selectionChoices', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoicesProcess.php');
+        $form->setFactory(CourseSelectionFormFactory::create($selectionsGateway));
 
         $form->setClass('fullWidth');
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
@@ -102,49 +104,27 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $row = $form->addRow()->setClass('break');
             $row->addContent(__('Department'));
-            $row->addContent(__('Courses'));
+            $row->addContent(__('Course Marks'));
             $row->addContent(__('Choices'));
-            $row->addContent(__('Done'));
+            $row->addContent(__('Progress'));
 
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
             $blocksByDepartment = $blocksRequest->fetchAll(\PDO::FETCH_GROUP);
 
-            $choicesRequest = $selectionsGateway->selectChoicesByOfferingBlockAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
-            $choicesByBlock = ($choicesRequest->rowCount() > 0)? $choicesRequest->fetchAll(\PDO::FETCH_GROUP) : array();
-
             foreach ($blocksByDepartment as $gibbonDepartmentID => $blocks) {
-                $departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
-                $department = $departmentRequest->fetch();
-
+                //$departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
+                //$department = $departmentRequest->fetch();
                 //$row = $form->addRow()->addSubHeading($department['name']);
 
                 foreach ($blocks as $block) {
-                    $coursesRequest = $blocksGateway->selectAllCoursesByBlock($block['courseSelectionBlockID']);
+                    if ($block['courseCount'] == 0) continue;
 
-                    if ($coursesRequest && $coursesRequest->rowCount() > 0) {
-                        $courses = $coursesRequest->fetchAll();
-                        $courseOptions = array_combine(array_column($courses, 'gibbonCourseID'), array_column($courses, 'courseName'));
-
-                        $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartment($gibbonDepartmentID, $gibbonPersonIDStudent);
-                        $grades = ($gradesRequest->rowCount() > 0)? $gradesRequest->fetchAll() : array();
-
-                        $gradesList = implode('<br/>', array_map(function ($grade) {
-                            $output = ($grade['schoolYearStatus'] == 'Current')? '<span style="background:#ffd800;">' : '<span>';
-                            $output .= $grade['courseNameShort'].' ('.$grade['schoolYearName'].'): ';
-                            $output .= intval($grade['grade']).'%';
-                            return $output;
-                        }, $grades));
-
-                        $selectedChoices = $choicesByBlock[$block['courseSelectionBlockID']] ?? array();
-                        $selectedChoiceIDList = array_column($selectedChoices, 'gibbonCourseID');
-
-                        $row = $form->addRow();
-                        $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                        $row->addContent($gradesList);
-                        $row->addCheckbox('courseSelection')->fromArray($courseOptions)->checked($selectedChoiceIDList);
-                        $row->addContent($block['minSelect'].' - '.$block['maxSelect']);
-                    }
+                    $row = $form->addRow();
+                    $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
+                    $row->addCourseGrades($gibbonDepartmentID, $gibbonPersonIDStudent);
+                    $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent);
+                    $row->addCourseProgress($block);
                 }
             }
         }

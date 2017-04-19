@@ -37,14 +37,14 @@ class SelectionsGateway
 
     // CHOICES
 
-    public function selectChoicesByOfferingBlockAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
+    public function selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent)
     {
-        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $data = array('courseSelectionBlockID' => $courseSelectionBlockID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
         $sql = "SELECT courseSelectionOfferingBlock.courseSelectionBlockID, courseSelectionChoice.*
                 FROM courseSelectionOfferingBlock
                 JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
                 JOIN courseSelectionChoice ON (courseSelectionBlockCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
-                WHERE courseSelectionOfferingBlock.courseSelectionOfferingID=:courseSelectionOfferingID
+                WHERE courseSelectionOfferingBlock.courseSelectionBlockID=:courseSelectionBlockID
                 AND courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                 AND courseSelectionChoice.status <> 'Removed'";
         $result = $this->pdo->executeQuery($data, $sql);
@@ -123,6 +123,20 @@ class SelectionsGateway
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
+    }
+
+    // FORMS
+
+    public function selectCourseChoicesByBlock($courseSelectionBlockID)
+    {
+        $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
+        $sql = "SELECT courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+                FROM courseSelectionBlockCourse
+                JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                WHERE courseSelectionBlockID=:courseSelectionBlockID
+                ORDER BY gibbonCourse.nameShort";
+
+        return $this->pdo->executeQuery($data, $sql);
     }
 
     // GRADES
