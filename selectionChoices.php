@@ -72,6 +72,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $access = $accessRequest->fetch();
         $offering = $offeringRequest->fetch();
 
+        $accessTypes = explode(',', $access['accessTypes']);
+        $readOnly = (in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false && !($highestGroupedAction == 'Course Selection_all');
+
         echo '<h3>';
             echo __('Course Selection').' '.$access['schoolYearName'];
         echo '</h3>';
@@ -122,7 +125,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                     $row = $form->addRow();
                     $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription'])->setTitle($department['name']);
                     $row->addCourseGrades($gibbonDepartmentID, $gibbonPersonIDStudent);
-                    $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent);
+                    $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent)->setReadOnly($readOnly);
                     $row->addCourseProgressByBlock($block);
                 }
             }
@@ -131,8 +134,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $row = $form->addRow();
             $row->addCourseProgressByOffering($offering);
 
-        $row = $form->addRow();
-            $row->addSubmit();
+        if ($readOnly == false) {
+            $row = $form->addRow();
+                $row->addSubmit();
+        }
 
         echo $form->getOutput();
 

@@ -107,46 +107,48 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             }
 
             $accessTypes = explode(',', $access['accessTypes']);
-            if ($highestGroupedAction == 'Course Selection_all' || in_array('Select', $accessTypes) || in_array('Request', $accessTypes) ) {
-                $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
+            $readOnly = (in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false && !($highestGroupedAction == 'Course Selection_all');
 
-                if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
+            $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
 
-                    $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
-                    $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
+            if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
 
-                    $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
+                $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
+                $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
 
-                    $form->setClass('fullWidth');
-                    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-                    $form->addHiddenValue('gibbonSchoolYearID', $access['gibbonSchoolYearID']);
-                    $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
+                $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
 
-                    $form->addRow()->addSubHeading(__('Course Offerings'));
+                $form->setClass('fullWidth');
+                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                $form->addHiddenValue('gibbonSchoolYearID', $access['gibbonSchoolYearID']);
+                $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
 
-                    while ($offering = $offeringsRequest->fetch()) {
-                        $row = $form->addRow();
-                            $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
-                            $row->addRadio('courseSelectionOfferingID')
-                                ->setClass('')
-                                ->fromArray(array($offering['courseSelectionOfferingID'] => ''))
-                                ->checked($offeringChoice);
-                    }
+                $form->addRow()->addSubHeading(__('Course Offerings'));
 
+                while ($offering = $offeringsRequest->fetch()) {
                     $row = $form->addRow();
-                        $row->addSubmit();
+                        $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
+                        $row->addRadio('courseSelectionOfferingID')
+                            ->setClass('')
+                            ->fromArray(array($offering['courseSelectionOfferingID'] => ''))
+                            ->checked($offeringChoice)
+                            ->setDisabled($readOnly);
 
-                    echo $form->getOutput();
-                } else {
-                    echo "<div class='error'>" ;
-                        echo __('There are no course offerings available at this time.');
-                    echo "</div>" ;
+                        if ($readOnly) {
+                            $form->addHiddenValue('courseSelectionOfferingID', $offeringChoice);
+                        }
                 }
+
+                $row = $form->addRow();
+                    $row->addSubmit( ($readOnly)? __('View') : __('Select') );
+
+                echo $form->getOutput();
             } else {
                 echo "<div class='error'>" ;
-                    echo __('The course selection interval is view-only at this time.');
+                    echo __('There are no course offerings available at this time.');
                 echo "</div>" ;
             }
+
         }
     }
 }

@@ -34,6 +34,7 @@ class CourseSelection extends Input
 
     protected $description;
     protected $checked = array();
+    protected $readOnly;
 
     public function __construct($selectionsGateway, $name, $courseSelectionBlockID, $gibbonPersonIDStudent)
     {
@@ -62,6 +63,18 @@ class CourseSelection extends Input
     {
         $this->description = $value;
         return $this;
+    }
+
+    public function setReadOnly($value)
+    {
+        $this->setAttribute('readonly', $value);
+
+        return $this;
+    }
+
+    public function getReadOnly()
+    {
+        return $this->getAttribute('readonly');
     }
 
     public function checked($value)
@@ -94,9 +107,14 @@ class CourseSelection extends Input
                 $this->setAttribute('checked', $this->getIsChecked($value));
                 if ($value != 'on') $this->setValue($value);
 
+                if ($this->getReadOnly()) {
+                    if ($this->getIsChecked($value) == false) continue;
 
-                $output .= '<input type="checkbox" '.$this->getAttributeString().'> &nbsp;';
-                $output .= '<label title="'.$label.'">'.$label.'</label><br/>';
+                    $output .= '<label title="'.$label.'">'.$label.'</label><br/>';
+                } else {
+                    $output .= '<input type="checkbox" '.$this->getAttributeString().'> &nbsp;';
+                    $output .= '<label title="'.$label.'">'.$label.'</label><br/>';
+                }
             }
         }
 

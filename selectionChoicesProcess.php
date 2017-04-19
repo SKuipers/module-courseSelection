@@ -35,56 +35,66 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     exit;
 } else {
     //Proceed!
-    $data = array();
-    $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
-    $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-    $data['gibbonPersonIDSelected'] = $_POST['gibbonPersonIDSelected'] ?? '';
-    $data['timestampSelected'] = date('Y-m-d H:i:s');
-    $data['gibbonPersonIDStatusChange'] = $_POST['gibbonPersonIDSelected'] ?? '';
-    $data['timestampStatusChange'] = date('Y-m-d H:i:s');
-    $data['notes'] = '';
 
-    if (empty($courseSelectionOfferingID) || empty($data['gibbonSchoolYearID']) || empty($data['gibbonPersonIDStudent']) || empty($data['gibbonPersonIDSelected'])) {
-        $URL .= '&return=error1';
+    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
+    if (!$accessRequest || $accessRequest->rowCount() == 0) {
+        $URL .= '&return=error0';
         header("Location: {$URL}");
         exit;
     } else {
-        $partialFail = false;
-        $gateway = new SelectionsGateway($pdo);
-
-        $courseSelections = $_POST['courseSelection'] ?? array();
-
-        if (!empty($courseSelections) && is_array($courseSelections)) {
-            foreach ($courseSelections as $courseSelection) {
-                if (empty($courseSelection)) continue;
-
-                $data['gibbonCourseID'] = $courseSelection;
-                $data['status'] = 'Requested';
-
-                $insertID = $gateway->insertChoice($data);
-                $partialFail &= empty($insertID);
-            }
-        }
-
-        $courseSelectionsList = implode(',', $courseSelections);
-        $gateway->updateUnselectedChoicesBySchoolYearAndPerson($data['gibbonSchoolYearID'], $gibbonPersonIDStudent, $courseSelectionsList);
+        $access = $accessRequest->fetch();
 
         $data = array();
         $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
         $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-        $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
+        $data['gibbonPersonIDSelected'] = $_POST['gibbonPersonIDSelected'] ?? '';
+        $data['timestampSelected'] = date('Y-m-d H:i:s');
+        $data['gibbonPersonIDStatusChange'] = $_POST['gibbonPersonIDSelected'] ?? '';
+        $data['timestampStatusChange'] = date('Y-m-d H:i:s');
+        $data['notes'] = '';
 
-        $insertID = $gateway->insertChoiceOffering($data);
-        $partialFail &= empty($insertID);
-
-        if ($partialFail == true) {
-            $URL .= '&return=error2';
+        if (empty($courseSelectionOfferingID) || empty($data['gibbonSchoolYearID']) || empty($data['gibbonPersonIDStudent']) || empty($data['gibbonPersonIDSelected'])) {
+            $URL .= '&return=error1';
             header("Location: {$URL}");
             exit;
         } else {
-            $URL .= "&return=success0";
-            header("Location: {$URL}");
-            exit;
+            $partialFail = false;
+            $gateway = new SelectionsGateway($pdo);
+
+            $courseSelections = $_POST['courseSelection'] ?? array();
+
+            if (!empty($courseSelections) && is_array($courseSelections)) {
+                foreach ($courseSelections as $courseSelection) {
+                    if (empty($courseSelection)) continue;
+
+                    $data['gibbonCourseID'] = $courseSelection;
+                    $data['status'] = ($access['accessType'] == 'Select')? 'Approved' : 'Requested';
+
+                    $insertID = $gateway->insertChoice($data);
+                    $partialFail &= empty($insertID);
+                }
+            }
+
+            $courseSelectionsList = implode(',', $courseSelections);
+            $gateway->updateUnselectedChoicesBySchoolYearAndPerson($data['gibbonSchoolYearID'], $gibbonPersonIDStudent, $courseSelectionsList);
+
+            $data = array();
+            $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
+            $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+            $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
+
+            $insertID = $gateway->insertChoiceOffering($data);
+            $partialFail &= empty($insertID);
+
+            if ($partialFail == true) {
+                $URL .= '&return=error2';
+                header("Location: {$URL}");
+                exit;
+            } else {
+                $URL .= "&return=success0";
+                header("Location: {$URL}");
+                exit;
+            }
         }
     }
 }
