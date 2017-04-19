@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 
+use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
@@ -35,8 +36,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     exit;
 } else {
     //Proceed!
-
+    $accessGateway = new AccessGateway($pdo);
     $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
+
     if (!$accessRequest || $accessRequest->rowCount() == 0) {
         $URL .= '&return=error0';
         header("Location: {$URL}");
