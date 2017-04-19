@@ -48,18 +48,6 @@ class CourseProgressByBlock extends Element
 
         $output .= '<div class="courseProgressByBlock" '.$this->getAttributeString().'>';
 
-        // $output .= '<span class="minMax">';
-        // if ($this->block['minSelect'] > 0) {
-        //     $output .= 'Select '.$this->block['minSelect'].' ';
-        // } else {
-        //     $output .= 'Optional ';
-        // }
-
-        // if ($this->block['minSelect'] != $this->block['maxSelect']) {
-        //     $output .= '(max '.$this->block['maxSelect'].')</span>';
-        // }
-        // $output .= '</span>';
-
         $output .= '<div class="indicator">';
             $output .= '<img class="valid" title="'.__('Complete').'" src="./themes/Default/img/iconTick.png" style="display:none;">';
             $output .= '<img class="invalid" title="'.__('Incomplete').'" src="./themes/Default/img/iconCross.png" style="display:none;">';

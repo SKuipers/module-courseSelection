@@ -50,17 +50,14 @@ class CourseProgressByOffering extends Element
             $output .= '<div class="progressBar" style="width:100%"><div class="complete" style="width:0%;"></div></div>';
 
             $output .= '<div class="valid success hidden">';
-                //$output .= '<img title="'.__('Complete').'" src="./themes/Default/img/iconTick.png">';
                 $output .= 'Ready to submit.';
             $output .= '</div>';
 
             $output .= '<div class="invalid warning hidden">';
-                //$output .= '<img title="'.__('Incomplete').'" src="./themes/Default/img/iconCross.png">';
                 $output .= 'There are errors.';
             $output .= '</div>';
 
             $output .= '<div class="continue information hidden">';
-                //$output .= '<img title="'.__('Incomplete').'" src="./themes/Default/img/iconCross.png">';
                 $output .= 'Continue making selections.';
             $output .= '</div>';
 

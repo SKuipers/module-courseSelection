@@ -31,13 +31,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     box-shadow: 2px 2px 2px rgba(50,50,50,0.15);
 }
 
-.courseChoice:not(:last-of-type) {
-    margin-bottom: 8px;
+.courseChoiceContainer {
+    padding: 4px;
+    border-radius: 3px;
+}
+
+.courseChoiceContainer:not(:last-of-type) {
+    margin-bottom: 6px;
+}
+
+.courseChoiceContainer[data-status='Recommended'] {
+    background-color: #d9edf7;
+}
+
+.courseChoiceContainer[data-status='Locked'] {
+    background-color: #f2f2f2;
+}
+
+.courseChoiceContainer[data-status='Approved'] {
+    background-color: #D4F6DC;
 }
 
 .courseProgressByOffering {
     display: inline-block;
     width: 554px;
+}
+
+.courseTag {
+    float: right;
+    padding: 2px;
+    opacity: 0.8;
 }
 
 .progressBar {

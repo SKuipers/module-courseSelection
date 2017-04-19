@@ -20,7 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace Gibbon\Modules\CourseSelection\Form;
 
 use Gibbon\Forms\Input\Input;
-use Gibbon\Forms\Traits\MultipleOptionsTrait;
 
 /**
  * Course Selection - Form Element
@@ -30,35 +29,27 @@ use Gibbon\Forms\Traits\MultipleOptionsTrait;
  */
 class CourseSelection extends Input
 {
-    use MultipleOptionsTrait;
-
     protected $description;
     protected $checked = array();
     protected $readOnly;
 
+    protected $courses;
+    protected $selectedChoices;
+
     public function __construct($selectionsGateway, $name, $courseSelectionBlockID, $gibbonPersonIDStudent)
     {
         $this->setName($name);
-        $this->setValue('on');
         $this->addClass('courseChoice');
         $this->addClass('courseBlock'.$courseSelectionBlockID);
         $this->setAttribute('data-block', $courseSelectionBlockID);
 
-        $coursesRequest = $selectionsGateway->selectChoicesByBlock($courseSelectionBlockID);
+        $coursesRequest = $selectionsGateway->selectCoursesByBlock($courseSelectionBlockID);
 
         if ($coursesRequest && $coursesRequest->rowCount() > 0) {
-            // Add Course Choices
-            $courses = $coursesRequest->fetchAll();
-            $courseChoices = array_combine(array_column($courses, 'gibbonCourseID'), array_column($courses, 'courseName'));
+            $this->courses = $coursesRequest->fetchAll();
 
-            $this->fromArray($courseChoices);
-
-            // Select Choices
             $selectedChoicesRequest = $selectionsGateway->selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent);
-            $selectedChoices = ($selectedChoicesRequest->rowCount() > 0)? $selectedChoicesRequest->fetchAll() : array();
-            $selectedChoiceIDList = array_column($selectedChoices, 'gibbonCourseID');
-
-            $this->checked($selectedChoiceIDList);
+            $this->selectedChoices = ($selectedChoicesRequest->rowCount() > 0)? $selectedChoicesRequest->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
         }
     }
 
@@ -88,36 +79,63 @@ class CourseSelection extends Input
         return $this;
     }
 
+    protected function getChoiceStatus($value)
+    {
+        return (isset($this->selectedChoices[$value]['status']))? $this->selectedChoices[$value]['status'] : '';
+    }
+
     protected function getIsChecked($value)
     {
-        if (empty($value) || empty($this->checked)) {
+        if (empty($value) || empty($this->selectedChoices)) {
             return '';
         }
 
-        return (in_array($value, $this->checked, true))? 'checked' : '';
+        $status = $this->getChoiceStatus($value);
+
+        return ($status == 'Locked' || $status == 'Approved' || $status == 'Requested')? 'checked' : '';
     }
 
     protected function getElement()
     {
         $output = '';
 
-        $this->options = (!empty($this->getOptions()))? $this->getOptions() : array($this->getValue() => $this->description);
-        $name = (count($this->options)>1 && stripos($this->getName(), '[]') === false)? $this->getName().'[]' : $this->getName();
+        $name = (count($this->courses)>1 && stripos($this->getName(), '[]') === false)? $this->getName().'[]' : $this->getName();
 
-        if (!empty($this->options) && is_array($this->options)) {
-            foreach ($this->options as $value => $label) {
+        if (!empty($this->courses) && is_array($this->courses)) {
+            foreach ($this->courses as $course) {
+                $value = $course['gibbonCourseID'];
+                $label = $course['courseName'];
+
                 $this->setName($name);
                 $this->setAttribute('checked', $this->getIsChecked($value));
-                if ($value != 'on') $this->setValue($value);
+                $this->setValue($value);
 
-                if ($this->getReadOnly()) {
-                    if ($this->getIsChecked($value) == false) continue;
+                $output .= '<div class="courseChoiceContainer" data-status="'.$this->getChoiceStatus($value).'">';
 
-                    $output .= '<label title="'.$label.'">'.$label.'</label><br/>';
-                } else {
+                if ($this->getReadOnly() && $this->getIsChecked($value) == false) continue;
+
+                if ($this->getReadOnly() == false) {
+
+                    $locked = ($this->getChoiceStatus($value) == 'Locked' || $this->getChoiceStatus($value) == 'Approved');
+
+                    $this->setAttribute('disabled', $locked);
+                    $this->setAttribute('data-locked', $locked);
+
+
                     $output .= '<input type="checkbox" '.$this->getAttributeString().'> &nbsp;';
-                    $output .= '<label title="'.$label.'">'.$label.'</label><br/>';
                 }
+
+                $output .= '<label title="'.$label.'">'.$label.'</label>';
+
+                if ($this->getChoiceStatus($value) == 'Locked') {
+                    $output .= '<span class="courseTag small emphasis">&nbsp; '.__('Required').'</span>';
+                } else if ($this->getChoiceStatus($value) == 'Approved') {
+                    $output .= '<span class="courseTag small emphasis">&nbsp; '.__('Approved').'</span>';
+                } else if ($this->getChoiceStatus($value) == 'Recommended') {
+                    $output .= '<span class="courseTag small emphasis">&nbsp; '.__('Recommended').'</span>';
+                }
+
+                $output .= '</div>';
             }
         }
 
