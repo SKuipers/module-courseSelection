@@ -37,6 +37,18 @@ class SelectionsGateway
 
     // CHOICES
 
+    public function selectChoicesByBlock($courseSelectionBlockID)
+    {
+        $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
+        $sql = "SELECT courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+                FROM courseSelectionBlockCourse
+                JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                WHERE courseSelectionBlockID=:courseSelectionBlockID
+                ORDER BY gibbonCourse.nameShort";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent)
     {
         $data = array('courseSelectionBlockID' => $courseSelectionBlockID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
@@ -123,20 +135,6 @@ class SelectionsGateway
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
-    }
-
-    // FORMS
-
-    public function selectCourseChoicesByBlock($courseSelectionBlockID)
-    {
-        $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
-        $sql = "SELECT courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
-                FROM courseSelectionBlockCourse
-                JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
-                WHERE courseSelectionBlockID=:courseSelectionBlockID
-                ORDER BY gibbonCourse.nameShort";
-
-        return $this->pdo->executeQuery($data, $sql);
     }
 
     // GRADES

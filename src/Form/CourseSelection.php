@@ -40,8 +40,11 @@ class CourseSelection extends Input
     {
         $this->setName($name);
         $this->setValue('on');
+        $this->addClass('courseChoice');
+        $this->addClass('courseBlock'.$courseSelectionBlockID);
+        $this->setAttribute('data-block', $courseSelectionBlockID);
 
-        $coursesRequest = $selectionsGateway->selectCourseChoicesByBlock($courseSelectionBlockID);
+        $coursesRequest = $selectionsGateway->selectChoicesByBlock($courseSelectionBlockID);
 
         if ($coursesRequest && $coursesRequest->rowCount() > 0) {
             // Add Course Choices
