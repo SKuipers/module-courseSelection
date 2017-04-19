@@ -72,8 +72,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                     $data['gibbonCourseID'] = $courseSelection;
                     $data['status'] = ($access['accessType'] == 'Select')? 'Approved' : 'Requested';
 
-                    $insertID = $gateway->insertChoice($data);
-                    $partialFail &= empty($insertID);
+                    $choiceRequest = $gateway->selectChoiceByCourseAndPerson($courseSelection, $gibbonPersonIDStudent);
+                    if ($choiceRequest && $choiceRequest->rowCount() > 0) {
+                        $choice = $choiceRequest->fetch();
+
+                        if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended') {
+                            $partialFail &= !$gateway->updateChoice($data);
+                        }
+                    } else {
+                        $partialFail &= !$gateway->insertChoice($data);
+                    }
                 }
             }
 
