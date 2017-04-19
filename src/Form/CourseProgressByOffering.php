@@ -27,20 +27,20 @@ use Gibbon\Forms\Layout\Element;
  * @version v14
  * @since   19th April 2017
  */
-class CourseProgress extends Element
+class CourseProgressByOffering extends Element
 {
-    protected $block;
+    protected $offering;
 
-    public function __construct($blockData)
+    public function __construct($offeringData)
     {
-        $this->block = $blockData;
+        $this->offering = $offeringData;
     }
 
     public function getOutput()
     {
         $output = '';
 
-        $output .= $this->block['minSelect'].' - '.$this->block['maxSelect'];
+        $output .= 'Progress: min '.$this->offering['minSelect'].' max '.$this->offering['maxSelect'];
 
         return $output;
     }

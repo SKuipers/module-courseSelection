@@ -25,7 +25,7 @@ use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 /**
  * CourseSelectionFormFactory
  *
- * Handles Form object creation for the Coruse Selection process
+ * Handles Form object creation for the Course Selection process
  *
  * @version v14
  * @since   19th April 2017
@@ -54,8 +54,13 @@ class CourseSelectionFormFactory extends FormFactory
         return new CourseGrades($this->selectionsGateway, $gibbonDepartmentID, $gibbonPersonIDStudent);
     }
 
-    public function createCourseProgress($blockData)
+    public function createCourseProgressByBlock($blockData)
     {
-        return new CourseProgress($blockData);
+        return new CourseProgressByBlock($blockData);
+    }
+
+    public function createCourseProgressByOffering($offeringData)
+    {
+        return new CourseProgressByOffering($offeringData);
     }
 }
