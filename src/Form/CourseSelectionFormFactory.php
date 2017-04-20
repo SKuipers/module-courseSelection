@@ -49,9 +49,9 @@ class CourseSelectionFormFactory extends FormFactory
         return new CourseSelection($this->selectionsGateway, $name, $courseSelectionBlockID, $gibbonPersonIDStudent);
     }
 
-    public function createCourseGrades($gibbonDepartmentID, $gibbonPersonIDStudent)
+    public function createCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent)
     {
-        return new CourseGrades($this->selectionsGateway, $gibbonDepartmentID, $gibbonPersonIDStudent);
+        return new CourseGrades($this->selectionsGateway, $gibbonDepartmentIDList, $gibbonPersonIDStudent);
     }
 
     public function createCourseProgressByBlock($blockData)

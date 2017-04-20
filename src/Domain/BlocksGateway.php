@@ -43,7 +43,7 @@ class BlocksGateway
         $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName, COUNT(gibbonCourseID) as courseCount
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN gibbonDepartment ON (courseSelectionBlock.gibbonDepartmentID=gibbonDepartment.gibbonDepartmentID)
+                LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
                 LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 GROUP BY courseSelectionBlock.courseSelectionBlockID
                 ORDER BY name";
@@ -57,7 +57,7 @@ class BlocksGateway
         $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN gibbonDepartment ON (courseSelectionBlock.gibbonDepartmentID=gibbonDepartment.gibbonDepartmentID)
+                LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
                 WHERE courseSelectionBlockID=:courseSelectionBlockID ";
 
         return $this->pdo->executeQuery($data, $sql);
@@ -65,7 +65,7 @@ class BlocksGateway
 
     public function insert(array $data)
     {
-        $sql = "INSERT INTO courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentID=:gibbonDepartmentID, name=:name, description=:description";
+        $sql = "INSERT INTO courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentIDList=:gibbonDepartmentIDList, name=:name, description=:description";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -73,7 +73,7 @@ class BlocksGateway
 
     public function update(array $data)
     {
-        $sql = "UPDATE courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentID=:gibbonDepartmentID, name=:name, description=:description WHERE courseSelectionBlockID=:courseSelectionBlockID";
+        $sql = "UPDATE courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentIDList=:gibbonDepartmentIDList, name=:name, description=:description WHERE courseSelectionBlockID=:courseSelectionBlockID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
@@ -147,16 +147,16 @@ class BlocksGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectAvailableCoursesByDepartment($courseSelectionBlockID, $gibbonDepartmentID)
+    public function selectAvailableCoursesByDepartments($courseSelectionBlockID, $gibbonDepartmentIDList)
     {
-        $data = array('courseSelectionBlockID' => $courseSelectionBlockID, 'gibbonDepartmentID' => $gibbonDepartmentID);
+        $data = array('courseSelectionBlockID' => $courseSelectionBlockID, 'gibbonDepartmentIDList' => $gibbonDepartmentIDList);
         $sql = "SELECT gibbonCourse.gibbonCourseID AS value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
                 FROM gibbonCourse
                 JOIN courseSelectionBlock ON (gibbonCourse.gibbonSchoolYearID=courseSelectionBlock.gibbonSchoolYearID)
                 LEFT JOIN courseSelectionBlockCourse ON (
                     courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID
                     AND courseSelectionBlockCourse.courseSelectionBlockID=:courseSelectionBlockID)
-                WHERE gibbonCourse.gibbonDepartmentID=:gibbonDepartmentID
+                WHERE FIND_IN_SET(gibbonCourse.gibbonDepartmentID, :gibbonDepartmentIDList)
                 AND courseSelectionBlock.courseSelectionBlockID=:courseSelectionBlockID
                 AND courseSelectionBlockCourse.gibbonCourseID IS NULL
                 ORDER BY nameShort, name";

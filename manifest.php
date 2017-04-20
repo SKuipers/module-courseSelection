@@ -43,7 +43,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionAccess` (
 $moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
-  `gibbonDepartmentID` int(4) unsigned zerofill DEFAULT NULL,
+  `gibbonDepartmentIDList` varchar(255) DEFAULT NULL,
   `name` varchar(90) NOT NULL,
   `description` varchar(255) NOT NULL,
   `minSelect` smallint(3) DEFAULT NULL,

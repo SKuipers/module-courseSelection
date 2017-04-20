@@ -31,9 +31,9 @@ class CourseGrades extends Element
 {
     protected $grades;
 
-    public function __construct($selectionsGateway, $gibbonDepartmentID, $gibbonPersonIDStudent)
+    public function __construct($selectionsGateway, $gibbonDepartmentIDList, $gibbonPersonIDStudent)
     {
-        $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartment($gibbonDepartmentID, $gibbonPersonIDStudent);
+        $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartments($gibbonDepartmentIDList, $gibbonPersonIDStudent);
         $this->grades = ($gradesRequest->rowCount() > 0)? $gradesRequest->fetchAll() : array();
     }
 

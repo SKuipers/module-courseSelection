@@ -78,20 +78,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $row = $form->addRow();
             $row->addLabel('schoolYearName', __('School Year'));
             $row->addTextField('schoolYearName')->readonly()->setValue($values['schoolYearName']);
-
-        $form->addHiddenValue('gibbonDepartmentID', $values['gibbonDepartmentID']);
-        $row = $form->addRow();
-            $row->addLabel('departmentName', __('Department'));
-            $row->addTextField('departmentName')->readonly()->setValue($values['departmentName']);
     } else {
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
             $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
-
-        $row = $form->addRow();
-            $row->addLabel('gibbonDepartmentID', __('Department'));
-            $row->addSelectDepartment('gibbonDepartmentID')->selected($values['gibbonDepartmentID']);
     }
+
+    $row = $form->addRow();
+            $row->addLabel('gibbonDepartmentIDList', __('Departments'))->description(__('This determines courses available to add, and course marks associated with this block. Leave blank to select from any courses.'));
+            $row->addSelectDepartment('gibbonDepartmentIDList')->selectMultiple()->selected($values['gibbonDepartmentIDList']);
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
@@ -106,10 +101,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $row->addSubmit();
 
     echo $form->getOutput();
-
-    echo '<script type="text/javascript">'; // Prefill the department name into the name field
-        echo '$("#gibbonDepartmentID").change(function(){ $("#name").val($("#gibbonDepartmentID").find("option:selected").text()); });';
-    echo '</script>';
 
     if ($action == 'edit' && !empty($values['courseSelectionBlockID'])) {
         echo '<h3>';
@@ -155,8 +146,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $form->addHiddenValue('courseSelectionBlockID', $values['courseSelectionBlockID']);
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-        if (!empty($values['gibbonDepartmentID']) && $values['gibbonDepartmentID'] > 0) {
-            $courseList = $gateway->selectAvailableCoursesByDepartment($values['courseSelectionBlockID'], $values['gibbonDepartmentID']);
+        if (!empty($values['gibbonDepartmentIDList'])) {
+            $courseList = $gateway->selectAvailableCoursesByDepartments($values['courseSelectionBlockID'], $values['gibbonDepartmentIDList']);
         } else {
             $courseList = $gateway->selectAvailableCourses($values['courseSelectionBlockID']);
         }

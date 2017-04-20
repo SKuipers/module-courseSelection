@@ -152,9 +152,9 @@ class SelectionsGateway
 
     // GRADES
 
-    public function selectStudentReportGradesByDepartment($gibbonDepartmentID, $gibbonPersonIDStudent)
+    public function selectStudentReportGradesByDepartments($gibbonDepartmentIDList, $gibbonPersonIDStudent)
     {
-        $data = array('gibbonDepartmentID' => $gibbonDepartmentID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $data = array('gibbonDepartmentIDList' => $gibbonDepartmentIDList, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
         $sql = "(SELECT gradeID as grade, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
@@ -163,7 +163,7 @@ class SelectionsGateway
                 LEFT JOIN arrCriteria ON (gibbonCourse.gibbonCourseID=arrCriteria.subjectID AND (arrCriteria.criteriaType=2 || arrCriteria.criteriaType=4) )
                 LEFT JOIN arrReportGrade ON (arrReportGrade.criteriaID=arrCriteria.criteriaID AND arrReportGrade.studentID = gibbonCourseClassPerson.gibbonPersonID )
                 LEFT JOIN arrReport ON (arrReport.reportID=arrReportGrade.reportID AND arrReport.schoolYearID=gibbonCourse.gibbonSchoolYearID )
-                WHERE gibbonCourse.gibbonDepartmentID=:gibbonDepartmentID
+                WHERE FIND_IN_SET(gibbonCourse.gibbonDepartmentID, :gibbonDepartmentIDList)
                 AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
                 AND gibbonCourseClass.reportable='Y'
                 AND gibbonCourse.nameShort NOT LIKE '%ECA%'
@@ -178,7 +178,7 @@ class SelectionsGateway
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=arrLegacyGrade.gibbonCourseID)
                 JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
                 WHERE arrLegacyGrade.gibbonPersonID=:gibbonPersonIDStudent
-                AND gibbonCourse.gibbonDepartmentID=:gibbonDepartmentID
+                AND FIND_IN_SET(gibbonCourse.gibbonDepartmentID, :gibbonDepartmentIDList)
                 AND arrLegacyGrade.reportTerm='Final'
                 ) ORDER BY schoolYearName, courseOrder, courseNameShort";
         $result = $this->pdo->executeQuery($data, $sql);

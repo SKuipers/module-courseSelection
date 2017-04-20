@@ -115,16 +115,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
             $blocksByDepartment = $blocksRequest->fetchAll(\PDO::FETCH_GROUP);
 
-            foreach ($blocksByDepartment as $gibbonDepartmentID => $blocks) {
-                $departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
-                $department = $departmentRequest->fetch();
+            foreach ($blocksByDepartment as $gibbonDepartmentIDList => $blocks) {
+                //$departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
+                //$department = $departmentRequest->fetch();
 
                 foreach ($blocks as $block) {
                     if ($block['courseCount'] == 0) continue;
 
                     $row = $form->addRow();
-                    $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription'])->setTitle($department['name']);
-                    $row->addCourseGrades($gibbonDepartmentID, $gibbonPersonIDStudent);
+                    $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
+                    $row->addCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent);
                     $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent)->setReadOnly($readOnly);
                     $row->addCourseProgressByBlock($block);
                 }
