@@ -231,11 +231,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
         $row = $form->addRow();
             $row->addLabel('minSelect', __('Min Selections'));
-            $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['minSelect']);
+            $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue(1);
 
         $row = $form->addRow();
             $row->addLabel('maxSelect', __('Max Selections'));
-            $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
+            $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue(1);
 
         $row = $form->addRow();
             $row->addSubmit(__('Add'));
