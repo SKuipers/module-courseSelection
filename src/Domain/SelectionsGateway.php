@@ -77,7 +77,7 @@ class SelectionsGateway
 
     public function insertChoice(array $data)
     {
-        $sql = "INSERT INTO courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes";
+        $sql = "INSERT INTO courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, notes=:notes";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -85,7 +85,7 @@ class SelectionsGateway
 
     public function updateChoice(array $data)
     {
-        $sql = "UPDATE courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, gibbonPersonIDStatusChange=:gibbonPersonIDStatusChange, timestampStatusChange=:timestampStatusChange, notes=:notes WHERE gibbonPersonIDStudent=:gibbonPersonIDStudent AND gibbonCourseID=:gibbonCourseID";
+        $sql = "UPDATE courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, notes=:notes WHERE gibbonPersonIDStudent=:gibbonPersonIDStudent AND gibbonCourseID=:gibbonCourseID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
@@ -120,6 +120,34 @@ class SelectionsGateway
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
+    }
+
+    // LOG
+
+    public function selectAllLogs($page = 1, $limit = 50)
+    {
+        $offset = ($page > 1)? ( ($page-1) * $limit) : 0;
+
+        $sql = "SELECT courseSelectionLog.*, gibbonSchoolYear.name as schoolYearName, courseSelectionOffering.name as offeringName, gibbonPersonStudent.surname AS studentSurname, gibbonPersonStudent.preferredName AS studentPreferredName, gibbonPersonChanged.surname AS changedSurname, gibbonPersonChanged.preferredName AS changedPreferredName
+                FROM courseSelectionLog
+                JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionLog.courseSelectionOfferingID)
+                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionLog.gibbonSchoolYearID)
+                JOIN gibbonPerson AS gibbonPersonStudent ON (gibbonPersonStudent.gibbonPersonID=courseSelectionLog.gibbonPersonIDStudent)
+                JOIN gibbonPerson AS gibbonPersonChanged ON (gibbonPersonChanged.gibbonPersonID=courseSelectionLog.gibbonPersonIDChanged)
+                GROUP BY courseSelectionLog.courseSelectionLogID
+                ORDER BY courseSelectionLog.timestampChanged DESC
+                LIMIT {$limit} OFFSET {$offset}";
+        $result = $this->pdo->executeQuery(array(), $sql);
+
+        return $result;
+    }
+
+    public function insertLog(array $data)
+    {
+        $sql = "INSERT INTO courseSelectionLog SET gibbonSchoolYearID=:gibbonSchoolYearID, courseSelectionOfferingID=:courseSelectionOfferingID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonPersonIDChanged=:gibbonPersonIDChanged, timestampChanged=:timestampChanged, action=:action";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
     }
 
     // OFFERINGS

@@ -51,8 +51,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
         $data['gibbonPersonIDSelected'] = $_POST['gibbonPersonIDSelected'] ?? '';
         $data['timestampSelected'] = date('Y-m-d H:i:s');
-        $data['gibbonPersonIDStatusChange'] = $_POST['gibbonPersonIDSelected'] ?? '';
-        $data['timestampStatusChange'] = date('Y-m-d H:i:s');
         $data['notes'] = '';
 
         if (empty($courseSelectionOfferingID) || empty($data['gibbonSchoolYearID']) || empty($data['gibbonPersonIDStudent']) || empty($data['gibbonPersonIDSelected'])) {
@@ -94,6 +92,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
 
             $insertID = $gateway->insertChoiceOffering($data);
+            $partialFail &= empty($insertID);
+
+
+            $data = array();
+            $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
+            $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
+            $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+            $data['gibbonPersonIDChanged'] = $_POST['gibbonPersonIDSelected'] ?? '';
+            $data['timestampChanged'] = date('Y-m-d H:i:s');
+            $data['action'] = 'Update';
+
+            $insertID = $gateway->insertLog($data);
             $partialFail &= empty($insertID);
 
             if ($partialFail == true) {

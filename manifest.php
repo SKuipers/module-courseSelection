@@ -94,7 +94,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
   `gibbonPersonIDSelected` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampSelected` DATETIME NULL ,
   `gibbonPersonIDStatusChange` INT(10) UNSIGNED ZEROFILL NULL ,
-  `timestampStatusChange` DATETIME NULL ,
+  `timestampStatusChange` DATETIME NULL,
   `notes` VARCHAR(255) NULL ,
   PRIMARY KEY (`courseSelectionChoiceID`),
   UNIQUE KEY (`gibbonPersonID`, `gibbonCourseID`)
@@ -107,6 +107,16 @@ $moduleTables[]="CREATE TABLE `courseSelectionChoiceOffering` (
   PRIMARY KEY (`gibbonSchoolYearID`,`gibbonPersonIDStudent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
+$moduleTables[]="CREATE TABLE `courseSelectionLog` (
+  `courseSelectionLogID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL,
+  `gibbonPersonIDChanged` INT(10) UNSIGNED ZEROFILL NULL,
+  `timestampChanged` DATETIME NULL,
+  `action` ENUM('Create','Update','Delete') NOT NULL DEFAULT 'Update',
+  PRIMARY KEY (`courseSelectionLogID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
 // courseSelectionRequisite (Ruleset/Rule)
 // courseSelectionMeta
@@ -271,6 +281,26 @@ $actionRows[] = array(
     'description'               => '',
     'URLList'                   => 'approval_byPerson.php',
     'entryURL'                  => 'approval_byPerson.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Activity Log',
+    'precedence'                => '0',
+    'category'                  => 'Reports',
+    'description'               => '',
+    'URLList'                   => 'report_courseSelectionLog.php',
+    'entryURL'                  => 'report_courseSelectionLog.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',
