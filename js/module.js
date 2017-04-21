@@ -43,6 +43,9 @@ jQuery(function($){
         var min = progressDiv.data('min');
         var max = progressDiv.data('max');
 
+        if (min == undefined) min = 0;
+        if (max == undefined) max = 1;
+
         if (choicesSelected.length >= min) {
             //progressDiv.html('Okay');
             progressDiv.addClass('complete');
