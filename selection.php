@@ -71,7 +71,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $offeringsGateway = new OfferingsGateway($pdo);
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $accessRequest = $accessGateway->getAccessByPerson($gibbonPersonIDStudent);
+    $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
 
     if (!$accessRequest || $accessRequest->rowCount() == 0) {
         echo "<div class='error'>" ;

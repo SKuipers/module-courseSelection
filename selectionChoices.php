@@ -61,7 +61,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $blocksGateway = new BlocksGateway($pdo);
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
+    if ($highestGroupedAction == 'Course Selection_all') {
+        $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
+    } else {
+        $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
+    }
+
     $offeringRequest = $offeringsGateway->selectOne($courseSelectionOfferingID);
 
     if (!$accessRequest || $accessRequest->rowCount() == 0 || !$offeringRequest || $offeringRequest->rowCount() == 0) {
