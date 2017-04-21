@@ -43,10 +43,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         'maxSelect'              => '1'
     );
 
+    $gibbonDepartmentIDList = '';
+
     if (isset($_GET['courseSelectionBlockID'])) {
         $result = $gateway->selectOne($_GET['courseSelectionBlockID']);
         if ($result && $result->rowCount() == 1) {
             $values = $result->fetch();
+
+            $gibbonDepartmentIDList = explode(',', $values['gibbonDepartmentIDList']);
         }
 
         $action = 'edit';
@@ -86,7 +90,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 
     $row = $form->addRow();
             $row->addLabel('gibbonDepartmentIDList', __('Departments'))->description(__('This determines courses available to add, and course marks associated with this block. Leave blank to select from any courses.'));
-            $row->addSelectDepartment('gibbonDepartmentIDList')->selectMultiple()->selected($values['gibbonDepartmentIDList']);
+            $row->addSelectDepartment('gibbonDepartmentIDList')->selectMultiple()->selected($gibbonDepartmentIDList);
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
