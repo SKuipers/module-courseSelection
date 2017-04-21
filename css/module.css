@@ -21,6 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     display: none;
 }
 
+.pullRight {
+    float: right;
+}
+
 .information {
     border-left: 6px solid #666666;
     color: #666666;
@@ -58,7 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }
 
 .courseTag {
-    float: right;
     padding: 2px;
     opacity: 0.8;
 }

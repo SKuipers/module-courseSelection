@@ -32,6 +32,7 @@ class CourseSelection extends Input
     protected $description;
     protected $checked = array();
     protected $readOnly;
+    protected $selectStatus = false;
 
     protected $courses;
     protected $selectedChoices;
@@ -62,6 +63,13 @@ class CourseSelection extends Input
     public function setReadOnly($value)
     {
         $this->setAttribute('readonly', $value);
+
+        return $this;
+    }
+
+    public function canSelectStatus($value = true)
+    {
+        $this->selectStatus = $value;
 
         return $this;
     }
@@ -105,18 +113,19 @@ class CourseSelection extends Input
             foreach ($this->courses as $course) {
                 $value = $course['gibbonCourseID'];
                 $label = $course['courseName'];
+                $status = $this->getChoiceStatus($value);
 
                 $this->setName($name);
                 $this->setAttribute('checked', $this->getIsChecked($value));
                 $this->setValue($value);
 
-                $output .= '<div class="courseChoiceContainer" data-status="'.$this->getChoiceStatus($value).'">';
+                $output .= '<div class="courseChoiceContainer" data-status="'.$status.'">';
 
                 if ($this->getReadOnly() && $this->getIsChecked($value) == false) continue;
 
                 if ($this->getReadOnly() == false) {
 
-                    $locked = ($this->getChoiceStatus($value) == 'Locked' || $this->getChoiceStatus($value) == 'Approved');
+                    $locked = ($status == 'Locked' || $status == 'Approved');
 
                     $this->setAttribute('disabled', $locked);
                     $this->setAttribute('data-locked', $locked);
@@ -127,13 +136,23 @@ class CourseSelection extends Input
 
                 $output .= '<label title="'.$label.'">'.$label.'</label>';
 
-                if ($this->getChoiceStatus($value) == 'Locked') {
-                    $output .= '<span class="courseTag small emphasis">&nbsp; '.__('Required').'</span>';
-                } else if ($this->getChoiceStatus($value) == 'Approved') {
-                    $output .= '<span class="courseTag small emphasis">&nbsp; '.__('Approved').'</span>';
-                } else if ($this->getChoiceStatus($value) == 'Recommended') {
-                    $output .= '<span class="courseTag small emphasis">&nbsp; '.__('Recommended').'</span>';
+                // if ($this->selectStatus == true) {
+                //     $output .= '<select name="courseStatus['.$value.']" class="courseStatusSelect pullRight">';
+                //     $output .= '<option value="Locked" '.($status == 'Locked'? 'selected' : '').'>'.__('Locked (Required)').'</option>';
+                //     $output .= '<option value="Approved" '.($status == 'Approved'? 'selected' : '').'>'.__('Approved').'</option>';
+                //     $output .= '<option value="Requested" '.($status == 'Requested'? 'selected' : '').'>'.__('Requested').'</option>';
+                //     $output .= '<option value="Recommended" '.($status == 'Recommended'? 'selected' : '').'>'.__('Recommended').'</option>';
+                //     $output .= '</select>';
+                // }
+
+                if ($status == 'Locked') {
+                    $output .= '<span class="courseTag pullRight small emphasis">&nbsp; '.__('Required').'</span>';
+                } else if ($status == 'Approved') {
+                    $output .= '<span class="courseTag pullRight small emphasis">&nbsp; '.__('Approved').'</span>';
+                } else if ($status == 'Recommended') {
+                    $output .= '<span class="courseTag pullRight small emphasis">&nbsp; '.__('Recommended').'</span>';
                 }
+
 
                 $output .= '</div>';
             }

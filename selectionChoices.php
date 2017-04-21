@@ -125,7 +125,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                     $row = $form->addRow();
                     $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
                     $row->addCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent);
-                    $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent)->setReadOnly($readOnly);
+                    $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
+                        ->setReadOnly($readOnly)
+                        ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
                     $row->addCourseProgressByBlock($block);
                 }
             }
