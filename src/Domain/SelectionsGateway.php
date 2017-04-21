@@ -44,7 +44,7 @@ class SelectionsGateway
                 FROM courseSelectionBlockCourse
                 JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionBlockID=:courseSelectionBlockID
-                ORDER BY gibbonCourse.nameShort";
+                ORDER BY gibbonCourse.name";
 
         return $this->pdo->executeQuery($data, $sql);
     }

@@ -40,7 +40,7 @@ class BlocksGateway
     public function selectAll()
     {
         $data = array();
-        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName, COUNT(gibbonCourseID) as courseCount
+        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName, COUNT(DISTINCT gibbonCourseID) as courseCount
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
@@ -58,7 +58,8 @@ class BlocksGateway
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
-                WHERE courseSelectionBlockID=:courseSelectionBlockID ";
+                WHERE courseSelectionBlockID=:courseSelectionBlockID
+                GROUP BY courseSelectionBlock.courseSelectionBlockID";
 
         return $this->pdo->executeQuery($data, $sql);
     }
