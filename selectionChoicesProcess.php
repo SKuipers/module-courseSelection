@@ -71,26 +71,33 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $courseSelections = $_POST['courseSelection'] ?? array();
 
             if (!empty($courseSelections) && is_array($courseSelections)) {
-                foreach ($courseSelections as $courseSelection) {
-                    if (empty($courseSelection)) continue;
+                foreach ($courseSelections as $courseSelectionBlockID => $courseBlockSelections) {
+                    $data['courseSelectionBlockID'] = $courseSelectionBlockID;
+                    
+                    foreach ($courseBlockSelections as $courseSelection) {
+                        if (empty($courseSelection)) continue;
 
-                    $data['gibbonCourseID'] = $courseSelection;
-                    $data['status'] = ($access['accessType'] == 'Select')? 'Approved' : 'Requested';
+                        $courseSelectionsList[$courseSelection] = $courseSelection;
+                        $data['gibbonCourseID'] = $courseSelection;
+                        $data['status'] = ($access['accessType'] == 'Select')? 'Approved' : 'Requested';
 
-                    $choiceRequest = $gateway->selectChoiceByCourseAndPerson($courseSelection, $gibbonPersonIDStudent);
-                    if ($choiceRequest && $choiceRequest->rowCount() > 0) {
-                        $choice = $choiceRequest->fetch();
-
-                        if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended') {
-                            $partialFail &= !$gateway->updateChoice($data);
+                        $choiceRequest = $gateway->selectChoiceByCourseAndPerson($courseSelection, $gibbonPersonIDStudent);
+                        if ($choiceRequest && $choiceRequest->rowCount() > 0) {
+                            $choice = $choiceRequest->fetch();
+                            
+                            if ($access['accessType'] == 'Select') {
+                                $partialFail &= !$gateway->updateChoice($data);
+                            } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested') {
+                                $partialFail &= !$gateway->updateChoice($data);
+                            }
+                        } else {
+                            $partialFail &= !$gateway->insertChoice($data);
                         }
-                    } else {
-                        $partialFail &= !$gateway->insertChoice($data);
                     }
                 }
             }
 
-            $courseSelectionsList = (is_array($courseSelections))? implode(',', $courseSelections) : $courseSelections;
+            $courseSelectionsList = (is_array($courseSelectionsList))? implode(',', $courseSelectionsList) : $courseSelectionsList;
             $gateway->updateUnselectedChoicesBySchoolYearAndPerson($data['gibbonSchoolYearID'], $gibbonPersonIDStudent, $courseSelectionsList);
 
             $data = array();

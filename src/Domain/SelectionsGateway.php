@@ -59,6 +59,7 @@ class SelectionsGateway
                 WHERE courseSelectionOfferingBlock.courseSelectionBlockID=:courseSelectionBlockID
                 AND courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                 AND courseSelectionChoice.status <> 'Removed'
+                AND (courseSelectionChoice.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID OR courseSelectionChoice.courseSelectionBlockID IS NULL)
                 GROUP BY courseSelectionChoice.gibbonCourseID
                 ORDER BY courseSelectionChoice.status";
         $result = $this->pdo->executeQuery($data, $sql);
@@ -77,7 +78,7 @@ class SelectionsGateway
 
     public function insertChoice(array $data)
     {
-        $sql = "INSERT INTO courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, notes=:notes";
+        $sql = "INSERT INTO courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, courseSelectionBlockID=:courseSelectionBlockID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, notes=:notes";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -85,7 +86,7 @@ class SelectionsGateway
 
     public function updateChoice(array $data)
     {
-        $sql = "UPDATE courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, notes=:notes WHERE gibbonPersonIDStudent=:gibbonPersonIDStudent AND gibbonCourseID=:gibbonCourseID";
+        $sql = "UPDATE courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, courseSelectionBlockID=:courseSelectionBlockID, notes=:notes WHERE gibbonPersonIDStudent=:gibbonPersonIDStudent AND gibbonCourseID=:gibbonCourseID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();

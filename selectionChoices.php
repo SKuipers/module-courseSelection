@@ -126,11 +126,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 foreach ($blocks as $block) {
                     if ($block['courseCount'] == 0) continue;
+                    
+                    $fieldName = 'courseSelection['.$block['courseSelectionBlockID'].'][]';
 
                     $row = $form->addRow();
-                    $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
+                    $row->addLabel($fieldName, $block['blockName'])->description($block['blockDescription']);
                     $row->addCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent);
-                    $row->addCourseSelection('courseSelection', $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
+                    $row->addCourseSelection($fieldName, $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
                         ->setReadOnly($readOnly)
                         ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
                     $row->addCourseProgressByBlock($block);
