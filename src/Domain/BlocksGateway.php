@@ -40,7 +40,7 @@ class BlocksGateway
     public function selectAll()
     {
         $data = array();
-        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName, COUNT(DISTINCT gibbonCourseID) as courseCount
+        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT gibbonDepartment.name ORDER BY gibbonDepartment.name SEPARATOR '<br/>') as departmentName, COUNT(DISTINCT gibbonCourseID) as courseCount
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
@@ -54,7 +54,7 @@ class BlocksGateway
     public function selectOne($courseSelectionBlockID)
     {
         $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
-        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, gibbonDepartment.name as departmentName
+        $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(gibbonDepartment.name SEPARATOR '<br/>') as departmentName
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
