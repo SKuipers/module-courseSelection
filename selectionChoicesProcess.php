@@ -90,7 +90,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 }
             }
 
-            $courseSelectionsList = implode(',', $courseSelections);
+            $courseSelectionsList = (is_array($courseSelections))? implode(',', $courseSelections) : $courseSelections;
             $gateway->updateUnselectedChoicesBySchoolYearAndPerson($data['gibbonSchoolYearID'], $gibbonPersonIDStudent, $courseSelectionsList);
 
             $data = array();

@@ -107,7 +107,7 @@ class CourseSelection extends Input
     {
         $output = '';
 
-        $name = (count($this->courses)>1 && stripos($this->getName(), '[]') === false)? $this->getName().'[]' : $this->getName();
+        $name = (stripos($this->getName(), '[]') === false)? $this->getName().'[]' : $this->getName();
 
         if (!empty($this->courses) && is_array($this->courses)) {
             foreach ($this->courses as $course) {
