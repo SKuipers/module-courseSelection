@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.01" ;
+$version="0.0.02" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -90,6 +90,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL ,
   `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `courseSelectionBlockID` int(10) unsigned zerofill NULL,
   `status` ENUM('Locked','Approved','Requested','Recommended','Waitlist','Declined','Removed') NOT NULL DEFAULT 'Requested',
   `gibbonPersonIDSelected` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampSelected` DATETIME NULL ,
