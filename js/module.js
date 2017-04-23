@@ -27,9 +27,22 @@ jQuery(function($){
     function updateSelectionProgress() {
         var blockID = $(this).data('block');
 
+        checkDuplicates(this);
+        
         updateBlockProgress(blockID);
 
         updateOfferingProgress();
+    }
+    
+    function checkDuplicates(checkbox) {
+        var courseID = $(checkbox).val();
+        
+        var duplicate = $('.courseChoice[type=checkbox][value="'+courseID+'"]:checked');
+        
+        if (duplicate.length > 1) {
+            alert('This course has already been selected in a different section. ');
+            $(checkbox).attr('checked', false);
+        }
     }
 
     function updateBlockProgress(blockID) {
@@ -50,7 +63,12 @@ jQuery(function($){
             //progressDiv.html('Okay');
             progressDiv.addClass('complete');
             progressDiv.find('.invalid').hide();
-            progressDiv.find('.valid').show();
+            
+            if (choicesSelected.length > 0) {
+                progressDiv.find('.valid').show();
+            } else {
+                progressDiv.find('.valid').hide();
+            }
 
             if (max > min && choicesSelected.length < max) progressInfo += 'Select up to '+max;
             else progressInfo += 'Complete';
