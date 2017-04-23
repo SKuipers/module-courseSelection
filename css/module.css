@@ -36,19 +36,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }
 
 .courseChoiceContainer {
-    padding: 4px;
+    padding: 8px 4px;
     border-radius: 3px;
 }
 
 .courseChoiceContainer:not(:last-of-type) {
-    margin-bottom: 6px;
+    margin-bottom: 0px;
+}
+
+.courseChoiceContainer:hover {
+    background-color: #ffffff;
 }
 
 .courseChoiceContainer[data-status='Recommended'] {
     background-color: #d9edf7;
 }
 
-.courseChoiceContainer[data-status='Locked'] {
+.courseChoiceContainer[data-status='Required'] {
     background-color: #f2f2f2;
 }
 
@@ -64,6 +68,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .courseTag {
     padding: 2px;
     opacity: 0.8;
+}
+
+.courseStatusIcon {
+    margin-left: 4px;
+    vertical-align: middle;
+    width: 14px;
+    height: 14px;
+}
+
+.courseStatusSelect {
+    font-size: 12px;
+    height: 26px;
+    width: 120px;
+    margin-top: -6px;
+}
+
+.courseChoiceContainer[data-status='']:not(:hover) .courseStatusSelect,
+.courseChoiceContainer[data-status='Removed']:not(:hover) .courseStatusSelect  {
+    visibility: hidden;
 }
 
 .progressBar {

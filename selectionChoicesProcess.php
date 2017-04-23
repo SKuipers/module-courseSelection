@@ -68,29 +68,50 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $partialFail = false;
             $gateway = new SelectionsGateway($pdo);
 
+            $courseSelectionsList = array();
             $courseSelections = $_POST['courseSelection'] ?? array();
+            $courseStatus = $_POST['courseStatus'] ?? array();
+            
+            if (!empty($courseStatus) && $highestGroupedAction == 'Course Selection_all') {
+                $courseSelections = array_replace_recursive($courseSelections, $courseStatus);
+            }
+            
+            echo '<pre>';
+            print_r($courseSelections);
+            echo '</pre>';
 
             if (!empty($courseSelections) && is_array($courseSelections)) {
-                foreach ($courseSelections as $courseSelectionBlockID => $courseBlockSelections) {
-                    $data['courseSelectionBlockID'] = $courseSelectionBlockID;
+                foreach ($courseSelections as $blockID => $courseBlockSelections) {
+                    $data['courseSelectionBlockID'] = $blockID;
                     
-                    foreach ($courseBlockSelections as $courseSelection) {
+                    foreach ($courseBlockSelections as $courseSelection => $status) {
                         if (empty($courseSelection)) continue;
 
                         $courseSelectionsList[$courseSelection] = $courseSelection;
                         $data['gibbonCourseID'] = $courseSelection;
-                        $data['status'] = ($access['accessType'] == 'Select')? 'Approved' : 'Requested';
+                        $data['status'] = '';
+                        
+                        if ($highestGroupedAction == 'Course Selection_all') {
+                            $data['status'] = $status;
+                        } else if ($access['accessType'] == 'Select') {
+                            $data['status'] = 'Selected';
+                        } else {
+                            $data['status'] = 'Requested';
+                        }
 
                         $choiceRequest = $gateway->selectChoiceByCourseAndPerson($courseSelection, $gibbonPersonIDStudent);
                         if ($choiceRequest && $choiceRequest->rowCount() > 0) {
                             $choice = $choiceRequest->fetch();
                             
-                            if ($access['accessType'] == 'Select') {
+                            if (empty($status) || empty($data['status'])) $data['status'] = 'Removed';
+                            
+                            if ($highestGroupedAction == 'Course Selection_all' || $access['accessType'] == 'Select') {
                                 $partialFail &= !$gateway->updateChoice($data);
                             } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested') {
                                 $partialFail &= !$gateway->updateChoice($data);
                             }
                         } else {
+                            if (empty($status) || empty($data['status'])) continue;
                             $partialFail &= !$gateway->insertChoice($data);
                         }
                     }

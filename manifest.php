@@ -91,7 +91,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL ,
   `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
   `courseSelectionBlockID` int(10) unsigned zerofill NULL,
-  `status` ENUM('Locked','Approved','Requested','Recommended','Waitlist','Declined','Removed') NOT NULL DEFAULT 'Requested',
+  `status` ENUM('Required','Approved','Requested','Selected','Recommended','Declined','Removed') NOT NULL DEFAULT 'Selected',
   `gibbonPersonIDSelected` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampSelected` DATETIME NULL ,
   `gibbonPersonIDStatusChange` INT(10) UNSIGNED ZEROFILL NULL ,

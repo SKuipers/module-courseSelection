@@ -23,7 +23,10 @@ jQuery(function($){
     });
 
     $('.courseChoice[type=checkbox]').change(updateSelectionProgress);
+    
+    $('.courseStatusSelect').change(updateSelectionStatus);
 
+    
     function updateSelectionProgress() {
         var blockID = $(this).data('block');
 
@@ -35,14 +38,32 @@ jQuery(function($){
     }
     
     function checkDuplicates(checkbox) {
-        var courseID = $(checkbox).val();
+        var courseID = $(checkbox).data('course');
         
-        var duplicate = $('.courseChoice[type=checkbox][value="'+courseID+'"]:checked');
+        var duplicate = $('.courseChoice[type=checkbox][data-course='+courseID+']:checked');
         
         if (duplicate.length > 1) {
-            alert('This course has already been selected in a different section. ');
-            $(checkbox).attr('checked', false);
+            alert('This course has already been selected.');
+            $(checkbox).prop('checked', false);
+            $(checkbox).prop('disabled', false);
         }
+        
+        var status = $(checkbox).parent().find('.courseStatusSelect option:selected').val();
+        if ($(checkbox).prop('checked') == true) {
+            if (status == '' || status == 'Recommended') {
+                status = 'Requested';
+            }
+            
+            $(checkbox).parent().attr('data-status', status);
+        } else {
+            if (status != 'Recommended') {
+                $(checkbox).parent().attr('data-status', '');
+                status = '';
+            }
+        }
+        
+        $(checkbox).parent().find('.courseStatusSelect').val(status);
+        
     }
 
     function updateBlockProgress(blockID) {
@@ -87,14 +108,14 @@ jQuery(function($){
 
 
         if (choicesSelected.length >= max) {
-            choices.find(':not([data-locked])').each(function() {
+            choices.find(':not([data-locked="true"])').each(function() {
                 $(this).data('full', true);
                 if ($(this).prop('checked') == false) {
                     $(this).prop('disabled', true);
                 }
             });
         } else {
-            choices.find(':not([data-locked])').each(function() {
+            choices.find(':not([data-locked="true"])').each(function() {
                 $(this).data('full', false);
                 $(this).prop('disabled', false);
             });
@@ -130,13 +151,13 @@ jQuery(function($){
         }
 
         if (choicesSelected.length >= max) {
-            choices.find(':not([data-locked])').each(function() {
+            choices.find(':not([data-locked="true"])').each(function() {
                 if ($(this).prop('checked') == false) {
                     $(this).prop('disabled', true);
                 }
             });
         } else {
-            choices.find(':not([data-locked])').each(function() {
+            choices.find(':not([data-locked="true"])').each(function() {
                 if ($(this).data('full') == false) {
                     $(this).prop('disabled', false);
                 }
@@ -145,5 +166,21 @@ jQuery(function($){
 
         //progressDiv.html(text);
         progressDiv.find('.complete').css('width', ( Math.min(choicesSelected.length / min, 1.0)*100)+"%" );
+    }
+    
+    function updateSelectionStatus() {
+        
+        var status = $('option:selected', this).val();
+        
+        $(this).parent().attr('data-status', status);
+        
+        var isChecked = (status == 'Required' || status == 'Approved' || status == 'Requested' || status == 'Selected');
+        $(this).parent().find('.courseChoice').prop('checked', isChecked);
+        
+        var isLocked = (status == 'Required' || status == 'Approved');
+        $(this).parent().find('.courseChoice').prop('disabled', isLocked);
+        $(this).parent().find('.courseChoice').attr('data-locked', isLocked);
+        
+        $(this).parent().find('.courseChoice[type=checkbox]').change();
     }
 });
