@@ -180,8 +180,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             echo __("There are no records to display.") ;
             echo '</div>';
         } else {
-            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
-
+            echo '<table id="offeringBlocks" class="fullWidth colorOddEven" cellspacing="0">';
+            echo '<thead>';
             echo '<tr class="head">';
                 echo '<th>';
                     echo __('Course Block');
@@ -195,24 +195,40 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
                 echo '<th>';
                     echo __('Max Selections');
                 echo '</th>';
-                echo '<th style="width: 80px;">';
+                echo '<th>';
                     echo __('Actions');
                 echo '</th>';
             echo '</tr>';
-
+            echo '</thead>';
+            echo '<tbody>';
+            
             while ($block = $blocks->fetch()) {
                 echo '<tr>';
-                    echo '<td>'.$block['blockName'].'</td>';
-                    echo '<td>'.$block['courseCount'].'</td>';
-                    echo '<td>'.$block['minSelect'].'</td>';
-                    echo '<td>'.$block['maxSelect'].'</td>';
-                    echo '<td>';
+                    echo '<input type="hidden" name="offeringBlockID" class="offeringBlockID" value="'.$block['courseSelectionBlockID'].'">';
+                    echo '<td style="width: 40%;"><div class="drag-handle"></div>'.$block['blockName'].'</td>';
+                    echo '<td style="width: 20%;">'.$block['courseCount'].'</td>';
+                    echo '<td style="width: 15%;">'.$block['minSelect'].'</td>';
+                    echo '<td style="width: 15%;">'.$block['maxSelect'].'</td>';
+                    echo '<td style="width: 10%;">';
                         echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/offerings_manage_block_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionBlockID=".$block['courseSelectionBlockID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
             }
-
+            
+            echo '</tbody>';
             echo '</table>';
+            ?>
+            
+            <script>
+                
+                $('#offeringBlocks tbody').sortable({
+                    update: function() {
+                        offeringBlockOrderSave(<?php echo $values['courseSelectionOfferingID']; ?>, '<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/'; ?>');
+                    }
+                }).disableSelection();
+            </script>
+        
+            <?php
         }
 
         $form = Form::create('offeringsBlockAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_block_addProcess.php');

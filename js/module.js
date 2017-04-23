@@ -183,4 +183,25 @@ jQuery(function($){
         
         $(this).parent().find('.courseChoice[type=checkbox]').change();
     }
+    
+    
 });
+
+function offeringBlockOrderSave(courseSelectionOfferingID, modpath) {
+    var blocklist = new Array();
+    $('.offeringBlockID').each(function() {
+        blocklist.push($(this).val());
+    });
+    console.log(blocklist);
+    $.ajax({
+        url: modpath + "/offerings_manage_block_orderAjax.php",
+        data: {
+            courseSelectionOfferingID: courseSelectionOfferingID,
+            blocklist: JSON.stringify(blocklist)
+        },
+        type: 'POST',
+        success: function(data) {
+            console.log(data);
+        }
+    });
+}

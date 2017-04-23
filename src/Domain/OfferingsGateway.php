@@ -165,7 +165,8 @@ class OfferingsGateway
                 JOIN courseSelectionBlock ON (courseSelectionBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
                 LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 WHERE courseSelectionOfferingID=:courseSelectionOfferingID
-                GROUP BY courseSelectionBlock.courseSelectionBlockID";
+                GROUP BY courseSelectionBlock.courseSelectionBlockID 
+                ORDER BY courseSelectionOfferingBlock.sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
@@ -177,6 +178,14 @@ class OfferingsGateway
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
+    }
+    
+    public function updateBlockOrder(array $data)
+    {
+        $sql = "UPDATE courseSelectionOfferingBlock SET sequenceNumber=:sequenceNumber WHERE courseSelectionOfferingID=:courseSelectionOfferingID AND courseSelectionBlockID=:courseSelectionBlockID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
     }
 
     public function deleteBlock($courseSelectionOfferingID, $courseSelectionBlockID)
