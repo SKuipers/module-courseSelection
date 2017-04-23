@@ -75,10 +75,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             if (!empty($courseStatus) && $highestGroupedAction == 'Course Selection_all') {
                 $courseSelections = array_replace_recursive($courseSelections, $courseStatus);
             }
-            
-            echo '<pre>';
-            print_r($courseSelections);
-            echo '</pre>';
 
             if (!empty($courseSelections) && is_array($courseSelections)) {
                 foreach ($courseSelections as $blockID => $courseBlockSelections) {

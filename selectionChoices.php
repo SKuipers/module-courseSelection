@@ -81,9 +81,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $readOnly = (in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false && !($highestGroupedAction == 'Course Selection_all');
 
         echo '<h3>';
-            echo __('Course Selection').' '.$access['schoolYearName'];
-        echo '</h3>';
+        echo __('Course Selection').' '.$access['schoolYearName'];
 
+        $studentRequest = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
+        if ($studentRequest && $studentRequest->rowCount() > 0) {
+            $student = $studentRequest->fetch();
+            echo ' for ';
+            echo formatName('', $student['preferredName'], $student['surname'], 'Student', false, true);
+        }
+        echo '</h3>';
+        
         $infoTextBefore = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionBefore');
         if (!empty($infoTextBefore)) {
             echo '<p>'.$infoTextBefore.'</p>';

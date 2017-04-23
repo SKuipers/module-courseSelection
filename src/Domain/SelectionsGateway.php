@@ -214,4 +214,20 @@ class SelectionsGateway
 
         return $result;
     }
+    
+    // MISC
+    
+    public function selectStudentDetails($gibbonPersonIDStudent)
+    {
+        $data = array('gibbonPersonID' => $gibbonPersonIDStudent);
+        $sql = "SELECT gibbonPerson.surname, gibbonPerson.preferredName 
+                FROM gibbonPerson 
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
+                WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID 
+                ORDER BY gibbonStudentEnrolment.gibbonSchoolYearID DESC 
+                LIMIT 1";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
 }
