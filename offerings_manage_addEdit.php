@@ -183,19 +183,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             echo '<table id="offeringBlocks" class="fullWidth colorOddEven" cellspacing="0">';
             echo '<thead>';
             echo '<tr class="head">';
-                echo '<th>';
+                echo '<th style="width: 40%;">';
                     echo __('Course Block');
                 echo '</th>';
-                echo '<th>';
+                echo '<th style="width: 20%;">';
                     echo __('Courses');
                 echo '</th>';
-                echo '<th>';
+                echo '<th style="width: 15%;">';
                     echo __('Min Selections');
                 echo '</th>';
-                echo '<th>';
+                echo '<th style="width: 15%;">';
                     echo __('Max Selections');
                 echo '</th>';
-                echo '<th>';
+                echo '<th style="width: 10%;">';
                     echo __('Actions');
                 echo '</th>';
             echo '</tr>';
@@ -204,12 +204,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             
             while ($block = $blocks->fetch()) {
                 echo '<tr>';
-                    echo '<input type="hidden" name="offeringBlockID" class="offeringBlockID" value="'.$block['courseSelectionBlockID'].'">';
                     echo '<td style="width: 40%;"><div class="drag-handle"></div>'.$block['blockName'].'</td>';
                     echo '<td style="width: 20%;">'.$block['courseCount'].'</td>';
                     echo '<td style="width: 15%;">'.$block['minSelect'].'</td>';
                     echo '<td style="width: 15%;">'.$block['maxSelect'].'</td>';
                     echo '<td style="width: 10%;">';
+                        echo '<input type="hidden" name="offeringBlockID" class="offeringBlockID" value="'.$block['courseSelectionBlockID'].'">';
                         echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/offerings_manage_block_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionBlockID=".$block['courseSelectionBlockID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
