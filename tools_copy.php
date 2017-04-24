@@ -108,19 +108,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $form->addRow()->addContent(__("This tool lets you copy student enrolments for a course and convert them into course selections for a different course. After selecting the year and course below you'll have the option to select students and the destination course to copy to."))->wrap('<br/><p>', '</p>');
 
     $row = $form->addRow();
-        $row->addLabel('gibbonSchoolYearName', __('Copy from School Year'));
-        $row->addTextField('gibbonSchoolYearName')->readonly()->setValue($gibbonSchoolYearName);
-
-    $row = $form->addRow();
-        $row->addLabel('gibbonCourseID', __('Copy from Course'));
+        $row->addLabel('gibbonCourseID', __('Courses from ').$gibbonSchoolYearName);
         $row->addSelect('gibbonCourseID')->fromArray($courses)->isRequired()->selected($gibbonCourseID);
 
     $row = $form->addRow();
-        $row->addLabel('gibbonSchoolYearIDCopyTo', __('Destination School Year'));
+        $row->addLabel('gibbonSchoolYearIDCopyTo', __('Destination School Year'))->setClass('mediumWidth');
         $row->addSelectSchoolYear('gibbonSchoolYearIDCopyTo', 'Active')->isRequired()->selected( (!empty($gibbonSchoolYearIDCopyTo)? $gibbonSchoolYearIDCopyTo : $nextYear));
 
     $row = $form->addRow();
-        $row->addFooter();
         $row->addSubmit();
 
     echo $form->getOutput();
@@ -193,6 +188,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
                 });
             });
         </script>
-        <?
+        <?php
     }
 }
