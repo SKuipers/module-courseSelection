@@ -58,11 +58,13 @@ class ToolsGateway
     public function selectStudentsByCourse($gibbonCourseID)
     {
         $data = array('gibbonCourseID' => $gibbonCourseID);
-        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonperson.preferredName
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonYearGroup.name as yearGroupName, CONCAT(gibbonCourse.nameShort, '.',gibbonCourseClass.nameShort) as courseClassName
                 FROM gibbonPerson
                 JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonPersonID=gibbonPerson.gibbonPersonID)
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=gibbonCourseClassPerson.gibbonCourseClassID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID AND gibbonStudentEnrolment.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
+                JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
                 WHERE (gibbonPerson.gibbonPersonID=gibbonCourseClassPerson.gibbonPersonID)
                 AND gibbonCourse.gibbonCourseID=:gibbonCourseID
                 AND (gibbonPerson.status='Full' OR gibbonPerson.status='Expected')

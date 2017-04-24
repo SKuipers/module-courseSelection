@@ -137,13 +137,20 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
         $row = $form->addRow()->setClass('break');
             $row->addContent(__('Student Name'));
+            $row->addContent(__('Grade'));
+            $row->addContent(__('Class'));
             $row->addContent('<input type="checkbox" class="checkall" checked>')->setClass('right');
 
         while ($student = $studentsResults->fetch()) {
-            $row = $form->addRow();
+            $row = $form->addRow()->addClass('rowHighlight');
                 $row->addLabel('studentList[]', formatName('', $student['preferredName'], $student['surname'], 'Student', true));
-                $row->addCheckbox('studentList[]')->setValue($student['gibbonPersonID'])->checked($student['gibbonPersonID']);
+                $row->addContent($student['yearGroupName']);
+                $row->addContent($student['courseClassName']);
+                $row->addCheckbox('studentList[]')->addClass('studentList')->setValue($student['gibbonPersonID'])->checked($student['gibbonPersonID']);
         }
+
+        $row = $form->addRow();
+            $row->addContent('<span><input type="text" class="countall" readonly style="text-align: right;"></span>')->setClass('right');
 
         $form->addRow()->addHeading(__('Copy to Course'))->append(__('Course selections will be created for each of the students selected here in the following course:'));
 
@@ -186,6 +193,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
                 $('.checkall').click(function () {
                     $(this).parents('#copySelectionsStudents').find(':checkbox').attr('checked', this.checked);
                 });
+
+                $(':checkbox').change(function () {
+                    $('.countall').val( 'Selected: '+$(this).parents('#copySelectionsStudents').find('.studentList:checked').length );
+                });
+
+                $('.checkall:checkbox').change();
             });
         </script>
         <?php
