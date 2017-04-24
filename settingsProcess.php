@@ -47,6 +47,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $infoTextSelectionAfter = $_POST['infoTextSelectionAfter'] ?? '';
     $partialFail &= !$settingsGateway->update('Course Selection', 'infoTextSelectionAfter', $infoTextSelectionAfter);
 
+    $selectionComplete = $_POST['selectionComplete'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'selectionComplete', $selectionComplete);
+
+    $selectionInvalid = $_POST['selectionInvalid'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'selectionInvalid', $selectionInvalid);
+
+    $selectionContinue = $_POST['selectionContinue'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'selectionContinue', $selectionContinue);
+
     if ($partialFail == true) {
         $URL .= '&return=warning2';
         header("Location: {$URL}");

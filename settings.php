@@ -63,6 +63,23 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
         $row->addTextArea($setting['name'])->setRows(4)->setValue($setting['value']);
 
+    $form->addRow()->addHeading(__('Course Selection Messages'));
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'selectionComplete', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addTextArea($setting['name'])->setRows(4)->setValue($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'selectionInvalid', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addTextArea($setting['name'])->setRows(4)->setValue($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'selectionContinue', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addTextArea($setting['name'])->setRows(4)->setValue($setting['value']);
+
     $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();

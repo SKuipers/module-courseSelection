@@ -31,10 +31,24 @@ class CourseProgressByOffering extends Element
 {
     protected $offering;
 
+    protected $messages;
+
     public function __construct($offeringData)
     {
         $this->setClass('right');
         $this->offering = $offeringData;
+    }
+
+    public function setMessage($key, $value = '')
+    {
+        $this->messages[$key] = $value;
+
+        return $this;
+    }
+
+    public function getMessage($key)
+    {
+        return (isset($this->messages[$key]))? $this->messages[$key] : '';
     }
 
     public function getOutput()
@@ -50,15 +64,15 @@ class CourseProgressByOffering extends Element
             $output .= '<div class="progressBar" style="width:100%"><div class="complete" style="width:0%;"></div></div>';
 
             $output .= '<div class="valid success hidden">';
-                $output .= 'Ready to submit.';
+                $output .= $this->getMessage('complete');
             $output .= '</div>';
 
             $output .= '<div class="invalid warning hidden">';
-                $output .= 'There are errors.';
+                $output .= $this->getMessage('invalid');
             $output .= '</div>';
 
             $output .= '<div class="continue information hidden">';
-                $output .= 'Continue making selections.';
+                $output .= $this->getMessage('continue');
             $output .= '</div>';
 
         $output .= '</div>';

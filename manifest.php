@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.03" ;
+$version="0.0.04" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -130,6 +130,11 @@ $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`
 $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextOfferings', 'Course Offerings Introduction', 'Information to display with the course offerings.', '');";
 $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionBefore', 'Course Selection Introduction', 'Information to display before the course selections form.', '');";
 $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionAfter', 'Course Selection Postscript', 'Information to display after the course selections form.', '');";
+
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionComplete', 'Message on Completion', 'The text to display when the course selection process is complete.', 'Great! The course selection form is complete, you\'re ready to submit.');";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionInvalid', 'Message on Invalid', 'The text to display when an invalid selection has been made.', 'The form is incomplete or contains an invalid choice. Please check your course selections above.');";
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionContinue', 'Message to Continue', 'The text to display when the course selection is in progress.', 'Continue selecting courses. You can submit a partial selection now and complete your choices at a later date.');";
+
 
 
 //Action rows

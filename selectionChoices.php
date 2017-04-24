@@ -133,9 +133,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
-            $blocksByDepartment = $blocksRequest->fetchAll(\PDO::FETCH_GROUP);
+            $blocks = $blocksRequest->fetchAll();
 
-            foreach ($blocksByDepartment as $gibbonDepartmentIDList => $blocks) {
+            //foreach ($blocksByDepartment as $gibbonDepartmentIDList => $blocks) {
                 //$departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
                 //$department = $departmentRequest->fetch();
 
@@ -146,7 +146,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                     $row = $form->addRow();
                     $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                    $row->addCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent);
+                    $row->addCourseGrades($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
                     $row->addCourseSelection($fieldName, $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
                         ->setReadOnly($readOnly)
                         ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
@@ -155,12 +155,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                         $row->addCourseProgressByBlock($block);
                     }
                 }
-            }
+            //}
         }
 
         if ($readOnly == false) {
             $row = $form->addRow();
-                $row->addCourseProgressByOffering($offering);
+                $progress = $row->addCourseProgressByOffering($offering);
+                $progress->setMessage('complete', getSettingByScope($connection2, 'Course Selection', 'selectionComplete'));
+                $progress->setMessage('invalid', getSettingByScope($connection2, 'Course Selection', 'selectionInvalid'));
+                $progress->setMessage('continue', getSettingByScope($connection2, 'Course Selection', 'selectionContinue'));
 
             $row = $form->addRow();
                 $row->addSubmit();
