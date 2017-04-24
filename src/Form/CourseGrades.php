@@ -41,10 +41,11 @@ class CourseGrades extends Element
     {
         $output = '';
 
-        $output .= implode('<br/>', array_map(function ($grade) {
-            $output = ($grade['schoolYearStatus'] == 'Current')? '<span style="background:#ffd800;">' : '<span>';
+        $output .= implode('', array_map(function ($grade) {
+            $output = ($grade['schoolYearStatus'] == 'Current')? '<div class="courseGrades" style="background:#fff4da;">' : '<div class="courseGrades" style="background:#D4F6DC;">';
             $output .= $grade['courseNameShort'].' ('.$grade['schoolYearName'].'): ';
             $output .= intval($grade['grade']).'%';
+            $output .= '</div>';
             return $output;
         }, $this->grades));
 
