@@ -50,12 +50,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         $gibbonSchoolYearName = $_SESSION[$guid]['gibbonSchoolYearName'];
     } else {
         $schoolYearResults = $toolsGateway->selectSchoolYear($gibbonSchoolYearID);
-
-        if ($schoolYearResults->rowCount() != 1) {
-            echo "<div class='error'>";
-            echo __($guid, 'The specified record does not exist.');
-            echo '</div>';
-        } else {
+        if ($schoolYearResults->rowCount() > 0) {
             $row = $schoolYearResults->fetch();
             $gibbonSchoolYearID = $row['gibbonSchoolYearID'];
             $gibbonSchoolYearName = $row['name'];
@@ -78,13 +73,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         $previousYear = getPreviousSchoolYearID($gibbonSchoolYearID, $connection2);
         $nextYear = getNextSchoolYearID($gibbonSchoolYearID, $connection2);
         if (!empty($previousYear)) {
-            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/tools_copy.php&gibbonSchoolYearID='.getPreviousSchoolYearID($gibbonSchoolYearID, $connection2)."'>".__($guid, 'Previous Year').'</a> ';
+            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/approval_byClass.php&gibbonSchoolYearID='.$previousYear."'>".__($guid, 'Previous Year').'</a> ';
         } else {
             echo __($guid, 'Previous Year').' ';
         }
         echo ' | ';
         if (!empty($nextYear)) {
-            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/tools_copy.php&gibbonSchoolYearID='.getNextSchoolYearID($gibbonSchoolYearID, $connection2)."'>".__($guid, 'Next Year').'</a> ';
+            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/approval_byClass.php&gibbonSchoolYearID='.$nextYear."'>".__($guid, 'Next Year').'</a> ';
         } else {
             echo __($guid, 'Next Year').' ';
         }
@@ -98,7 +93,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
     $courses = array();
-    $courseResults = $toolsGateway->selectCoursesBySchoolYear($gibbonSchoolYearID);
+    $courseResults = $toolsGateway->selectAllCoursesBySchoolYear($gibbonSchoolYearID);
     if ($courseResults && $courseResults->rowCount() > 0) {
         while ($row = $courseResults->fetch()) {
             $courses[$row['grouping']][$row['value']] = $row['name'];
@@ -162,16 +157,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
             $row->addTextField('gibbonSchoolYearCopyToName')->readonly()->setValue($schoolYearCopyToName);
 
         $coursesCopyTo = array();
-        $courseCopyToResults = $toolsGateway->selectCoursesBySchoolYear($gibbonSchoolYearIDCopyTo);
-        if ($courseCopyToResults && $courseCopyToResults->rowCount() > 0) {
-            while ($row = $courseCopyToResults->fetch()) {
-                $coursesCopyTo[$row['grouping']][$row['value']] = $row['name'];
-            }
-        }
+        $courseCopyToResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearIDCopyTo);
 
         $row = $form->addRow();
             $row->addLabel('gibbonCourseIDCopyTo', __('Course Selection'));
-            $row->addSelect('gibbonCourseIDCopyTo', 'Active')->fromArray($coursesCopyTo)->isRequired();
+            $row->addSelect('gibbonCourseIDCopyTo', 'Active')->fromResults($courseCopyToResults)->isRequired();
 
         $row = $form->addRow();
             $row->addLabel('status', __('Selection Status'));

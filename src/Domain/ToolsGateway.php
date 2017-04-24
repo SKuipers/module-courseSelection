@@ -43,7 +43,7 @@ class ToolsGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectCoursesBySchoolYear($gibbonSchoolYearID)
+    public function selectAllCoursesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT gibbonYearGroup.name as grouping, gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
@@ -51,6 +51,21 @@ class ToolsGateway
                 JOIN gibbonYearGroup ON (FIND_IN_SET(gibbonYearGroup.gibbonYearGroupID, gibbonCourse.gibbonYearGroupIDList))
                 WHERE gibbonSchoolYearID=:gibbonSchoolYearID
                 ORDER BY gibbonYearGroup.sequenceNumber DESC, gibbonCourse.nameShort, gibbonCourse.name";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectCoursesOfferedBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
+                FROM courseSelectionOffering
+                JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionOfferingID=courseSelectionOffering.courseSelectionOfferingID)
+                JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionBlockCourse.gibbonCourseID)
+                WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
+                GROUP BY gibbonCourse.gibbonCourseID
+                ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
 
         return $this->pdo->executeQuery($data, $sql);
     }

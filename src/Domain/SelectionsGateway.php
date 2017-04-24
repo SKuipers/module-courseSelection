@@ -67,6 +67,27 @@ class SelectionsGateway
         return $result;
     }
 
+    public function selectChoicesByCourse($gibbonCourseID, $excludeStatusList = array())
+    {
+        $data = array('gibbonCourseID' => $gibbonCourseID, 'exclude' => implode(',', $excludeStatusList));
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, selectedPerson.gibbonPersonID as selectedPersonID, selectedPerson.surname as selectedSurname, selectedPerson.preferredName as selectedPreferredName, courseSelectionChoiceOffering.courseSelectionOfferingID
+                FROM courseSelectionChoice
+                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                LEFT JOIN courseSelectionChoiceOffering ON (
+                    courseSelectionChoiceOffering.gibboNSchoolYearID=gibbonCourse.gibbonSchoolYearID
+                    AND courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
+                )
+                JOIN gibbonPerson AS selectedPerson ON (selectedPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDSelected)
+                WHERE courseSelectionChoice.gibbonCourseID=:gibbonCourseID
+                AND courseSelectionChoice.status NOT IN (:exclude)
+                GROUP BY courseSelectionChoice.gibbonPersonIDStudent
+                ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
     public function selectChoiceByCourseAndPerson($gibbonCourseID, $gibbonPersonIDStudent)
     {
         $data = array('gibbonCourseID' => $gibbonCourseID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
@@ -214,17 +235,17 @@ class SelectionsGateway
 
         return $result;
     }
-    
+
     // MISC
-    
+
     public function selectStudentDetails($gibbonPersonIDStudent)
     {
         $data = array('gibbonPersonID' => $gibbonPersonIDStudent);
-        $sql = "SELECT gibbonPerson.surname, gibbonPerson.preferredName 
-                FROM gibbonPerson 
+        $sql = "SELECT gibbonPerson.surname, gibbonPerson.preferredName
+                FROM gibbonPerson
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
-                WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID 
-                ORDER BY gibbonStudentEnrolment.gibbonSchoolYearID DESC 
+                WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID
+                ORDER BY gibbonStudentEnrolment.gibbonSchoolYearID DESC
                 LIMIT 1";
         $result = $this->pdo->executeQuery($data, $sql);
 
