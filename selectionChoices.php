@@ -82,15 +82,20 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         echo '<h3>';
         echo __('Course Selection').' '.$access['schoolYearName'];
-
-        $studentRequest = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
-        if ($studentRequest && $studentRequest->rowCount() > 0) {
-            $student = $studentRequest->fetch();
-            echo ' for ';
-            echo formatName('', $student['preferredName'], $student['surname'], 'Student', false, true);
-        }
         echo '</h3>';
-        
+
+        if ($gibbonPersonIDStudent !=  $_SESSION[$guid]['gibbonPersonID']) {
+            $studentRequest = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
+            if ($studentRequest && $studentRequest->rowCount() > 0) {
+                $student = $studentRequest->fetch();
+                echo '<p>';
+                echo __('Selecting courses for ');
+                echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
+                echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', false, true).'</strong>';
+                echo '</a></p>';
+            }
+        }
+
         $infoTextBefore = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionBefore');
         if (!empty($infoTextBefore)) {
             echo '<p>'.$infoTextBefore.'</p>';
@@ -121,7 +126,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $row->addContent(__('Department'));
             $row->addContent(__('Course Marks'));
             $row->addContent(__('Choices'));
-            $row->addContent(__('Progress'));
+
+            if ($readOnly == false) {
+                $row->addContent(__('Progress'));
+            }
 
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
@@ -133,33 +141,36 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 foreach ($blocks as $block) {
                     if ($block['courseCount'] == 0) continue;
-                    
+
                     $fieldName = 'courseSelection['.$block['courseSelectionBlockID'].'][]';
 
                     $row = $form->addRow();
-                    $row->addLabel($fieldName, $block['blockName'])->description($block['blockDescription']);
+                    $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
                     $row->addCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent);
                     $row->addCourseSelection($fieldName, $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
                         ->setReadOnly($readOnly)
                         ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
-                    $row->addCourseProgressByBlock($block);
+
+                    if ($readOnly == false) {
+                        $row->addCourseProgressByBlock($block);
+                    }
                 }
             }
         }
 
-        $row = $form->addRow();
-            $row->addCourseProgressByOffering($offering);
-
         if ($readOnly == false) {
+            $row = $form->addRow();
+                $row->addCourseProgressByOffering($offering);
+
             $row = $form->addRow();
                 $row->addSubmit();
         }
 
         echo $form->getOutput();
 
-        $infoTextBefore = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionAfter');
-        if (!empty($infoTextBefore)) {
-            echo '<br/><p>'.$infoTextBefore.'</p>';
+        $infoTextAfter = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionAfter');
+        if (!empty($infoTextAfter)) {
+            echo '<br/><p>'.$infoTextAfter.'</p>';
         }
     }
 }

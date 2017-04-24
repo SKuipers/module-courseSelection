@@ -41,7 +41,7 @@ class CourseSelection extends Input
     public function __construct($selectionsGateway, $name, $courseSelectionBlockID, $gibbonPersonIDStudent)
     {
         $this->blockID = $courseSelectionBlockID;
-        
+
         $this->setName($name);
         $this->addClass('courseChoice');
         $this->addClass('courseBlock'.$courseSelectionBlockID);
@@ -115,19 +115,19 @@ class CourseSelection extends Input
                 $courseID = $course['gibbonCourseID'];
                 $label = $course['courseName'];
                 $status = $this->getChoiceStatus($courseID);
-                
+
                 $name = 'courseSelection['.$this->blockID.']['.$courseID.']';
 
                 $this->setName($name);
                 $this->setID($this->blockID.'-'.$courseID);
                 $this->setAttribute('checked', $this->getIsChecked($courseID));
                 $this->setAttribute('data-course', $courseID);
-                
+
                 $this->setValue('Selected');
 
-                $output .= '<div class="courseChoiceContainer" data-status="'.$status.'">';
-
                 if ($this->getReadOnly() && $this->getIsChecked($courseID) == false) continue;
+
+                $output .= '<div class="courseChoiceContainer" data-status="'.$status.'">';
 
                 if ($this->getReadOnly() == false) {
 
@@ -148,7 +148,7 @@ class CourseSelection extends Input
                     $output .= '<option value="Approved" '.($status == 'Approved'? 'selected' : '').'>'.__('Approved').'</option>';
                     $output .= '<option value="Recommended" '.($status == 'Recommended'? 'selected' : '').'>'.__('Recommended').'</option>';
                     $output .= '<option value="Requested" '.($status == 'Requested' ? 'selected' : '').'>'.__('Requested').'</option>';
-                    
+
                     $output .= '</select>';
                 } else {
                     if ($status == 'Required' || $status == 'Approved' || $status == 'Recommended') {
