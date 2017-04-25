@@ -54,6 +54,12 @@ class CourseSelection extends Input
 
             $selectedChoicesRequest = $selectionsGateway->selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent);
             $this->selectedChoices = ($selectedChoicesRequest->rowCount() > 0)? $selectedChoicesRequest->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
+
+            foreach ($this->selectedChoices as $courseID => $choice) {
+                if ( ($this->getChoiceStatus($courseID) == 'Required' && empty($this->getChoiceBlock($courseID))) && ($this->blockID == '0000000007' || $this->blockID ==  '0000000016' || $this->blockID == '0000000017') ) {
+                    unset($this->selectedChoices[$courseID]);
+                }
+            }
         }
     }
 
@@ -93,6 +99,11 @@ class CourseSelection extends Input
     protected function getChoiceStatus($value)
     {
         return (isset($this->selectedChoices[$value]['status']))? $this->selectedChoices[$value]['status'] : '';
+    }
+
+    protected function getChoiceBlock($value)
+    {
+        return (isset($this->selectedChoices[$value]['courseSelectionBlockID']))? $this->selectedChoices[$value]['courseSelectionBlockID'] : '';
     }
 
     protected function getIsChecked($value)
