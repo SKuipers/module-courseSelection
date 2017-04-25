@@ -38,6 +38,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     //Proceed!
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
 
+    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
+        $URL .= '&return=error0';
+        header("Location: {$URL}");
+        exit;
+    }
+
     $accessGateway = new AccessGateway($pdo);
 
     if ($highestGroupedAction == 'Course Selection_all') {
@@ -56,7 +62,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $data = array();
         $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
         $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-        $data['gibbonPersonIDSelected'] = $_POST['gibbonPersonIDSelected'] ?? '';
+        $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
         $data['timestampSelected'] = date('Y-m-d H:i:s');
         $data['notes'] = '';
 

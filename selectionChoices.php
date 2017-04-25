@@ -69,7 +69,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
     $offeringRequest = $offeringsGateway->selectOne($courseSelectionOfferingID);
 
-    if (!$accessRequest || $accessRequest->rowCount() == 0 || !$offeringRequest || $offeringRequest->rowCount() == 0) {
+    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
+        echo "<div class='error'>" ;
+            echo __('You do not have access to this action.');
+        echo "</div>" ;
+    }
+    else if (!$accessRequest || $accessRequest->rowCount() == 0 || !$offeringRequest || $offeringRequest->rowCount() == 0) {
         echo "<div class='error'>" ;
             echo __('You do not have access to course selection at this time.');
         echo "</div>" ;
@@ -118,7 +123,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $form->addHiddenValue('courseSelectionOfferingID', $courseSelectionOfferingID);
         $form->addHiddenValue('gibbonSchoolYearID', $offering['gibbonSchoolYearID']);
         $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
-        $form->addHiddenValue('gibbonPersonIDSelected', $_SESSION[$guid]['gibbonPersonID']);
 
         $form->addRow()->addHeading($offering['name'])->append($offering['description']);
 
