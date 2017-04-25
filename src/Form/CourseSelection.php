@@ -154,7 +154,7 @@ class CourseSelection extends Input
 
                 if ($this->selectStatus == true) {
                     $output .= '<select name="courseStatus['.$this->blockID.']['.$courseID.']" class="courseStatusSelect pullRight">';
-                    $output .= '<option value="" '.($status == ''? 'selected' : '').'> </option>';
+                    $output .= '<option value="" '.(($status == 'Removed' || $status == '')? 'selected' : '').'> </option>';
                     $output .= '<option value="Required" '.($status == 'Required'? 'selected' : '').'>'.__('Required').'</option>';
                     $output .= '<option value="Approved" '.($status == 'Approved'? 'selected' : '').'>'.__('Approved').'</option>';
                     $output .= '<option value="Recommended" '.($status == 'Recommended'? 'selected' : '').'>'.__('Recommended').'</option>';

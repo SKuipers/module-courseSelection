@@ -104,11 +104,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                         if ($choiceRequest && $choiceRequest->rowCount() > 0) {
                             $choice = $choiceRequest->fetch();
 
-                            if (empty($status) && !empty($courseSelectionsList[$courseSelection])) continue; //$data['status'] = 'Removed';
+                            if (empty($status) && !empty($courseSelectionsList[$courseSelection])) continue;
 
                             if ($highestGroupedAction == 'Course Selection_all' || $access['accessType'] == 'Select') {
+                                if (empty($data['status'])) $data['status'] = 'Removed';
+
                                 $partialFail &= !$gateway->updateChoice($data);
-                            } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested') {
+                            } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested' || $choice['status'] == '') {
                                 $partialFail &= !$gateway->updateChoice($data);
                             }
                         } else {

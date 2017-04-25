@@ -131,12 +131,12 @@ class SelectionsGateway
                     WHERE gibbonSchoolYearID=:gibbonSchoolYearID
                     AND gibbonPersonIDStudent=:gibbonPersonIDStudent
                     AND gibbonCourseID NOT IN ({$courseIDList})
-                    AND (status='Requested' OR status='Selected' OR status='Approved')";
+                    AND (status='Requested' OR status='Selected' OR status='Approved' OR status='')";
         } else {
             $sql = "UPDATE courseSelectionChoice SET status='Removed'
                     WHERE gibbonSchoolYearID=:gibbonSchoolYearID
                     AND gibbonPersonIDStudent=:gibbonPersonIDStudent
-                    AND (status='Requested' OR status='Selected' OR status='Approved')";
+                    AND (status='Requested' OR status='Selected' OR status='Approved' OR status='')";
         }
 
         $result = $this->pdo->executeQuery($data, $sql);

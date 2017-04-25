@@ -89,7 +89,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         echo __('Course Selection').' '.$access['schoolYearName'];
         echo '</h3>';
 
-        if ($gibbonPersonIDStudent !=  $_SESSION[$guid]['gibbonPersonID']) {
+        if ($gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
             $studentRequest = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
             if ($studentRequest && $studentRequest->rowCount() > 0) {
                 $student = $studentRequest->fetch();
@@ -137,29 +137,22 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
-            $blocks = $blocksRequest->fetchAll();
+            while ($block = $blocksRequest->fetch()) {
+                if ($block['courseCount'] == 0) continue;
 
-            //foreach ($blocksByDepartment as $gibbonDepartmentIDList => $blocks) {
-                //$departmentRequest = $offeringsGateway->selectDepartmentByID($gibbonDepartmentID);
-                //$department = $departmentRequest->fetch();
+                $fieldName = 'courseSelection['.$block['courseSelectionBlockID'].'][]';
 
-                foreach ($blocks as $block) {
-                    if ($block['courseCount'] == 0) continue;
+                $row = $form->addRow();
+                $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
+                $row->addCourseGrades($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
+                $row->addCourseSelection($fieldName, $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
+                    ->setReadOnly($readOnly)
+                    ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
 
-                    $fieldName = 'courseSelection['.$block['courseSelectionBlockID'].'][]';
-
-                    $row = $form->addRow();
-                    $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                    $row->addCourseGrades($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
-                    $row->addCourseSelection($fieldName, $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
-                        ->setReadOnly($readOnly)
-                        ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
-
-                    if ($readOnly == false) {
-                        $row->addCourseProgressByBlock($block);
-                    }
+                if ($readOnly == false) {
+                    $row->addCourseProgressByBlock($block);
                 }
-            //}
+            }
         }
 
         if ($readOnly == false) {
