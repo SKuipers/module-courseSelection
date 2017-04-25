@@ -168,7 +168,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 $row = $form->addRow();
                 $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
                 $row->addCourseGrades()->fromResults($gradesRequest);
-                $row->addCourseSelection($fieldName, $courseSelectionBlockID, $gibbonPersonIDStudent)
+                $row->addCourseSelection($fieldName)
                     ->fromResults($coursesRequest)
                     ->selected($selectedChoices)
                     ->setReadOnly($readOnly)
@@ -188,7 +188,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $row = $form->addRow();
             $row->addLabel('courseSelection', __('Other Courses'));
             $row->addContent();
-            $row->addCourseSelection($fieldName, $courseSelectionBlockID, $gibbonPersonIDStudent)
+            $row->addCourseSelection('courseSelection[][]')
                 ->fromArray($unofferedChoices)
                 ->selected($unofferedChoices)
                 ->setReadOnly($readOnly)
