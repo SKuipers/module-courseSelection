@@ -88,7 +88,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_sel
     echo '</div>';
 
     // SELECT COURSE
-    $form = Form::create('selectByStudent', $_SESSION[$guid]['absoluteURL'].'/tools_selectByStudentProcess.php');
+    $form = Form::create('selectByStudent', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_selectByStudentProcess.php');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
@@ -96,7 +96,27 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_sel
 
     $row = $form->addRow();
         $row->addLabel('gibbonPersonIDStudent', __('Student'));
-        $row->addSelectStudent('gibbonPersonIDStudent');
+        $row->addSelectStudent('gibbonPersonIDStudent')->isRequired();
+
+    $courses = array();
+    $courseResults = $toolsGateway->selectAllCoursesBySchoolYear($gibbonSchoolYearID);
+    if ($courseResults && $courseResults->rowCount() > 0) {
+        while ($row = $courseResults->fetch()) {
+            $courses[$row['grouping']][$row['value']] = $row['name'];
+        }
+    }
+
+    $row = $form->addRow();
+        $row->addLabel('gibbonCourseID', __('Course'));
+        $row->addSelect('gibbonCourseID')->fromArray($courses)->isRequired();
+
+    $row = $form->addRow();
+            $row->addLabel('status', __('Selection Status'));
+            $row->addSelect('status')->fromArray(array('Required', 'Recommended', 'Selected', 'Approved', 'Requested', 'Removed'))->isRequired();
+
+        $row = $form->addRow();
+            $row->addLabel('overwrite', __('Overwrite?'))->description(__('Replace the course selection status if one already exists for that student and course.'));
+            $row->addYesNo('overwrite')->isRequired()->selected('Y');
 
     $row = $form->addRow();
         $row->addSubmit();

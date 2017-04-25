@@ -26,11 +26,9 @@ $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Select
 
 $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
 
-$gibbonCourseID = $_POST['gibbonCourseID'] ?? '';
+$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_selectByStudent.php&gibbonSchoolYearID={$gibbonSchoolYearID}";
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_copyByCourse.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonCourseID={$gibbonCourseID}";
-
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_copyByCourse.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_selectByStudent.php') == false) {
     $URL .= '&return=error0';
     header("Location: {$URL}");
     exit;
@@ -39,39 +37,35 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $partialFail = false;
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $gibbonSchoolYearIDCopyTo = $_POST['gibbonSchoolYearIDCopyTo'] ?? '';
-    $gibbonCourseIDCopyTo = $_POST['gibbonCourseIDCopyTo'] ?? '';
-    $studentList = $_POST['studentList'] ?? '';
+    $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? '';
+    $gibbonCourseID = $_POST['gibbonCourseID'] ?? '';
     $status = $_POST['status'] ?? '';
     $overwrite = $_POST['overwrite'] ?? 'Y';
 
-    if (empty($gibbonSchoolYearID) || empty($gibbonSchoolYearIDCopyTo) || empty($gibbonCourseID) || empty($gibbonCourseIDCopyTo) || empty($studentList) || empty($status)) {
+    if (empty($gibbonSchoolYearID) || empty($gibbonCourseID) || empty($gibbonPersonIDStudent) || empty($status)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
     } else {
         $data = array();
-        $data['gibbonSchoolYearID'] = $gibbonSchoolYearIDCopyTo;
-        $data['gibbonCourseID'] = $gibbonCourseIDCopyTo;
+        $data['gibbonSchoolYearID'] = $gibbonSchoolYearID;
+        $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+        $data['gibbonCourseID'] = $gibbonCourseID;
         $data['courseSelectionBlockID'] = null;
         $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
         $data['timestampSelected'] = date('Y-m-d H:i:s');
         $data['status'] = $status;
         $data['notes'] = '';
 
-        foreach ($studentList as $gibbonPersonIDStudent) {
-            $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+        $choiceRequest = $selectionsGateway->selectChoiceByCourseAndPerson($gibbonCourseID, $gibbonPersonIDStudent);
+        if ($choiceRequest && $choiceRequest->rowCount() > 0) {
+            $choice = $choiceRequest->fetch();
 
-            $choiceRequest = $selectionsGateway->selectChoiceByCourseAndPerson($gibbonCourseIDCopyTo, $gibbonPersonIDStudent);
-            if ($choiceRequest && $choiceRequest->rowCount() > 0) {
-                $choice = $choiceRequest->fetch();
-
-                if ($overwrite == 'Y') {
-                    $partialFail &= !$selectionsGateway->updateChoice($data);
-                }
-            } else {
-                $partialFail &= !$selectionsGateway->insertChoice($data);
+            if ($overwrite == 'Y') {
+                $partialFail &= !$selectionsGateway->updateChoice($data);
             }
+        } else {
+            $partialFail &= !$selectionsGateway->insertChoice($data);
         }
 
         if ($partialFail == true) {

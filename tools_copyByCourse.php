@@ -123,12 +123,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
         $studentsResults = $toolsGateway->selectStudentsByCourse($gibbonCourseID);
 
-        $form = Form::create('copySelectionsStudents', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_copyByCourseProcess.php', 'post');
+        $form = Form::create('copySelectionsStudents', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_copyByCourseProcess.php');
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonSchoolYearIDCopyTo', $gibbonSchoolYearIDCopyTo);
         $form->addHiddenValue('gibbonCourseID', $gibbonCourseID);
-        $form->addHiddenValue('gibbonPersonIDSelected', $_SESSION[$guid]['gibbonPersonID']);
 
         $row = $form->addRow()->setClass('break');
             $row->addContent(__('Student Name'));
@@ -169,7 +168,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
         $row = $form->addRow();
             $row->addLabel('overwrite', __('Overwrite?'))->description(__('Replace the course selection status if one already exists for that student and course.'));
-            $row->addYesNo('overwrite')->isRequired()->selected('Yes');
+            $row->addYesNo('overwrite')->isRequired()->selected('Y');
 
         $row = $form->addRow();
             $row->addFooter();
