@@ -30,13 +30,13 @@ $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? '';
 
 $URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false&gibbonPersonIDStudent={$gibbonPersonIDStudent}&courseSelectionOfferingID={$courseSelectionOfferingID}";
 
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selectionChoices.php') == false) {
     $URL .= '&return=error0';
     header("Location: {$URL}");
     exit;
 } else {
     //Proceed!
-    $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
+    $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
 
     if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
         $URL .= '&return=error0';
@@ -84,7 +84,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
             if (!empty($courseSelections) && is_array($courseSelections)) {
                 foreach ($courseSelections as $blockID => $courseBlockSelections) {
-                    $data['courseSelectionBlockID'] = $blockID;
+                    $data['courseSelectionBlockID'] = (!empty($blockID))? $blockID : null;
 
                     foreach ($courseBlockSelections as $courseSelection => $status) {
                         if (empty($courseSelection)) continue;

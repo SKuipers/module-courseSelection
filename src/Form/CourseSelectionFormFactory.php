@@ -32,26 +32,24 @@ use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
  */
 class CourseSelectionFormFactory extends FormFactory
 {
-    protected $selectionsGateway;
 
-    public function __construct(SelectionsGateway $selectionsGateway)
+    public function __construct()
     {
-        $this->selectionsGateway = $selectionsGateway;
     }
 
-    public static function create(SelectionsGateway $selectionsGateway = null)
+    public static function create()
     {
-        return new CourseSelectionFormFactory($selectionsGateway);
+        return new CourseSelectionFormFactory();
     }
 
-    public function createCourseSelection($name, $courseSelectionBlockID, $gibbonPersonIDStudent)
+    public function createCourseSelection($name)
     {
-        return new CourseSelection($this->selectionsGateway, $name, $courseSelectionBlockID, $gibbonPersonIDStudent);
+        return new CourseSelection($name);
     }
 
-    public function createCourseGrades($gibbonDepartmentIDList, $gibbonPersonIDStudent)
+    public function createCourseGrades()
     {
-        return new CourseGrades($this->selectionsGateway, $gibbonDepartmentIDList, $gibbonPersonIDStudent);
+        return new CourseGrades();
     }
 
     public function createCourseProgressByBlock($blockData)

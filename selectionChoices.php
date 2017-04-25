@@ -23,13 +23,14 @@ use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
 use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Modules\CourseSelection\Domain\ToolsGateway;
 use Gibbon\Modules\CourseSelection\Form\CourseSelectionFormFactory;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selectionChoices.php') == false) {
     //Acess denied
     echo "<div class='error'>" ;
         echo __('You do not have access to this action.');
@@ -39,11 +40,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection Choices', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
-    $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
+    $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
 
     $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
     $courseSelectionOfferingID = isset($_REQUEST['courseSelectionOfferingID'])? $_REQUEST['courseSelectionOfferingID'] : 0;
@@ -54,6 +51,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo __('You do not have access to this action.');
         echo '</div>';
         return;
+    }
+
+    // Cancel out if a student is accessing a different student record
+    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
+        echo "<div class='error'>" ;
+            echo __('You do not have access to this action.');
+        echo "</div>" ;
+        return;
+    }
+
+    if (isset($_GET['return'])) {
+        returnProcess($guid, $_GET['return'], null, null);
     }
 
     $accessGateway = new AccessGateway($pdo);
@@ -69,12 +78,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
     $offeringRequest = $offeringsGateway->selectOne($courseSelectionOfferingID);
 
-    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
-        echo "<div class='error'>" ;
-            echo __('You do not have access to this action.');
-        echo "</div>" ;
-    }
-    else if (!$accessRequest || $accessRequest->rowCount() == 0 || !$offeringRequest || $offeringRequest->rowCount() == 0) {
+    if (!$accessRequest || $accessRequest->rowCount() == 0 || !$offeringRequest || $offeringRequest->rowCount() == 0) {
         echo "<div class='error'>" ;
             echo __('You do not have access to course selection at this time.');
         echo "</div>" ;
@@ -135,24 +139,66 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 $row->addContent(__('Progress'));
             }
 
+        $alreadySelected = array();
+
         $blocksRequest = $offeringsGateway->selectAllBlocksByOffering($courseSelectionOfferingID);
         if ($blocksRequest && $blocksRequest->rowCount() > 0) {
             while ($block = $blocksRequest->fetch()) {
                 if ($block['courseCount'] == 0) continue;
 
-                $fieldName = 'courseSelection['.$block['courseSelectionBlockID'].'][]';
+                $courseSelectionBlockID = $block['courseSelectionBlockID'];
+
+                $fieldName = 'courseSelection['.$courseSelectionBlockID.'][]';
+
+                $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartments($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
+                $coursesRequest = $selectionsGateway->selectCoursesByBlock($courseSelectionBlockID);
+
+                $selectedChoicesRequest = $selectionsGateway->selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent);
+                $selectedChoices = ($selectedChoicesRequest->rowCount() > 0)? $selectedChoicesRequest->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
+
+                // Prevent pre-filled courses from selecting multiple times (gives priority to the first instance)
+                foreach ($selectedChoices as $gibbonCourseID => $choice) {
+                    if (!empty($alreadySelected[$gibbonCourseID]) && ($alreadySelected[$gibbonCourseID] == 'Required' || $alreadySelected[$gibbonCourseID] == 'Approved')) {
+                        $selectedChoices[$gibbonCourseID]['status'] = 'Locked';
+                    }
+
+                    $alreadySelected[$gibbonCourseID] = $choice['status'];
+                }
 
                 $row = $form->addRow();
                 $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                $row->addCourseGrades($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
-                $row->addCourseSelection($fieldName, $block['courseSelectionBlockID'], $gibbonPersonIDStudent)
+                $row->addCourseGrades()->fromResults($gradesRequest);
+                $row->addCourseSelection($fieldName, $courseSelectionBlockID, $gibbonPersonIDStudent)
+                    ->fromResults($coursesRequest)
+                    ->selected($selectedChoices)
                     ->setReadOnly($readOnly)
+                    ->setBlockID($courseSelectionBlockID)
                     ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
 
                 if ($readOnly == false) {
                     $row->addCourseProgressByBlock($block);
                 }
             }
+        }
+
+        $unofferedChoicesRequest = $selectionsGateway->selectUnofferedChoicesByPerson($courseSelectionOfferingID, $gibbonPersonIDStudent);
+        if ($unofferedChoicesRequest && $unofferedChoicesRequest->rowCount() > 0) {
+            $unofferedChoices = $unofferedChoicesRequest->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE);
+
+            $row = $form->addRow();
+            $row->addLabel('courseSelection', __('Other Courses'));
+            $row->addContent();
+            $row->addCourseSelection($fieldName, $courseSelectionBlockID, $gibbonPersonIDStudent)
+                ->fromArray($unofferedChoices)
+                ->selected($unofferedChoices)
+                ->setReadOnly($readOnly)
+                ->setBlockID(null)
+                ->canSelectStatus($highestGroupedAction == 'Course Selection_all');
+
+            if ($readOnly == false) {
+                $row->addContent();
+            }
+
         }
 
         if ($readOnly == false) {
@@ -172,5 +218,45 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         if (!empty($infoTextAfter)) {
             echo '<br/><p>'.$infoTextAfter.'</p>';
         }
+
+        if ($highestGroupedAction == 'Course Selection_all') {
+            $toolsGateway = new ToolsGateway($pdo);
+
+            echo '<h3>';
+            echo __('Add a Course Selection');
+            echo '</h3>';
+
+            // MANUALLY ADD COURSE
+            $form = Form::create('selectByStudent', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoices_addProcess.php');
+            $form->setFactory(DatabaseFormFactory::create($pdo));
+
+            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('gibbonSchoolYearID', $access['gibbonSchoolYearID']);
+            $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
+            $form->addHiddenValue('courseSelectionOfferingID', $courseSelectionOfferingID);
+
+            $courses = array();
+            $courseResults = $toolsGateway->selectAllCoursesBySchoolYear($access['gibbonSchoolYearID']);
+            if ($courseResults && $courseResults->rowCount() > 0) {
+                while ($row = $courseResults->fetch()) {
+                    $courses[$row['grouping']][$row['value']] = $row['name'];
+                }
+            }
+
+            $row = $form->addRow();
+                $row->addLabel('gibbonCourseID', __('Course'));
+                $row->addSelect('gibbonCourseID')->fromArray($courses)->isRequired();
+
+            $row = $form->addRow();
+                    $row->addLabel('status', __('Selection Status'));
+                    $row->addSelect('status')->fromArray(array('Required', 'Recommended', 'Selected', 'Approved', 'Requested'))->isRequired();
+
+            $row = $form->addRow();
+                $row->addSubmit('Add');
+
+            echo $form->getOutput();
+        }
     }
+
+
 }

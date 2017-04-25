@@ -31,10 +31,22 @@ class CourseGrades extends Element
 {
     protected $grades;
 
-    public function __construct($selectionsGateway, $gibbonDepartmentIDList, $gibbonPersonIDStudent)
+    public function __construct()
     {
-        $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartments($gibbonDepartmentIDList, $gibbonPersonIDStudent);
+    }
+
+    public function fromResults($gradesRequest)
+    {
         $this->grades = ($gradesRequest->rowCount() > 0)? $gradesRequest->fetchAll() : array();
+
+        return $this;
+    }
+
+    public function fromArray($grades)
+    {
+        $this->grades = (is_array($grades))? $grades : array();
+
+        return $this;
     }
 
     public function getOutput()

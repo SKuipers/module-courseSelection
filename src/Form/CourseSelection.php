@@ -38,35 +38,52 @@ class CourseSelection extends Input
     protected $courses;
     protected $selectedChoices;
 
-    public function __construct($selectionsGateway, $name, $courseSelectionBlockID, $gibbonPersonIDStudent)
+    public function __construct($name)
     {
-        $this->blockID = $courseSelectionBlockID;
-
         $this->setName($name);
         $this->addClass('courseChoice');
-        $this->addClass('courseBlock'.$courseSelectionBlockID);
-        $this->setAttribute('data-block', $courseSelectionBlockID);
+    }
 
-        $coursesRequest = $selectionsGateway->selectCoursesByBlock($courseSelectionBlockID);
+    public function fromResults($coursesRequest)
+    {
+        $this->courses = ($coursesRequest->rowCount() > 0)? $coursesRequest->fetchAll() : array();
 
-        if ($coursesRequest && $coursesRequest->rowCount() > 0) {
-            $this->courses = $coursesRequest->fetchAll();
+        return $this;
+    }
 
-            $selectedChoicesRequest = $selectionsGateway->selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent);
-            $this->selectedChoices = ($selectedChoicesRequest->rowCount() > 0)? $selectedChoicesRequest->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
+    public function fromArray($courses)
+    {
+        $this->courses = (is_array($courses))? $courses : array();
 
-            foreach ($this->selectedChoices as $courseID => $choice) {
-                if ( ($this->getChoiceStatus($courseID) == 'Required' && empty($this->getChoiceBlock($courseID))) && ($this->blockID == '0000000007' || $this->blockID ==  '0000000016' || $this->blockID == '0000000017') ) {
-                    unset($this->selectedChoices[$courseID]);
-                }
-            }
-        }
+        return $this;
+    }
+
+    public function selected($selected = array())
+    {
+        $this->selectedChoices = $selected;
+
+        return $this;
     }
 
     public function description($value = '')
     {
         $this->description = $value;
         return $this;
+    }
+
+    public function setBlockID($value)
+    {
+        $this->blockID = $value;
+
+        $this->addClass('courseBlock'.$this->blockID);
+        $this->setAttribute('data-block', $this->blockID);
+
+        return $this;
+    }
+
+    public function getReadOnly()
+    {
+        return $this->getAttribute('readonly');
     }
 
     public function setReadOnly($value)
@@ -83,27 +100,9 @@ class CourseSelection extends Input
         return $this;
     }
 
-    public function getReadOnly()
-    {
-        return $this->getAttribute('readonly');
-    }
-
-    public function checked($value)
-    {
-        if ($value === 1 || $value === true) $value = 'on';
-        $this->checked = (!is_array($value))? array($value) : $value;
-
-        return $this;
-    }
-
     protected function getChoiceStatus($value)
     {
         return (isset($this->selectedChoices[$value]['status']))? $this->selectedChoices[$value]['status'] : '';
-    }
-
-    protected function getChoiceBlock($value)
-    {
-        return (isset($this->selectedChoices[$value]['courseSelectionBlockID']))? $this->selectedChoices[$value]['courseSelectionBlockID'] : '';
     }
 
     protected function getIsChecked($value)
@@ -142,7 +141,7 @@ class CourseSelection extends Input
 
                 if ($this->getReadOnly() == false) {
 
-                    $locked = ($status == 'Required' || $status == 'Approved')? 'true' : 'false';
+                    $locked = ($status == 'Required' || $status == 'Approved' || $status == 'Locked')? 'true' : 'false';
 
                     $this->setAttribute('disabled', $locked == 'true');
                     $this->setAttribute('data-locked', $locked);

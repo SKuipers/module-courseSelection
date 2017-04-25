@@ -40,7 +40,7 @@ class SelectionsGateway
     public function selectCoursesByBlock($courseSelectionBlockID)
     {
         $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
-        $sql = "SELECT courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+        $sql = "SELECT gibbonCourse.gibbonCourseID, courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
                 FROM courseSelectionBlockCourse
                 JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionBlockID=:courseSelectionBlockID
@@ -92,6 +92,22 @@ class SelectionsGateway
     {
         $data = array('gibbonCourseID' => $gibbonCourseID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
         $sql = "SELECT * FROM courseSelectionChoice WHERE gibbonCourseID=:gibbonCourseID AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function selectUnofferedChoicesByPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $sql = "SELECT courseSelectionChoice.gibbonCourseID, courseSelectionChoice.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (SELECT COUNT(*) as count FROM courseSelectionBlockCourse JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlockCourse.courseSelectionBlockID) WHERE courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID AND courseSelectionOfferingBlock.courseSelectionOfferingID=:courseSelectionOfferingID) AS offeringBlockCount
+                FROM courseSelectionChoice
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                WHERE courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
+                AND courseSelectionChoice.status <> 'Removed'
+                GROUP BY courseSelectionChoice.gibbonCourseID
+                HAVING (offeringBlockCount = 0)
+                ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
