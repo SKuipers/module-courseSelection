@@ -25,6 +25,22 @@ namespace Gibbon\Modules\CourseSelection\Domain;
  * @version v14
  * @since   16th April 2017
  * @author  Sandra Kuipers
+ *
+ * @uses  courseSelectionOffering
+ * @uses  courseSelectionOfferingBlock
+ * @uses  courseSelectionBlockCourse
+ * @uses  courseSelectionChoice
+ * @uses  courseSelectionChoiceOffering
+ * @uses  courseSelectionLog
+ * @uses  gibbonSchoolYear
+ * @uses  gibbonPerson
+ * @uses  gibbonCourse
+ * @uses  gibbonCourseClass
+ * @uses  gibbonCourseClassPerson
+ * @uses  arrCriteria
+ * @uses  arrReportGrade
+ * @uses  arrReport
+ * @uses  arrLegacyGrade
  */
 class SelectionsGateway
 {

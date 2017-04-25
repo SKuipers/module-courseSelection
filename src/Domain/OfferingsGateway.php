@@ -25,6 +25,16 @@ namespace Gibbon\Modules\CourseSelection\Domain;
  * @version v14
  * @since   13th April 2017
  * @author  Sandra Kuipers
+ *
+ * @uses  courseSelectionOffering
+ * @uses  courseSelectionOfferingRestriction
+ * @uses  courseSelectionOfferingBlock
+ * @uses  courseSelectionBlock
+ * @uses  courseSelectionBlockCourse
+ * @uses  gibbonStudentEnrolment
+ * @uses  gibbonSchoolYear
+ * @uses  gibbonYearGroup
+ * @uses  gibbonDepartment
  */
 class OfferingsGateway
 {
@@ -165,7 +175,7 @@ class OfferingsGateway
                 JOIN courseSelectionBlock ON (courseSelectionBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
                 LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 WHERE courseSelectionOfferingID=:courseSelectionOfferingID
-                GROUP BY courseSelectionBlock.courseSelectionBlockID 
+                GROUP BY courseSelectionBlock.courseSelectionBlockID
                 ORDER BY courseSelectionOfferingBlock.sequenceNumber";
         $result = $this->pdo->executeQuery($data, $sql);
 
@@ -179,7 +189,7 @@ class OfferingsGateway
 
         return $this->pdo->getConnection()->lastInsertID();
     }
-    
+
     public function updateBlockOrder(array $data)
     {
         $sql = "UPDATE courseSelectionOfferingBlock SET sequenceNumber=:sequenceNumber WHERE courseSelectionOfferingID=:courseSelectionOfferingID AND courseSelectionBlockID=:courseSelectionBlockID";

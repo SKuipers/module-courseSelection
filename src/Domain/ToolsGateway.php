@@ -25,6 +25,17 @@ namespace Gibbon\Modules\CourseSelection\Domain;
  * @version v14
  * @since   17th April 2017
  * @author  Sandra Kuipers
+ *
+ * @uses  courseSelectionOffering
+ * @uses  courseSelectionOfferingBlock
+ * @uses  courseSelectionBlockCourse
+ * @uses  gibbonSchoolYear
+ * @uses  gibbonYearGroup
+ * @uses  gibbonStudentEnrolment
+ * @uses  gibbonPerson
+ * @uses  gibbonCourse
+ * @uses  gibbonCourseClass
+ * @uses  gibbonCourseClassPerson
  */
 class ToolsGateway
 {

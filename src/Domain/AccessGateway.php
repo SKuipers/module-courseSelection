@@ -25,6 +25,15 @@ namespace Gibbon\Modules\CourseSelection\Domain;
  * @version v14
  * @since   13th April 2017
  * @author  Sandra Kuipers
+ *
+ * @uses  courseSelectionAccess
+ * @uses  courseSelectionOffering
+ * @uses  gibbonSchoolYear
+ * @uses  gibbonRole
+ * @uses  gibbonPerson
+ * @uses  gibbonAction
+ * @uses  gibbonModule
+ * @uses  gibbonPermission
  */
 class AccessGateway
 {

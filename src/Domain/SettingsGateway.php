@@ -25,6 +25,8 @@ namespace Gibbon\Modules\CourseSelection\Domain;
  * @version v14
  * @since   17th April 2017
  * @author  Sandra Kuipers
+ *
+ * @uses  gibbonSetting
  */
 class SettingsGateway
 {

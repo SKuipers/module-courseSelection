@@ -25,6 +25,12 @@ namespace Gibbon\Modules\CourseSelection\Domain;
  * @version v14
  * @since   13th April 2017
  * @author  Sandra Kuipers
+ *
+ * @uses  courseSelectionBlock
+ * @uses  courseSelectionBlockCourse
+ * @uses  gibbonCourse
+ * @uses  gibbonSchoolYear
+ * @uses  gibbonDepartment
  */
 class BlocksGateway
 {
