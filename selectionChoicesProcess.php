@@ -71,7 +71,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $courseSelectionsList = array();
             $courseSelections = $_POST['courseSelection'] ?? array();
             $courseStatus = $_POST['courseStatus'] ?? array();
-            
+
             if (!empty($courseStatus) && $highestGroupedAction == 'Course Selection_all') {
                 $courseSelections = array_replace_recursive($courseSelections, $courseStatus);
             }
@@ -79,14 +79,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             if (!empty($courseSelections) && is_array($courseSelections)) {
                 foreach ($courseSelections as $blockID => $courseBlockSelections) {
                     $data['courseSelectionBlockID'] = $blockID;
-                    
+
                     foreach ($courseBlockSelections as $courseSelection => $status) {
                         if (empty($courseSelection)) continue;
 
-                        $courseSelectionsList[$courseSelection] = $courseSelection;
                         $data['gibbonCourseID'] = $courseSelection;
                         $data['status'] = '';
-                        
+
                         if ($highestGroupedAction == 'Course Selection_all') {
                             $data['status'] = $status;
                         } else if ($access['accessType'] == 'Select') {
@@ -98,9 +97,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                         $choiceRequest = $gateway->selectChoiceByCourseAndPerson($courseSelection, $gibbonPersonIDStudent);
                         if ($choiceRequest && $choiceRequest->rowCount() > 0) {
                             $choice = $choiceRequest->fetch();
-                            
-                            if (empty($status) || empty($data['status'])) $data['status'] = 'Removed';
-                            
+
+                            if (empty($status) && !empty($courseSelectionsList[$courseSelection])) continue; //$data['status'] = 'Removed';
+
                             if ($highestGroupedAction == 'Course Selection_all' || $access['accessType'] == 'Select') {
                                 $partialFail &= !$gateway->updateChoice($data);
                             } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested') {
@@ -110,6 +109,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                             if (empty($status) || empty($data['status'])) continue;
                             $partialFail &= !$gateway->insertChoice($data);
                         }
+
+                        $courseSelectionsList[$courseSelection] = $courseSelection;
                     }
                 }
             }
