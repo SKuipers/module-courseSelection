@@ -23,37 +23,37 @@ jQuery(function($){
     });
 
     $('.courseChoice[type=checkbox]').change(updateSelectionProgress);
-    
+
     $('.courseStatusSelect').change(updateSelectionStatus);
 
-    
+
     function updateSelectionProgress() {
         var blockID = $(this).data('block');
 
         checkDuplicates(this);
-        
+
         updateBlockProgress(blockID);
 
         updateOfferingProgress();
     }
-    
+
     function checkDuplicates(checkbox) {
         var courseID = $(checkbox).data('course');
-        
+
         var duplicate = $('.courseChoice[type=checkbox][data-course='+courseID+']:checked');
-        
+
         if (duplicate.length > 1) {
             alert('This course has already been selected.');
             $(checkbox).prop('checked', false);
             $(checkbox).prop('disabled', false);
         }
-        
+
         var status = $(checkbox).parent().find('.courseStatusSelect option:selected').val();
         if ($(checkbox).prop('checked') == true) {
             if (status == '' || status == 'Recommended') {
                 status = 'Requested';
             }
-            
+
             $(checkbox).parent().attr('data-status', status);
         } else {
             if (status != 'Recommended') {
@@ -61,9 +61,9 @@ jQuery(function($){
                 status = '';
             }
         }
-        
+
         $(checkbox).parent().find('.courseStatusSelect').val(status);
-        
+
     }
 
     function updateBlockProgress(blockID) {
@@ -84,7 +84,7 @@ jQuery(function($){
             //progressDiv.html('Okay');
             progressDiv.addClass('complete');
             progressDiv.find('.invalid').hide();
-            
+
             if (choicesSelected.length > 0) {
                 progressDiv.find('.valid').show();
             } else {
@@ -167,24 +167,24 @@ jQuery(function($){
         //progressDiv.html(text);
         progressDiv.find('.complete').css('width', ( Math.min(choicesSelected.length / min, 1.0)*100)+"%" );
     }
-    
+
     function updateSelectionStatus() {
-        
+
         var status = $('option:selected', this).val();
-        
+
         $(this).parent().attr('data-status', status);
-        
+
         var isChecked = (status == 'Required' || status == 'Approved' || status == 'Requested' || status == 'Selected');
         $(this).parent().find('.courseChoice').prop('checked', isChecked);
-        
+
         var isLocked = (status == 'Required' || status == 'Approved');
         $(this).parent().find('.courseChoice').prop('disabled', isLocked);
         $(this).parent().find('.courseChoice').attr('data-locked', isLocked);
-        
+
         $(this).parent().find('.courseChoice[type=checkbox]').change();
     }
-    
-    
+
+
 });
 
 function offeringBlockOrderSave(courseSelectionOfferingID, modpath) {

@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.04" ;
+$version="0.0.05" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -407,26 +407,6 @@ $actionRows[] = array(
     'description'               => '',
     'URLList'                   => 'tools_copyByCourse.php',
     'entryURL'                  => 'tools_copyByCourse.php',
-    'entrySidebar'              => 'Y',
-    'menuShow'                  => 'Y',
-    'defaultPermissionAdmin'    => 'Y',
-    'defaultPermissionTeacher'  => 'N',
-    'defaultPermissionStudent'  => 'N',
-    'defaultPermissionParent'   => 'N',
-    'defaultPermissionSupport'  => 'N',
-    'categoryPermissionStaff'   => 'Y',
-    'categoryPermissionStudent' => 'N',
-    'categoryPermissionParent'  => 'N',
-    'categoryPermissionOther'   => 'N',
-);
-
-$actionRows[] = array(
-    'name'                      => 'Manual Course Selection',
-    'precedence'                => '0',
-    'category'                  => 'Tools',
-    'description'               => '',
-    'URLList'                   => 'tools_selectByStudent.php',
-    'entryURL'                  => 'tools_selectByStudent.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',
