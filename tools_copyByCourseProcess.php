@@ -28,9 +28,9 @@ $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
 
 $gibbonCourseID = $_POST['gibbonCourseID'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_copy.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonCourseID={$gibbonCourseID}";
+$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_copyByCourse.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonCourseID={$gibbonCourseID}";
 
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_copy.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_copyByCourse.php') == false) {
     $URL .= '&return=error0';
     header("Location: {$URL}");
     exit;

@@ -401,12 +401,32 @@ $actionRows[] = array(
 );
 
 $actionRows[] = array(
-    'name'                      => 'Copy Course Selections',
+    'name'                      => 'Copy Selections By Course',
     'precedence'                => '0',
     'category'                  => 'Tools',
     'description'               => '',
-    'URLList'                   => 'tools_copy.php',
-    'entryURL'                  => 'tools_copy.php',
+    'URLList'                   => 'tools_copyByCourse.php',
+    'entryURL'                  => 'tools_copyByCourse.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Manual Course Selection',
+    'precedence'                => '0',
+    'category'                  => 'Tools',
+    'description'               => '',
+    'URLList'                   => 'tools_selectByStudent.php',
+    'entryURL'                  => 'tools_selectByStudent.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',

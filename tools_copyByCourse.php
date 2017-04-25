@@ -25,14 +25,14 @@ use Gibbon\Modules\CourseSelection\Domain\ToolsGateway;
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_copy.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_copyByCourse.php') == false) {
     //Acess denied
     echo "<div class='error'>" ;
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Copy Course Selections', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Copy Selections By Course', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -89,7 +89,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $form = Form::create('copySelectionsPicker', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
-    $form->addHiddenValue('q', '/modules/Course Selection/tools_copy.php');
+    $form->addHiddenValue('q', '/modules/Course Selection/tools_copyByCourse.php');
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
     $courses = array();
@@ -123,7 +123,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
         $studentsResults = $toolsGateway->selectStudentsByCourse($gibbonCourseID);
 
-        $form = Form::create('copySelectionsStudents', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_copyProcess.php', 'post');
+        $form = Form::create('copySelectionsStudents', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_copyByCourseProcess.php', 'post');
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonSchoolYearIDCopyTo', $gibbonSchoolYearIDCopyTo);
