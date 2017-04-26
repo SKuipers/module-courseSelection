@@ -101,11 +101,11 @@ class BlocksGateway
     public function selectAllCoursesByBlock($courseSelectionBlockID)
     {
         $data = array('courseSelectionBlockID' => $courseSelectionBlockID);
-        $sql = "SELECT courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+        $sql = "SELECT gibbonCourse.gibbonCourseID, courseSelectionBlockCourse.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
                 FROM courseSelectionBlockCourse
                 JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionBlockID=:courseSelectionBlockID
-                ORDER BY gibbonCourse.nameShort";
+                ORDER BY gibbonCourse.name, gibbonCourse.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }

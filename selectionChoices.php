@@ -23,6 +23,7 @@ use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 use Gibbon\Modules\CourseSelection\Domain\BlocksGateway;
 use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Modules\CourseSelection\Domain\GradesGateway;
 use Gibbon\Modules\CourseSelection\Domain\ToolsGateway;
 use Gibbon\Modules\CourseSelection\Form\CourseSelectionFormFactory;
 
@@ -69,6 +70,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $offeringsGateway = new OfferingsGateway($pdo);
     $blocksGateway = new BlocksGateway($pdo);
     $selectionsGateway = new SelectionsGateway($pdo);
+    $gradesGateway = new GradesGateway($pdo);
 
     if ($highestGroupedAction == 'Course Selection_all') {
         $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
@@ -150,8 +152,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 $fieldName = 'courseSelection['.$courseSelectionBlockID.'][]';
 
-                $gradesRequest = $selectionsGateway->selectStudentReportGradesByDepartments($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
-                $coursesRequest = $selectionsGateway->selectCoursesByBlock($courseSelectionBlockID);
+                $gradesRequest = $gradesGateway->selectStudentReportGradesByDepartments($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
+                $coursesRequest = $blocksGateway->selectAllCoursesByBlock($courseSelectionBlockID);
 
                 $selectedChoicesRequest = $selectionsGateway->selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent);
                 $selectedChoices = ($selectedChoicesRequest->rowCount() > 0)? $selectedChoicesRequest->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
@@ -198,7 +200,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             if ($readOnly == false) {
                 $row->addContent();
             }
-
         }
 
         if ($readOnly == false) {
@@ -257,6 +258,4 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo $form->getOutput();
         }
     }
-
-
 }
