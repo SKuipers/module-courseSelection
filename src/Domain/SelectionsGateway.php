@@ -74,7 +74,7 @@ class SelectionsGateway
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
                 LEFT JOIN courseSelectionChoiceOffering ON (
-                    courseSelectionChoiceOffering.gibboNSchoolYearID=gibbonCourse.gibbonSchoolYearID
+                    courseSelectionChoiceOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID
                     AND courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
                 )
                 JOIN gibbonPerson AS selectedPerson ON (selectedPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDSelected)
@@ -82,6 +82,27 @@ class SelectionsGateway
                 AND courseSelectionChoice.status NOT IN (:exclude)
                 GROUP BY courseSelectionChoice.gibbonPersonIDStudent
                 ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function selectChoicesByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, courseSelectionChoiceOffering.courseSelectionOfferingID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+                FROM courseSelectionChoice
+                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                JOIN courseSelectionChoiceOffering ON (
+                    courseSelectionChoiceOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID
+                    AND courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
+                )
+                WHERE courseSelectionChoiceOffering.courseSelectionOfferingID=:courseSelectionOfferingID
+                AND gibbonPerson.gibbonPersonID=:gibbonPersonIDStudent
+                AND courseSelectionChoice.status <> 'Removed'
+                AND courseSelectionChoice.status <> 'Recommended'
+                ORDER BY gibbonCourse.name";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
@@ -272,6 +293,35 @@ class SelectionsGateway
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
                 GROUP BY gibbonPerson.gibbonPersonID
 
+        ";
+
+        if ($orderBy == 'rollGroup') {
+            $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else {
+            $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
+        }
+
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function selectStudentsByOffering($courseSelectionOfferingID, $orderBy = 'surname')
+    {
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonPerson.image_240, courseSelectionOffering.courseSelectionOfferingID, gibbonRollGroup.nameShort as rollGroupName, courseSelectionChoiceOffering.courseSelectionOfferingID as selectedOfferingID
+                FROM gibbonPerson
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
+                JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID)
+                JOIN courseSelectionOfferingRestriction ON (
+                    courseSelectionOfferingRestriction.gibbonSchoolYearID=gibbonStudentEnrolment.gibbonSchoolYearID
+                    AND courseSelectionOfferingRestriction.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
+                JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                JOIN courseSelectionChoiceOffering ON (courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
+                    AND courseSelectionChoiceOffering.courseSelectionOfferingID=courseSelectionOffering.courseSelectionOfferingID)
+                WHERE courseSelectionOffering.courseSelectionOfferingID=:courseSelectionOfferingID
+                AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
+                GROUP BY gibbonPerson.gibbonPersonID
         ";
 
         if ($orderBy == 'rollGroup') {

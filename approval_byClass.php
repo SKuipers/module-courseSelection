@@ -58,6 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $form->addHiddenValue('q', '/modules/Course Selection/approval_byClass.php');
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+    $form->addHiddenValue('sidebar', 'false');
 
     $courseResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearID);
 
