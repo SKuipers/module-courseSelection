@@ -54,7 +54,8 @@ class CourseGrades extends Element
         $output = '';
 
         $output .= implode('', array_map(function ($grade) {
-            $output = ($grade['schoolYearStatus'] == 'Current')? '<div title="Current Year" class="courseGrades" style="background:#fff4da;">' : '<div title="Final Grade" class="courseGrades" style="background:#D4F6DC;">';
+            if (empty($grade['grade'])) return '';
+            $output = ($grade['schoolYearStatus'] == 'Current')? '<div title="Current Year '.$grade['reportName'].'" class="courseGrades" style="background:#fff4da;">' : '<div title="Final Grade" class="courseGrades" style="background:#D4F6DC;">';
             $output .= $grade['courseNameShort'].' ('.$grade['schoolYearName'].'): ';
             $output .= intval($grade['grade']).'%';
             $output .= '</div>';
