@@ -35,6 +35,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $partialFail = false;
     $settingsGateway = new SettingsGateway($pdo);
 
+    $activeSchoolYear = $_POST['activeSchoolYear'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
+    $partialFail &= !$settingsGateway->update('Course Selection', 'activeSchoolYear', $activeSchoolYear);
+
     $requireApproval = $_POST['requireApproval'] ?? 'Y';
     $partialFail &= !$settingsGateway->update('Course Selection', 'requireApproval', $requireApproval);
 

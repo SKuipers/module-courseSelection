@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
@@ -38,8 +39,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     }
 
     $form = Form::create('settings', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/settingsProcess.php');
+    $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addSelectSchoolYear($setting['name'], 'Active')->selected($setting['value'])->isRequired();
 
     $setting = getSettingByScope($connection2, 'Course Selection', 'requireApproval', true);
     $row = $form->addRow();

@@ -60,6 +60,7 @@ CREATE TABLE `courseSelectionRecommendation` (
   `timestampRecommended` DATETIME NULL ,
   PRIMARY KEY (`courseSelectionRecommendationID`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'activeSchoolYear', 'Course Selection School Year', 'Sets the default school year to be pre-selected on various pages.', (SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Upcoming' ORDER BY sequenceNumber ASC LIMIT 1));end
 ";
 
 ?>
