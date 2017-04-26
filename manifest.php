@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.06" ;
+$version="0.0.07" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -301,12 +301,12 @@ $actionRows[] = array(
 );
 
 $actionRows[] = array(
-    'name'                      => 'Course Approval by Student',
+    'name'                      => 'Course Approval by Offering',
     'precedence'                => '0',
     'category'                  => 'Courses',
     'description'               => '',
-    'URLList'                   => 'approval_byPerson.php',
-    'entryURL'                  => 'approval_byPerson.php',
+    'URLList'                   => 'approval_byOffering.php',
+    'entryURL'                  => 'approval_byOffering.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',
