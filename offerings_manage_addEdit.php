@@ -35,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
     $values = array(
         'courseSelectionOfferingID' => '',
-        'gibbonSchoolYearID'        => '',
+        'gibbonSchoolYearID'        => $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'],
         'gibbonYearGroupIDList'     => '',
         'name'                      => '',
         'description'               => '',
@@ -201,7 +201,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             echo '</tr>';
             echo '</thead>';
             echo '<tbody>';
-            
+
             while ($block = $blocks->fetch()) {
                 echo '<tr>';
                     echo '<td style="width: 40%;"><div class="drag-handle"></div>'.$block['blockName'].'</td>';
@@ -214,20 +214,20 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
                     echo '</td>';
                 echo '</tr>';
             }
-            
+
             echo '</tbody>';
             echo '</table>';
             ?>
-            
+
             <script>
-                
+
                 $('#offeringBlocks tbody').sortable({
                     update: function() {
                         offeringBlockOrderSave(<?php echo $values['courseSelectionOfferingID']; ?>, '<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/'; ?>');
                     }
                 }).disableSelection();
             </script>
-        
+
             <?php
         }
 

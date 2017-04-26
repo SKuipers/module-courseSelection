@@ -35,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 
     $values = array(
         'courseSelectionBlockID' => '',
-        'gibbonSchoolYearID'     => '',
+        'gibbonSchoolYearID'     => $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'],
         'gibbonDepartmentIDList' => '',
         'name'                   => '',
         'description'            => '',

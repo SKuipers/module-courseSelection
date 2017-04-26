@@ -44,13 +44,14 @@ class AccessGateway
         $this->pdo = $pdo;
     }
 
-    public function selectAll()
+    public function selectAllBySchoolYear($gibbonSchoolYearID)
     {
-        $data = array();
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as gibbonSchoolYearName, GROUP_CONCAT(DISTINCT gibbonRole.name SEPARATOR ', ') as roleGroupNames
                 FROM courseSelectionAccess
                 JOIN gibbonSchoolYear ON (courseSelectionAccess.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
+                WHERE courseSelectionAccess.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY courseSelectionAccessID
                 ORDER BY dateStart, dateEnd";
         $result = $this->pdo->executeQuery($data, $sql);

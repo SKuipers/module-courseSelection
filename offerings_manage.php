@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Modules\CourseSelection\SchoolYearNavigation;
 use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
 
 // Autoloader & Module includes
@@ -37,12 +38,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         returnProcess($guid, $_GET['return'], null, null);
     }
 
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+
+    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
+    echo $navigation->getYearPicker($gibbonSchoolYearID);
+
     echo "<div class='linkTop'>";
-    echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/offerings_manage_addEdit.php'>".__($guid, 'Add')."<img style='margin-left: 5px' title='".__($guid, 'Add')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
+    echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/offerings_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__($guid, 'Add')."<img style='margin-left: 5px' title='".__($guid, 'Add')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
     echo '</div>';
 
     $gateway = new OfferingsGateway($pdo);
-    $offerings = $gateway->selectAll();
+    $offerings = $gateway->selectAllBySchoolYear($gibbonSchoolYearID);
 
     if ($offerings->rowCount() == 0) {
         echo '<div class="error">';

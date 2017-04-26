@@ -43,14 +43,15 @@ class BlocksGateway
 
     // BLOCKS
 
-    public function selectAll()
+    public function selectAllBySchoolYear($gibbonSchoolYearID)
     {
-        $data = array();
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT courseSelectionBlock.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT gibbonDepartment.name ORDER BY gibbonDepartment.name SEPARATOR '<br/>') as departmentName, COUNT(DISTINCT gibbonCourseID) as courseCount
                 FROM courseSelectionBlock
                 JOIN gibbonSchoolYear ON (courseSelectionBlock.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 LEFT JOIN gibbonDepartment ON (FIND_IN_SET(gibbonDepartment.gibbonDepartmentID, courseSelectionBlock.gibbonDepartmentIDList))
                 LEFT JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
+                WHERE courseSelectionBlock.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY courseSelectionBlock.courseSelectionBlockID
                 ORDER BY name";
 
