@@ -46,7 +46,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
 
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $logs = $selectionsGateway->selectAllLogs(1, 50);
+    $logs = $selectionsGateway->selectAllLogsBySchoolYear($gibbonSchoolYearID, 1, 50);
 
     if ($logs->rowCount() == 0) {
         echo '<div class="error">';
@@ -56,9 +56,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
         echo '<table class="fullWidth colorOddEven" cellspacing="0">';
 
         echo '<tr class="head">';
-            echo '<th>';
-                echo __('School Year');
-            echo '</th>';
             echo '<th>';
                 echo __('Course Offering');
             echo '</th>';
@@ -78,7 +75,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
 
         while ($log = $logs->fetch()) {
             echo '<tr>';
-                echo '<td>'.$log['schoolYearName'].'</td>';
                 echo '<td>'.$log['offeringName'].'</td>';
                 echo '<td>'.formatName('', $log['studentPreferredName'], $log['studentSurname'], 'Student', false, true).'</td>';
                 echo '<td>'.$log['action'].'</td>';

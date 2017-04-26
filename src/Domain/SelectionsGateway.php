@@ -161,20 +161,22 @@ class SelectionsGateway
 
     // LOG
 
-    public function selectAllLogs($page = 1, $limit = 50)
+    public function selectAllLogsBySchoolYear($gibbonSchoolYearID, $page = 1, $limit = 50)
     {
         $offset = ($page > 1)? ( ($page-1) * $limit) : 0;
 
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT courseSelectionLog.*, gibbonSchoolYear.name as schoolYearName, courseSelectionOffering.name as offeringName, gibbonPersonStudent.surname AS studentSurname, gibbonPersonStudent.preferredName AS studentPreferredName, gibbonPersonChanged.surname AS changedSurname, gibbonPersonChanged.preferredName AS changedPreferredName
                 FROM courseSelectionLog
                 JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionLog.courseSelectionOfferingID)
                 JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionLog.gibbonSchoolYearID)
                 JOIN gibbonPerson AS gibbonPersonStudent ON (gibbonPersonStudent.gibbonPersonID=courseSelectionLog.gibbonPersonIDStudent)
                 JOIN gibbonPerson AS gibbonPersonChanged ON (gibbonPersonChanged.gibbonPersonID=courseSelectionLog.gibbonPersonIDChanged)
+                WHERE courseSelectionLog.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY courseSelectionLog.courseSelectionLogID
                 ORDER BY courseSelectionLog.timestampChanged DESC
                 LIMIT {$limit} OFFSET {$offset}";
-        $result = $this->pdo->executeQuery(array(), $sql);
+        $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
     }
