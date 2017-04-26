@@ -64,7 +64,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
         $row->addCheckbox('allStudents')->checked($allStudents);
 
     $row = $form->addRow();
-        $row->addSubmit();
+        $row->addSubmit('Go');
 
     echo $form->getOutput();
 
@@ -108,7 +108,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
             if (empty($student['selectedOfferingID'])) {
                 $status = 'Not Started';
-                $rowClass = 'error';
+                $rowClass = 'dull';
             } else if ($student['choiceCount'] >= $student['minSelect']) {
                 $status = 'Complete';
                 $rowClass = 'current';
