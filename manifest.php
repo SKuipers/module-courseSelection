@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.05" ;
+$version="0.0.06" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -118,6 +118,24 @@ $moduleTables[]="CREATE TABLE `courseSelectionLog` (
   `action` ENUM('Create','Update','Delete') NOT NULL DEFAULT 'Update',
   PRIMARY KEY (`courseSelectionLogID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+
+$moduleTables[]="CREATE TABLE `courseSelectionApproval` (
+  `courseSelectionApprovalID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDApproved` INT(10) UNSIGNED ZEROFILL NULL ,
+  `timestampApproved` DATETIME NULL ,
+  PRIMARY KEY (`courseSelectionApprovalID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
+
+$moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
+  `courseSelectionRecommendationID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL ,
+  `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `gibbonPersonIDRecommended` INT(10) UNSIGNED ZEROFILL NULL ,
+  `timestampRecommended` DATETIME NULL ,
+  PRIMARY KEY (`courseSelectionRecommendationID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
 // courseSelectionRequisite (Ruleset/Rule)
 // courseSelectionMeta

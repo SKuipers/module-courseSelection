@@ -40,4 +40,26 @@ $sql[$count][0]="0.0.05" ;
 $sql[$count][1]="UPDATE `gibbonAction` SET `name`='Copy Selections By Course', `URLList`='tools_copyByCourse.php', `entryURL`='tools_copyByCourse.php' WHERE name='Copy Course Selections' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
 ";
 
+//v0.0.06
+$count++;
+$sql[$count][0]="0.0.06" ;
+$sql[$count][1]="
+CREATE TABLE `courseSelectionApproval` (
+  `courseSelectionApprovalID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDApproved` INT(10) UNSIGNED ZEROFILL NULL ,
+  `timestampApproved` DATETIME NULL ,
+  PRIMARY KEY (`courseSelectionApprovalID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
+CREATE TABLE `courseSelectionRecommendation` (
+  `courseSelectionRecommendationID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL ,
+  `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `gibbonPersonIDRecommended` INT(10) UNSIGNED ZEROFILL NULL ,
+  `timestampRecommended` DATETIME NULL ,
+  PRIMARY KEY (`courseSelectionRecommendationID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
+";
+
 ?>
