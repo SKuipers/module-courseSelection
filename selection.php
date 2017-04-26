@@ -84,34 +84,38 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 echo __('Course Selection').' '.$access['schoolYearName'];
             echo '</h3>';
 
-            $today = date('Y-m-d');
-
-            if ($today >= $access['dateStart'] && $today <= $access['dateEnd']) {
-                $accessMessageClass = 'success';
-                $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Open'));
-            } else {
-                $accessMessageClass = 'warning';
-                $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Closed'));
-            }
-
-            echo '<div class="'.$accessMessageClass.'">';
-                echo $accessMessageText.' '.sprintf(__('Access is available from %1$s to %2$s'),
-                    date('M j', strtotime($access['dateStart'])),
-                    date('M j, Y', strtotime($access['dateEnd']))
-                );
-            echo '</div>';
-
-            $infoText = getSettingByScope($connection2, 'Course Selection', 'infoTextOfferings');
-            if (!empty($infoText)) {
-                echo '<p>'.$infoText.'</p>';
-            }
-
             $accessTypes = explode(',', $access['accessTypes']);
             $readOnly = (in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false && !($highestGroupedAction == 'Course Selection_all');
 
             $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
 
             if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
+
+                $today = date('Y-m-d');
+
+                if (in_array('Request', $accessTypes) || in_array('Select', $accessTypes) == false) {
+                    $accessMessageClass = 'message';
+                    $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('View Only'));
+                }
+                else if ($today >= $access['dateStart'] && $today <= $access['dateEnd']) {
+                    $accessMessageClass = 'success';
+                    $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Open'));
+                } else {
+                    $accessMessageClass = 'warning';
+                    $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Closed'));
+                }
+
+                echo '<div class="'.$accessMessageClass.'">';
+                    echo $accessMessageText.' '.sprintf(__('Access is available from %1$s to %2$s'),
+                        date('M j', strtotime($access['dateStart'])),
+                        date('M j, Y', strtotime($access['dateEnd']))
+                    );
+                echo '</div>';
+
+                $infoText = getSettingByScope($connection2, 'Course Selection', 'infoTextOfferings');
+                if (!empty($infoText)) {
+                    echo '<p>'.$infoText.'</p>';
+                }
 
                 $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
                 $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
