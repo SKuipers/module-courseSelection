@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Modules\CourseSelection\SchoolYearNavigation;
 use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
@@ -37,6 +38,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
+
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+
+    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
+    echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     $selectionsGateway = new SelectionsGateway($pdo);
 

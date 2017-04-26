@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Modules\CourseSelection\SchoolYearNavigation;
 use Gibbon\Modules\CourseSelection\Domain\ToolsGateway;
 use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 
@@ -43,53 +44,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $toolsGateway = new ToolsGateway($pdo);
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $gibbonSchoolYearID = $_GET['gibbonSchoolYearID'] ?? '';
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
     $showRemoved = $_GET['showRemoved'] ?? 'N';
 
-    if ($gibbonSchoolYearID == $_SESSION[$guid]['gibbonSchoolYearID']) {
-        $gibbonSchoolYearID = $_SESSION[$guid]['gibbonSchoolYearID'];
-        $gibbonSchoolYearName = $_SESSION[$guid]['gibbonSchoolYearName'];
-    } else {
-        if (empty($gibbonSchoolYearID)) {
-            $gibbonSchoolYearID = getNextSchoolYearID($_SESSION[$guid]['gibbonSchoolYearID'], $connection2);
-        }
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 
-        $schoolYearResults = $toolsGateway->selectSchoolYear($gibbonSchoolYearID);
-        if ($schoolYearResults->rowCount() > 0) {
-            $row = $schoolYearResults->fetch();
-            $gibbonSchoolYearID = $row['gibbonSchoolYearID'];
-            $gibbonSchoolYearName = $row['name'];
-        }
-    }
-
-    if (empty($gibbonSchoolYearID)) {
-        echo "<div class='error'>";
-        echo __($guid, 'The specified record does not exist.');
-        echo '</div>';
-        return;
-    }
-
-    echo '<h2>';
-    echo $gibbonSchoolYearName;
-    echo '</h2>';
-
-    echo "<div class='linkTop'>";
-        //Print year picker
-        $previousYear = getPreviousSchoolYearID($gibbonSchoolYearID, $connection2);
-        $nextYear = getNextSchoolYearID($gibbonSchoolYearID, $connection2);
-        if (!empty($previousYear)) {
-            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/approval_byClass.php&gibbonSchoolYearID='.$previousYear."'>".__($guid, 'Previous Year').'</a> ';
-        } else {
-            echo __($guid, 'Previous Year').' ';
-        }
-        echo ' | ';
-        if (!empty($nextYear)) {
-            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/approval_byClass.php&gibbonSchoolYearID='.$nextYear."'>".__($guid, 'Next Year').'</a> ';
-        } else {
-            echo __($guid, 'Next Year').' ';
-        }
-    echo '</div>';
+    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
+    echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     // SELECT COURSE
     $form = Form::create('courseApprovalByClass', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');

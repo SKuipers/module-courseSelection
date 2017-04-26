@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Modules\CourseSelection\SchoolYearNavigation;
 use Gibbon\Modules\CourseSelection\Domain\ToolsGateway;
 
 // Autoloader & Module includes
@@ -41,49 +42,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
     $toolsGateway = new ToolsGateway($pdo);
 
-    $gibbonSchoolYearID = $_GET['gibbonSchoolYearID'] ?? '';
-    $gibbonSchoolYearIDCopyTo = $_GET['gibbonSchoolYearIDCopyTo'] ?? '';
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
+    $gibbonSchoolYearIDCopyTo = $_GET['gibbonSchoolYearIDCopyTo'] ?? null;
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
 
-    if ($gibbonSchoolYearID == '' or $gibbonSchoolYearID == $_SESSION[$guid]['gibbonSchoolYearID']) {
-        $gibbonSchoolYearID = $_SESSION[$guid]['gibbonSchoolYearID'];
-        $gibbonSchoolYearName = $_SESSION[$guid]['gibbonSchoolYearName'];
-    } else {
-        $schoolYearResults = $toolsGateway->selectSchoolYear($gibbonSchoolYearID);
-        if ($schoolYearResults->rowCount() > 0) {
-            $row = $schoolYearResults->fetch();
-            $gibbonSchoolYearID = $row['gibbonSchoolYearID'];
-            $gibbonSchoolYearName = $row['name'];
-        }
+    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
+    echo $navigation->getYearPicker($gibbonSchoolYearID);
+
+    if (empty($gibbonSchoolYearIDCopyTo)) {
+        $nextSchoolYear = $navigation->selectNextSchoolYearByID($gibbonSchoolYearID);
+        $gibbonSchoolYearIDCopyTo = $nextSchoolYear['gibbonSchoolYearID'] ?? '';
     }
-
-    if (empty($gibbonSchoolYearID)) {
-        echo "<div class='error'>";
-        echo __($guid, 'The specified record does not exist.');
-        echo '</div>';
-        return;
-    }
-
-    echo '<h2>';
-    echo $gibbonSchoolYearName;
-    echo '</h2>';
-
-    echo "<div class='linkTop'>";
-        //Print year picker
-        $previousYear = getPreviousSchoolYearID($gibbonSchoolYearID, $connection2);
-        $nextYear = getNextSchoolYearID($gibbonSchoolYearID, $connection2);
-        if (!empty($previousYear)) {
-            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/approval_byClass.php&gibbonSchoolYearID='.$previousYear."'>".__($guid, 'Previous Year').'</a> ';
-        } else {
-            echo __($guid, 'Previous Year').' ';
-        }
-        echo ' | ';
-        if (!empty($nextYear)) {
-            echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/approval_byClass.php&gibbonSchoolYearID='.$nextYear."'>".__($guid, 'Next Year').'</a> ';
-        } else {
-            echo __($guid, 'Next Year').' ';
-        }
-    echo '</div>';
 
     // SELECT COURSE
     $form = Form::create('copySelectionsPicker', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
@@ -103,12 +72,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $form->addRow()->addContent(__("This tool lets you copy student enrolments for a course and convert them into course selections for a different course. After selecting the year and course below you'll have the option to select students and the destination course to copy to."))->wrap('<br/><p>', '</p>');
 
     $row = $form->addRow();
-        $row->addLabel('gibbonCourseID', __('Courses from ').$gibbonSchoolYearName);
+        $row->addLabel('gibbonCourseID', __('Courses from ').$navigation->getSchoolYearName());
         $row->addSelect('gibbonCourseID')->fromArray($courses)->isRequired()->selected($gibbonCourseID);
 
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearIDCopyTo', __('Destination School Year'))->setClass('mediumWidth');
-        $row->addSelectSchoolYear('gibbonSchoolYearIDCopyTo', 'Active')->isRequired()->selected( (!empty($gibbonSchoolYearIDCopyTo)? $gibbonSchoolYearIDCopyTo : $nextYear));
+        $row->addSelectSchoolYear('gibbonSchoolYearIDCopyTo', 'Active')->isRequired()->selected($gibbonSchoolYearIDCopyTo);
 
     $row = $form->addRow();
         $row->addSubmit();
