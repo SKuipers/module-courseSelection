@@ -253,6 +253,38 @@ class SelectionsGateway
         return $result;
     }
 
+    public function selectStudentsWithChoicesNotApproved($gibbonSchoolYearID, $orderBy = 'surname')
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionOffering.courseSelectionOfferingID, gibbonRollGroup.nameShort as rollGroupName, COUNT(DISTINCT courseSelectionChoice.gibbonCourseID) as choiceCount, COUNT(DISTINCT courseSelectionApproval.courseSelectionChoiceID) as approvalCount
+                FROM gibbonPerson
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
+                JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID)
+                JOIN courseSelectionOfferingRestriction ON (
+                    courseSelectionOfferingRestriction.gibbonSchoolYearID=gibbonStudentEnrolment.gibbonSchoolYearID
+                    AND courseSelectionOfferingRestriction.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
+                JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                LEFT JOIN courseSelectionChoice ON (courseSelectionChoice.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
+                    AND courseSelectionChoice.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID
+                    AND courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended')
+                LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
+                GROUP BY gibbonPerson.gibbonPersonID
+
+        ";
+
+        if ($orderBy == 'rollGroup') {
+            $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else {
+            $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
+        }
+
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
     public function selectStudentDetails($gibbonPersonIDStudent)
     {
         $data = array('gibbonPersonID' => $gibbonPersonIDStudent);

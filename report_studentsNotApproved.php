@@ -25,14 +25,14 @@ use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_studentsNotSelected.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_studentsNotApproved.php') == false) {
     //Acess denied
     echo "<div class='error'>" ;
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Students Not Selected', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Students Not Approved', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -53,7 +53,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
     $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
 
     $form->setClass('noIntBorder fullWidth');
-    $form->addHiddenValue('q', '/modules/Course Selection/report_studentsNotSelected.php');
+    $form->addHiddenValue('q', '/modules/Course Selection/report_studentsNotApproved.php');
 
     $row = $form->addRow();
         $row->addLabel('sort', __('Sort By'));
@@ -74,7 +74,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $students = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID, $sort);
+    $students = $selectionsGateway->selectStudentsWithChoicesNotApproved($gibbonSchoolYearID, $sort);
 
     if ($students->rowCount() == 0) {
         echo '<div class="error">';
@@ -94,9 +94,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 echo __('Course Selections');
             echo '</th>';
             echo '<th>';
-                echo __('Status');
+                echo __('Approved Selections');
             echo '</th>';
-
             echo '<th style="width: 80px;">';
                 echo __('Actions');
             echo '</th>';
@@ -106,10 +105,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
             $status = 'In Progress';
             $rowClass = '';
 
-            if (empty($student['selectedOfferingID'])) {
-                $status = 'Not Started';
-                $rowClass = 'dull';
-            } else if ($student['choiceCount'] >= $student['minSelect']) {
+            if ($student['approvalCount'] >= $student['choiceCount']) {
                 $status = 'Complete';
                 $rowClass = 'current';
             }
@@ -124,14 +120,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 echo '</td>';
 
                 echo '<td>'.$student['rollGroupName'].'</td>';
-                echo '<td><span title="Min: '.$student['minSelect'].' Max: '.$student['maxSelect'].'">'.$student['choiceCount'].'</span></td>';
-                echo '<td>';
-                if (!empty($student['selectedOfferingName'])) {
-                    echo '<span title="'.__('Offering').': '.$student['selectedOfferingName'].'">'.$status.'</span>';
-                } else {
-                    echo $status;
-                }
-                echo '</td>';
+                echo '<td>'.$student['choiceCount'].'</td>';
+                echo '<td>'.$student['approvalCount'].'</td>';
                 echo '<td>';
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                 echo '</td>';
