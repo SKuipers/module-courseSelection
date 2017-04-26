@@ -115,7 +115,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 echo '<tr class="'.$class.'">';
                     echo '<td>';
                         echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
-                        echo formatName('', $student['preferredName'], $student['surname'], 'Student', true).'</a>';
+                        echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
+                        echo '</a>';
                     echo '</td>';
 
                     echo '<td>'.$student['status'].'</td>';

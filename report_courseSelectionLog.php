@@ -76,7 +76,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
         while ($log = $logs->fetch()) {
             echo '<tr>';
                 echo '<td>'.$log['offeringName'].'</td>';
-                echo '<td>'.formatName('', $log['studentPreferredName'], $log['studentSurname'], 'Student', false, true).'</td>';
+                echo '<td>';
+                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$log['gibbonPersonIDStudent'].'" target="_blank">';
+                    echo formatName('', $log['studentPreferredName'], $log['studentSurname'], 'Student', true);
+                    echo '</a>';
+                echo '</td>';
                 echo '<td>'.$log['action'].'</td>';
                 echo '<td>';
                     echo date('M j, Y \a\t g:i a', strtotime($log['timestampChanged']));
