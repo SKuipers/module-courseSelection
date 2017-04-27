@@ -93,11 +93,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 $today = date('Y-m-d');
 
-                if (in_array('Request', $accessTypes) || in_array('Select', $accessTypes) == false) {
+                if ((in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false) {
                     $accessMessageClass = 'message';
                     $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('View Only'));
-                }
-                else if ($today >= $access['dateStart'] && $today <= $access['dateEnd']) {
+                } else if ($today >= $access['dateStart'] && $today <= $access['dateEnd']) {
                     $accessMessageClass = 'success';
                     $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Open'));
                 } else {
