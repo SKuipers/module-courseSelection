@@ -46,7 +46,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
 
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $logs = $selectionsGateway->selectAllLogsBySchoolYear($gibbonSchoolYearID, 1, 50);
+    $logs = $selectionsGateway->selectAllLogsBySchoolYear($gibbonSchoolYearID, 1, 100);
 
     if ($logs->rowCount() == 0) {
         echo '<div class="error">';

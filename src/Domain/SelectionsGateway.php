@@ -214,9 +214,8 @@ class SelectionsGateway
                 JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionLog.courseSelectionOfferingID)
                 JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionLog.gibbonSchoolYearID)
                 JOIN gibbonPerson AS gibbonPersonStudent ON (gibbonPersonStudent.gibbonPersonID=courseSelectionLog.gibbonPersonIDStudent)
-                JOIN gibbonPerson AS gibbonPersonChanged ON (gibbonPersonChanged.gibbonPersonID=courseSelectionLog.gibbonPersonIDChanged)
+                LEFT JOIN gibbonPerson AS gibbonPersonChanged ON (gibbonPersonChanged.gibbonPersonID=courseSelectionLog.gibbonPersonIDChanged)
                 WHERE courseSelectionLog.gibbonSchoolYearID=:gibbonSchoolYearID
-                GROUP BY courseSelectionLog.courseSelectionLogID
                 ORDER BY courseSelectionLog.timestampChanged DESC
                 LIMIT {$limit} OFFSET {$offset}";
         $result = $this->pdo->executeQuery($data, $sql);

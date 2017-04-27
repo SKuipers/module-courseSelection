@@ -139,7 +139,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
             $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
             $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-            $data['gibbonPersonIDChanged'] = $_POST['gibbonPersonIDSelected'] ?? '';
+            $data['gibbonPersonIDChanged'] = $_SESSION[$guid]['gibbonPersonID'];
             $data['timestampChanged'] = date('Y-m-d H:i:s');
             $data['action'] = 'Update';
 
