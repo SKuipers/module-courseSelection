@@ -53,8 +53,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
-    // SELECT COURSE
-    $form = Form::create('courseApprovalByClass', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    // SELECT OFFERING
+    $form = Form::create('courseApprovalByOffering', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('q', '/modules/Course Selection/approval_byOffering.php');
@@ -110,12 +110,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 $choicesResults = $selectionsGateway->selectChoicesByOfferingAndPerson($courseSelectionOfferingID, $student['gibbonPersonID']);
                 $choices = ($choicesResults && $choicesResults->rowCount() > 0)? $choicesResults->fetchAll() : array();
 
+                $status = __('In Progress');
+                $rowClass = '';
+
                 if (count($choices) >= $offering['minSelect']) {
                     $status = __('Complete');
-                    $rowClass = 'current';
-                } else {
-                    $status = __('In Progress');
-                    $rowClass = '';
+                    //$rowClass = 'current';
                 }
 
                 echo '<tr class="'.$rowClass.'">';
@@ -133,23 +133,30 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                                 $checked = ($choice['approval'] == 'Approved')? 'checked' : '';
 
                                 echo '<div class="courseChoiceContainer" data-status="'.$choice['approval'].'">';
-                                echo '<input type="checkbox" name="'.$student['gibbonPersonID'].'" class="courseSelectionApproval" value="'.$choice['courseSelectionChoiceID'].'" data-student="'.$student['gibbonPersonID'].'" '.$checked.'/> &nbsp;';
+                                echo '<input type="checkbox" name="'.$student['gibbonPersonID'].'" class="courseSelectionApproval pullRight" value="'.$choice['courseSelectionChoiceID'].'" data-student="'.$student['gibbonPersonID'].'" '.$checked.'/> &nbsp;';
 
                                 echo $choice['courseName'];
+
+                                if ($choice['status'] == 'Required') {
+                                    echo '<span class="pullRight courseTag small emphasis">'.$choice['status'].'&nbsp;&nbsp;</span>';
+                                }
                                 echo '</div>';
                             }
                         }
                     echo '</td>';
                     echo '<td width="35%">';
+                        echo '<strong>'.$status.'</strong>: ';
+
+                        echo sprintf(__('%1$s of %2$s courses selected'), count($choices), $offering['minSelect']).'<br/>';
 
                     echo '</td>';
                     echo '<td width="15%">';
 
                         echo "<a onclick='courseSelectionApproveAll(\"".$student['gibbonPersonID']."\")' style='cursor:pointer;'><img title='".__('Approve All')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick_double.png'/></a> &nbsp;&nbsp;&nbsp;";
 
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;&nbsp;";
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;&nbsp;";
 
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/report_studentGrades.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false' target='_blank'><img title='".__('Student Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
 
                     echo '</td>';
                 echo '</tr>';

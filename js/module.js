@@ -218,7 +218,7 @@ function courseSelectionApproveAll(gibbonPersonIDStudent) {
 
 function courseSelectionApprovalSave(checkbox, courseSelectionOfferingID, modpath) {
     $.ajax({
-        url: modpath + "approval_byOffering_ajax.php",
+        url: modpath + "approval_approveAjax.php",
         data: {
             courseSelectionOfferingID: courseSelectionOfferingID,
             gibbonPersonIDStudent: $(checkbox).attr('name'),
