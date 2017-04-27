@@ -70,5 +70,7 @@ $count++;
 $sql[$count][0]="0.0.07" ;
 $sql[$count][1]="
 UPDATE `gibbonAction` SET `name`='Course Approval by Offering', `URLList`='approval_byOffering.php', `entryURL`='approval_byOffering.php' WHERE name='Course Approval by Student' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
+ALTER TABLE `courseSelectionApproval` DROP `courseSelectionApprovalID`;end;
+ALTER TABLE `courseSelectionApproval` ADD PRIMARY KEY(`courseSelectionChoiceID`);end
 ";
 

@@ -48,7 +48,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $courseSelectionOfferingID = $_REQUEST['courseSelectionOfferingID'] ?? '';
     $showRemoved = $_GET['showRemoved'] ?? 'N';
-    $allStudents = $_GET['allStudents'] ?? false;
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
@@ -63,16 +62,20 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $form->addHiddenValue('sidebar', 'false');
 
     $offeringsResults = $offeringsGateway->selectAllBySchoolYear($gibbonSchoolYearID);
-    $offerings = ($offeringsResults && $offeringsResults->rowCount() > 0)? $offeringsResults->fetchAll() : array();
+
+    if ($offeringsResults->rowCount() == 0) {
+        echo '<div class="error">';
+        echo __("There are no records to display.") ;
+        echo '</div>';
+        return;
+    }
+
+    $offerings = $offeringsResults->fetchAll();
     $offeringsArray = array_combine(array_column($offerings, 'courseSelectionOfferingID'), array_column($offerings, 'name'));
 
     $row = $form->addRow();
         $row->addLabel('courseSelectionOfferingID', __('Offering'));
         $row->addSelect('courseSelectionOfferingID')->fromArray($offeringsArray)->isRequired()->placeholder()->selected($courseSelectionOfferingID);
-
-    $row = $form->addRow();
-        $row->addLabel('allStudents', __('All Students'))->description(__('Include complete course approvals in this list.'));
-        $row->addCheckbox('allStudents')->checked($allStudents);
 
     $row = $form->addRow();
         $row->addSubmit();
@@ -83,9 +86,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $offering = ($offeringResult && $offeringResult->rowCount() > 0)? $offeringResult->fetch() : array();
 
     if (empty($offering)) {
-        echo '<div class="error">';
-        echo __("There are no records to display.") ;
-        echo '</div>';
         return;
     }
 
@@ -118,37 +118,52 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                     $rowClass = '';
                 }
 
-                if ($allStudents == false && $status == 'Complete') continue;
-
                 echo '<tr class="'.$rowClass.'">';
                     echo '<td width="15%">';
                         echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
-                        echo getUserPhoto($guid, $student['image_240'], 75);
+                        echo getUserPhoto($guid, $student['image_240'], 75).'<br/>';
                         echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
-                        echo '</a>';
+                        echo '</a><br/>';
+                        echo $student['rollGroupName'];
                     echo '</td>';
 
-                    echo '<td>';
+                    echo '<td width="35%">';
                         if (count($choices) > 0) {
                             foreach ($choices as $choice) {
-                                echo $choice['courseName'].'<br>';
+                                $checked = ($choice['approval'] == 'Approved')? 'checked' : '';
+
+                                echo '<div class="courseChoiceContainer" data-status="'.$choice['approval'].'">';
+                                echo '<input type="checkbox" name="'.$student['gibbonPersonID'].'" class="courseSelectionApproval" value="'.$choice['courseSelectionChoiceID'].'" data-student="'.$student['gibbonPersonID'].'" '.$checked.'/> &nbsp;';
+
+                                echo $choice['courseName'];
+                                echo '</div>';
                             }
                         }
                     echo '</td>';
-                    echo '<td>';
+                    echo '<td width="35%">';
 
                     echo '</td>';
-                    echo '<td width="10%">';
+                    echo '<td width="15%">';
 
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('Approve All')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick_double.png'/></a> &nbsp;&nbsp;&nbsp;";
+                        echo "<a onclick='courseSelectionApproveAll(\"".$student['gibbonPersonID']."\")' style='cursor:pointer;'><img title='".__('Approve All')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick_double.png'/></a> &nbsp;&nbsp;&nbsp;";
 
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;&nbsp;";
+
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
 
                     echo '</td>';
                 echo '</tr>';
             }
 
             echo '</table>';
+
+            ?>
+            <script>
+                $('.courseSelectionApproval').change(function() {
+                    courseSelectionApprovalSave($(this), <?php echo $courseSelectionOfferingID; ?>, '<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/'; ?>');
+                });
+            </script>
+            <?php
         }
     }
 }

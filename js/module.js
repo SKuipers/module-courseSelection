@@ -192,7 +192,7 @@ function offeringBlockOrderSave(courseSelectionOfferingID, modpath) {
     $('.offeringBlockID').each(function() {
         blocklist.push($(this).val());
     });
-    console.log(blocklist);
+    //console.log(blocklist);
     $.ajax({
         url: modpath + "/offerings_manage_block_orderAjax.php",
         data: {
@@ -201,7 +201,43 @@ function offeringBlockOrderSave(courseSelectionOfferingID, modpath) {
         },
         type: 'POST',
         success: function(data) {
-            console.log(data);
+            //console.log(data);
+        }
+    });
+}
+
+function courseSelectionApproveAll(gibbonPersonIDStudent) {
+
+    $('.courseSelectionApproval[name='+gibbonPersonIDStudent+']').each(function(){
+        if ($(this).prop('checked') == false) {
+            $(this).prop('checked', true);
+            $(this).change();
+        }
+    });
+}
+
+function courseSelectionApprovalSave(checkbox, courseSelectionOfferingID, modpath) {
+    $.ajax({
+        url: modpath + "approval_byOffering_ajax.php",
+        data: {
+            courseSelectionOfferingID: courseSelectionOfferingID,
+            gibbonPersonIDStudent: $(checkbox).attr('name'),
+            courseSelectionChoiceID: $(checkbox).val(),
+            status: $(checkbox).prop('checked'),
+        },
+        type: 'POST',
+        success: function(data) {
+            if (data == 1) {
+                if ($(checkbox).prop('checked') == true) {
+                    $(checkbox).parent().attr('data-status', 'Approved');
+                } else {
+                    $(checkbox).parent().attr('data-status', '');
+                }
+            } else {
+                $(checkbox).parent().attr('data-status', '');
+                $(checkbox).prop('checked', false);
+                alert('There was an error saving this approval. Please reload or try again later.');
+            }
         }
     });
 }

@@ -120,11 +120,10 @@ $moduleTables[]="CREATE TABLE `courseSelectionLog` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionApproval` (
-  `courseSelectionApprovalID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
-  `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL DEFAULT NULL,
+  `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL DEFAULT NOT NULL,
   `gibbonPersonIDApproved` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampApproved` DATETIME NULL ,
-  PRIMARY KEY (`courseSelectionApprovalID`)
+  PRIMARY KEY (`courseSelectionChoiceID`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
