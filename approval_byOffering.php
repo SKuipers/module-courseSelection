@@ -118,7 +118,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                     //$rowClass = 'current';
                 }
 
-                echo '<tr class="'.$rowClass.'">';
+                echo '<tr class="'.$rowClass.'" id="'.$student['gibbonPersonID'].'">';
                     echo '<td width="15%">';
                         echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
                         echo getUserPhoto($guid, $student['image_240'], 75).'<br/>';
@@ -133,12 +133,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                                 $checked = ($choice['approval'] == 'Approved')? 'checked' : '';
 
                                 echo '<div class="courseChoiceContainer" data-status="'.$choice['approval'].'">';
-                                echo '<input type="checkbox" name="'.$student['gibbonPersonID'].'" class="courseSelectionApproval pullRight" value="'.$choice['courseSelectionChoiceID'].'" data-student="'.$student['gibbonPersonID'].'" '.$checked.'/> &nbsp;';
+                                echo '<input type="checkbox" name="'.$student['gibbonPersonID'].'" class="courseSelectionApproval" value="'.$choice['courseSelectionChoiceID'].'" data-student="'.$student['gibbonPersonID'].'" '.$checked.'/> &nbsp;';
 
                                 echo $choice['courseName'];
 
                                 if ($choice['status'] == 'Required') {
-                                    echo '<span class="pullRight courseTag small emphasis">'.$choice['status'].'&nbsp;&nbsp;</span>';
+                                    echo '<span class="pullRight courseTag small emphasis">'.$choice['status'].'</span>';
                                 }
                                 echo '</div>';
                             }

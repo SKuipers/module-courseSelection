@@ -58,7 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         echo '<div>';
         echo __('Viewing report grades for ');
         echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
-        echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', false, true).'</strong>';
+        echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', true).'</strong>';
         echo '</a>';
         echo '</div>';
 

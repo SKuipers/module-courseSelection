@@ -41,10 +41,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $sort = $_GET['sort'] ?? 'surname';
-    $allStudents = $_GET['allStudents'] ?? false;
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
+
+    echo '<p>';
+    echo __("This report shows students who have completed the course selection process but their courses have not yet been approved.");
+    echo '<p>';
 
     echo '<h2>';
     echo __('Filter');
@@ -57,11 +60,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $row = $form->addRow();
         $row->addLabel('sort', __('Sort By'));
-        $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group')))->selected($sort);
-
-    $row = $form->addRow();
-        $row->addLabel('allStudents', __('All Students'))->description(__('Include complete selections in this list.'));
-        $row->addCheckbox('allStudents')->checked($allStudents);
+        $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'approvalCount' => __('Approvals')))->selected($sort);
 
     $row = $form->addRow();
         $row->addSubmit('Go');
@@ -74,7 +73,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $selectionsGateway = new SelectionsGateway($pdo);
 
-    $students = $selectionsGateway->selectStudentsWithChoicesNotApproved($gibbonSchoolYearID, $sort);
+    $students = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID, $sort);
 
     if ($students->rowCount() == 0) {
         echo '<div class="error">';
@@ -94,23 +93,33 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 echo __('Course Selections');
             echo '</th>';
             echo '<th>';
-                echo __('Approved Selections');
+                echo __('Approved');
+            echo '</th>';
+            echo '<th>';
+                echo __('Status');
             echo '</th>';
             echo '<th style="width: 80px;">';
                 echo __('Actions');
             echo '</th>';
         echo '</tr>';
 
+        $count = 0;
         while ($student = $students->fetch()) {
-            $status = 'In Progress';
-            $rowClass = '';
 
-            if ($student['approvalCount'] >= $student['choiceCount']) {
-                $status = 'Complete';
-                $rowClass = 'current';
+            // Skip incomplete selections on this report
+            if (empty($student['selectedOfferingID'])) continue;
+            if ($student['choiceCount'] < $student['minSelect']) continue;
+
+            // Skip approved selections
+            if ($student['approvalCount'] >= $student['choiceCount'] && $student['approvalCount'] > 0) continue;
+
+            if ($student['approvalCount'] > 0) {
+                $status = 'Partially Approved';
+                $rowClass = 'dull';
+            } else {
+                $status = 'Needs Approval';
+                $rowClass = '';
             }
-
-            if ($allStudents == false && $status == 'Complete') continue;
 
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>';
@@ -122,12 +131,21 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 echo '<td>'.$student['rollGroupName'].'</td>';
                 echo '<td>'.$student['choiceCount'].'</td>';
                 echo '<td>'.$student['approvalCount'].'</td>';
+                echo '<td>'.$status.'</td>';
                 echo '<td>';
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;";
+
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byOffering.php&sidebar=false&courseSelectionOfferingID=".$student['selectedOfferingID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."#".$student['gibbonPersonID']."'><img title='".__('Go to Approval')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_right.png'/></a>";
                 echo '</td>';
             echo '</tr>';
+
+            $count++;
         }
 
         echo '</table>';
+
+        echo '<div class="paginationBottom">';
+        echo __('Records').': '.$count;
+        echo '</div>';
     }
 }

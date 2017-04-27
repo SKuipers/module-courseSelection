@@ -41,10 +41,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $sort = $_GET['sort'] ?? 'surname';
-    $allStudents = $_GET['allStudents'] ?? false;
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
+
+    echo '<p>';
+    echo __("This report shows students who have not completed the course selection process. Completion is determined by the minimum selections required for each course offering.");
+    echo '<p>';
 
     echo '<h2>';
     echo __('Filter');
@@ -57,11 +60,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $row = $form->addRow();
         $row->addLabel('sort', __('Sort By'));
-        $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group')))->selected($sort);
-
-    $row = $form->addRow();
-        $row->addLabel('allStudents', __('All Students'))->description(__('Include complete selections in this list.'));
-        $row->addCheckbox('allStudents')->checked($allStudents);
+        $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'choiceCount' => __('Selections')))->selected($sort);
 
     $row = $form->addRow();
         $row->addSubmit('Go');
@@ -96,13 +95,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
             echo '<th>';
                 echo __('Status');
             echo '</th>';
-
             echo '<th style="width: 80px;">';
                 echo __('Actions');
             echo '</th>';
         echo '</tr>';
 
+        $count = 0;
         while ($student = $students->fetch()) {
+
+            // Skip complete and/or approved selections
+            if ($student['choiceCount'] >= $student['minSelect'] && $student['minSelect'] > 0) continue;
+            if ($student['approvalCount'] >= $student['choiceCount'] && $student['approvalCount'] > 0) continue;
+
             $status = 'In Progress';
             $rowClass = '';
 
@@ -110,11 +114,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 $status = 'Not Started';
                 $rowClass = 'dull';
             } else if ($student['choiceCount'] >= $student['minSelect']) {
-                $status = 'Complete';
-                $rowClass = 'current';
+                if ($student['approvalCount'] >= $student['choiceCount']) {
+                    $status = 'Approved';
+                    $rowClass = 'current';
+                } else {
+                    $status = 'Complete';
+                    $rowClass = 'message';
+                }
             }
-
-            if ($allStudents == false && $status == 'Complete') continue;
 
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>';
@@ -133,11 +140,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 }
                 echo '</td>';
                 echo '<td>';
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
+
+            $count++;
         }
 
         echo '</table>';
+
+        echo '<div class="paginationBottom">';
+        echo __('Records').': '.$count;
+        echo '</div>';
     }
 }

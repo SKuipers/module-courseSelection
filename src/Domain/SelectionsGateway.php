@@ -265,7 +265,7 @@ class SelectionsGateway
     public function selectStudentsWithIncompleteSelections($gibbonSchoolYearID, $orderBy = 'surname')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionOffering.courseSelectionOfferingID, gibbonRollGroup.nameShort as rollGroupName, COUNT(DISTINCT courseSelectionChoice.gibbonCourseID) as choiceCount, selectedOffering.minSelect, selectedOffering.maxSelect, selectedOffering.courseSelectionOfferingID as selectedOfferingID, selectedOffering.name as selectedOfferingName
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionOffering.courseSelectionOfferingID, gibbonRollGroup.nameShort as rollGroupName, COUNT(DISTINCT courseSelectionChoice.gibbonCourseID) as choiceCount, selectedOffering.minSelect, selectedOffering.maxSelect, selectedOffering.courseSelectionOfferingID as selectedOfferingID, selectedOffering.name as selectedOfferingName, COUNT(DISTINCT courseSelectionApproval.courseSelectionChoiceID) as approvalCount
                 FROM gibbonPerson
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                 JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID)
@@ -279,13 +279,18 @@ class SelectionsGateway
                 LEFT JOIN courseSelectionChoiceOffering ON (courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
                     AND courseSelectionChoiceOffering.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID)
                 LEFT JOIN courseSelectionOffering as selectedOffering ON (selectedOffering.courseSelectionOfferingID=courseSelectionChoiceOffering.courseSelectionOfferingID)
+                LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
                 GROUP BY gibbonPerson.gibbonPersonID
 
         ";
 
-        if ($orderBy == 'rollGroup') {
+        if ($orderBy == 'choiceCount') {
+            $sql .= " ORDER BY choiceCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else if ($orderBy == 'approvalCount') {
+            $sql .= " ORDER BY approvalCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else if ($orderBy == 'rollGroup') {
             $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else {
             $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";

@@ -130,3 +130,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 tr.rowHighlight:hover td {
     background: #fff4da;
 }
+
+tr.message td {
+    background: #D0EAFD !important;
+}
+
+tr:target td {
+    background: #EDF7FF !important;
+}
