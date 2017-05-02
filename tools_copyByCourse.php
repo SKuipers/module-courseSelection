@@ -133,7 +133,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
         $row = $form->addRow();
             $row->addLabel('status', __('Selection Status'));
-            $row->addSelect('status')->fromArray(array('Required',  'Recommended', 'Selected', 'Approved', 'Requested', 'Removed'))->isRequired();
+            $row->addSelect('status')->fromArray(array('Required',  'Recommended', 'Selected', 'Requested', 'Removed'))->isRequired();
 
         $row = $form->addRow();
             $row->addLabel('overwrite', __('Overwrite?'))->description(__('Replace the course selection status if one already exists for that student and course.'));

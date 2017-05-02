@@ -250,7 +250,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
             $row = $form->addRow();
                     $row->addLabel('status', __('Selection Status'));
-                    $row->addSelect('status')->fromArray(array('Required', 'Recommended', 'Selected', 'Approved', 'Requested'))->isRequired();
+                    $row->addSelect('status')->fromArray(array('Required', 'Recommended', 'Selected', 'Requested'))->isRequired();
 
             $row = $form->addRow();
                 $row->addSubmit('Add');
