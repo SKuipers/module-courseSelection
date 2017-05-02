@@ -89,22 +89,35 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
             foreach ($schoolYearGrades as $courseGrades) {
 
                 $sem1Mid = (!empty($courseGrades['Sem1-Mid']))? $courseGrades['Sem1-Mid'].'%' : '';
+                $sem1MidClass = (!empty($sem1Mid) && intval($sem1Mid) < 50)? 'gradesRow warning' : 'gradesRow';
+
                 $sem1End = (!empty($courseGrades['Sem1-End']))? $courseGrades['Sem1-End'].'%' : '';
+                $sem1EndClass = (!empty($sem1End) && intval($sem1End) < 50)? 'gradesRow warning' : 'gradesRow';
+
                 $sem2Mid = (!empty($courseGrades['Sem2-Mid']))? $courseGrades['Sem2-Mid'].'%' : '';
+                $sem2MidClass = (!empty($sem2Mid) && intval($sem2Mid) < 50)? 'gradesRow warning' : 'gradesRow';
+
                 $sem2End = (!empty($courseGrades['Sem2-End']))? $courseGrades['Sem2-End'].'%' : '';
+                $sem2EndClass = (!empty($sem2End) && intval($sem2End) < 50)? 'gradesRow warning' : 'gradesRow';
+
                 $credits = (!empty($courseGrades['credits']))? $courseGrades['credits'].'%' : '';
+
                 $exam = (!empty($courseGrades['Exam']))? $courseGrades['Exam'].'%' : '';
+                $examClass = (!empty($exam) && intval($exam) < 50)? 'gradesRow warning' : 'gradesRow';
+
                 $final = (!empty($courseGrades['Final']))? $courseGrades['Final'].'%' : '';
+                $finalClass = (!empty($final) && intval($final) < 50)? 'gradesRow warning' : 'gradesRow';
+
 
                 echo '<tr>';
                     echo '<td class="gradesRow" style="width:15%;text-align:left;">'.$courseGrades['courseNameShort'].'</td>';
                     echo '<td class="gradesRow" style="width:37%;text-align:left;">'.$courseGrades['courseName'].'</td>';
-                    echo '<td class="gradesRow" style="width:8%;">'.$sem1Mid.'</td>';
-                    echo '<td class="gradesRow" style="width:8%;">'.$sem1End.'</td>';
-                    echo '<td class="gradesRow" style="width:8%">'.$sem2Mid.'</td>';
-                    echo '<td class="gradesRow" style="width:8%">'.$sem2End.'</td>';
-                    echo '<td class="gradesRow" style="width:8%;border-left: 2px solid #bbb;">'.$exam.'</td>';
-                    echo '<td class="gradesRow" style="width:8%;text-align:left;">'.$final.'</td>';
+                    echo '<td class="'.$sem1MidClass.'" style="width:8%;">'.$sem1Mid.'</td>';
+                    echo '<td class="'.$sem1EndClass.'" style="width:8%;">'.$sem1End.'</td>';
+                    echo '<td class="'.$sem2MidClass.'" style="width:8%">'.$sem2Mid.'</td>';
+                    echo '<td class="'.$sem2EndClass.'" style="width:8%">'.$sem2End.'</td>';
+                    echo '<td class="'.$examClass.'" style="width:8%;border-left: 2px solid #bbb;">'.$exam.'</td>';
+                    echo '<td class="'.$finalClass.'" style="width:8%;text-align:left;">'.$final.'</td>';
                 echo '</tr>';
             }
             echo '</table>';
