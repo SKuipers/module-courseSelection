@@ -108,6 +108,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 $final = (!empty($courseGrades['Final']))? $courseGrades['Final'].'%' : '';
                 $finalClass = (!empty($final) && intval($final) < 50)? 'gradesRow warning' : 'gradesRow';
 
+                if (!empty($courseGrades['gibbonCourseClassID']) && $enrolment['schoolYearID'] == $_SESSION[$guid]['gibbonSchoolYearID']) {
+                    $courseGrades['courseNameShort'] = sprintf('<a href="%2$s">%1$s</a>', $courseGrades['courseNameShort'], $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'&search=&search=&allStudents=&subpage=Markbook#'.str_pad($courseGrades['gibbonCourseClassID'], 8, '0', STR_PAD_LEFT));
+                }
 
                 echo '<tr>';
                     echo '<td class="gradesRow" style="width:15%;text-align:left;">'.$courseGrades['courseNameShort'].'</td>';

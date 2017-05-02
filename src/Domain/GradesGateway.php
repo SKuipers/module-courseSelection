@@ -86,7 +86,7 @@ class GradesGateway
             'gibbonSchoolYearID' => $gibbonSchoolYearID
         );
 
-        $sql = "(SELECT (CASE WHEN arrCriteria.criteriaType=4 THEN 'Final' WHEN arrCriteria.criteriaType=1 THEN 'Exam' ELSE arrReport.reportName END) as reportTerm, gradeID as grade, 'Standard' as gradeType, (CASE WHEN arrCriteria.criteriaType=4 AND gradeID >= 50.0 THEN gibbonCourse.credits WHEN gradeID = '' THEN '' ELSE 0 END) as creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+        $sql = "(SELECT (CASE WHEN arrCriteria.criteriaType=4 THEN 'Final' WHEN arrCriteria.criteriaType=1 THEN 'Exam' ELSE arrReport.reportName END) as reportTerm, gradeID as grade, 'Standard' as gradeType, (CASE WHEN arrCriteria.criteriaType=4 AND gradeID >= 50.0 THEN gibbonCourse.credits WHEN gradeID = '' THEN '' ELSE 0 END) as creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
@@ -99,7 +99,7 @@ class GradesGateway
                 AND gibbonCourse.nameShort NOT LIKE '%ECA%'
                 AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
                 AND gibbonCourse.nameShort NOT LIKE '%Advisor%') UNION ALL (
-            SELECT DISTINCT reportTerm, grade, gradeType, creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+            SELECT DISTINCT reportTerm, grade, gradeType, creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, '', (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
                 FROM arrLegacyGrade
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=arrLegacyGrade.gibbonCourseID)
                 WHERE arrLegacyGrade.gibbonPersonID = :gibbonPersonID
@@ -162,6 +162,7 @@ class GradesGateway
 
             $courseGrades['courseName'] = $courseName;
             $courseGrades['courseNameShort'] = $row['courseNameShort'];
+            $courseGrades['gibbonCourseClassID'] = $row['gibbonCourseClassID'];
 
             $grade = (is_numeric($row['grade']))? round($row['grade']) : $row['grade'];
             $courseGrades[ $row['reportTerm'] ] = $grade;
