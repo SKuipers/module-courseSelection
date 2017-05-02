@@ -385,4 +385,32 @@ class SelectionsGateway
 
         return $result;
     }
+
+    public function selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT COUNT(DISTINCT courseSelectionChoice.gibbonPersonIDStudent) as count, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+                FROM courseSelectionChoice
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
+                WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND (courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended')
+                AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
+                GROUP BY gibbonCourse.gibbonCourseID
+        ";
+
+        if ($orderBy == 'count') {
+            $sql .= " ORDER BY count DESC, gibbonCourse.nameShort, gibbonCourse.name";
+        } else if ($orderBy == 'order') {
+            $sql .= " ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort, gibbonCourse.name";
+        } else if ($orderBy == 'name') {
+            $sql .= " ORDER BY gibbonCourse.name, gibbonCourse.nameShort";
+        } else {
+            $sql .= " ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
+        }
+
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
 }

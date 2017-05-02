@@ -74,3 +74,10 @@ ALTER TABLE `courseSelectionApproval` DROP `courseSelectionApprovalID`;end
 ALTER TABLE `courseSelectionApproval` ADD PRIMARY KEY(`courseSelectionChoiceID`);end
 ";
 
+//v0.0.08
+$count++;
+$sql[$count][0]="0.0.08" ;
+$sql[$count][1]="
+UPDATE `gibbonAction` SET `name`='Total Requests by Course', `URLList`='report_requestsByCourse.php', `entryURL`='report_requestsByCourse.php' WHERE name='Course Selection Numbers' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
+";
+
