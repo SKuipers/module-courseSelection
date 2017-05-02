@@ -80,7 +80,7 @@ jQuery(function($){
         if (min == undefined) min = 0;
         if (max == undefined) max = 1;
 
-        if (choicesSelected.length >= min) {
+        if (choicesSelected.length >= min && choicesSelected.length <= max) {
             //progressDiv.html('Okay');
             progressDiv.addClass('complete');
             progressDiv.find('.invalid').hide();
@@ -137,7 +137,7 @@ jQuery(function($){
         if (choicesSelected.length >= min) {
             progressDiv.find('.continue').hide();
 
-            if (blocksComplete.length >= blocks.length) {
+            if (blocksComplete.length >= blocks.length && choicesSelected.length <= max) {
                 progressDiv.find('.invalid').hide();
                 progressDiv.find('.valid').show();
             } else {
