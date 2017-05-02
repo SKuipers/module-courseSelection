@@ -100,4 +100,23 @@ class ToolsGateway
 
         return $this->pdo->executeQuery($data, $sql);
     }
+
+    public function selectStudentsByCourseSelection($gibbonCourseID)
+    {
+        $data = array('gibbonCourseID' => $gibbonCourseID);
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonYearGroup.name as yearGroupName, courseSelectionChoice.status as courseClassName
+                FROM gibbonPerson
+                JOIN courseSelectionChoice ON (courseSelectionChoice.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
+                JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
+                WHERE courseSelectionChoice.gibbonCourseID=:gibbonCourseID
+                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
+                AND (gibbonPerson.status='Full' OR gibbonPerson.status='Expected')
+                AND courseSelectionChoice.status != 'Removed'
+                GROUP BY gibbonPerson.gibbonPersonID
+                ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
 }
