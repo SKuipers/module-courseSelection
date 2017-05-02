@@ -105,6 +105,11 @@ class CourseSelection extends Input
         return (isset($this->selectedChoices[$value]['status']))? $this->selectedChoices[$value]['status'] : '';
     }
 
+    protected function getChoiceApproved($value)
+    {
+        return (isset($this->selectedChoices[$value]['approved']))? $this->selectedChoices[$value]['approved'] == 'Approved' : false;
+    }
+
     protected function getIsChecked($value)
     {
         if (empty($value) || empty($this->selectedChoices)) {
@@ -124,7 +129,7 @@ class CourseSelection extends Input
             foreach ($this->courses as $course) {
                 $courseID = $course['gibbonCourseID'];
                 $label = $course['courseName'];
-                $status = $this->getChoiceStatus($courseID);
+                $status = $this->getChoiceApproved($courseID)? 'Approved' : $this->getChoiceStatus($courseID);
 
                 $name = 'courseSelection['.$this->blockID.']['.$courseID.']';
 
@@ -152,14 +157,18 @@ class CourseSelection extends Input
                 $output .= '<label for="'.$this->getID().'" title="'.$course['courseNameShort'].'">'.$label.'</label>';
 
                 if ($this->selectStatus == true) {
-                    $output .= '<select name="courseStatus['.$this->blockID.']['.$courseID.']" class="courseStatusSelect pullRight">';
-                    $output .= '<option value="" '.(($status == 'Removed' || $status == '')? 'selected' : '').'> </option>';
-                    $output .= '<option value="Required" '.($status == 'Required'? 'selected' : '').'>'.__('Required').'</option>';
-                    $output .= '<option value="Approved" '.($status == 'Approved'? 'selected' : '').'>'.__('Approved').'</option>';
-                    $output .= '<option value="Recommended" '.($status == 'Recommended'? 'selected' : '').'>'.__('Recommended').'</option>';
-                    $output .= '<option value="Requested" '.($status == 'Requested' ? 'selected' : '').'>'.__('Requested').'</option>';
+                    if ($status == 'Approved') {
+                        $output .= '<input type="hidden" name="courseStatus['.$this->blockID.']['.$courseID.']" value="'.$this->getChoiceStatus($courseID).'">';
+                        $output .= '<span class="courseTag pullRight small emphasis">&nbsp; '.__($status).'</span>';
+                    } else {
+                        $output .= '<select name="courseStatus['.$this->blockID.']['.$courseID.']" class="courseStatusSelect pullRight">';
+                        $output .= '<option value="" '.(($status == 'Removed' || $status == '')? 'selected' : '').'> </option>';
+                        $output .= '<option value="Required" '.($status == 'Required'? 'selected' : '').'>'.__('Required').'</option>';
+                        $output .= '<option value="Recommended" '.($status == 'Recommended'? 'selected' : '').'>'.__('Recommended').'</option>';
+                        $output .= '<option value="Requested" '.($status == 'Requested' ? 'selected' : '').'>'.__('Requested').'</option>';
 
-                    $output .= '</select>';
+                        $output .= '</select>';
+                    }
                 } else {
                     if ($status == 'Required' || $status == 'Approved' || $status == 'Recommended') {
                         $output .= '<span class="courseTag pullRight small emphasis">&nbsp; '.__($status).'</span>';

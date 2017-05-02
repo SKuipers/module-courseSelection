@@ -108,14 +108,14 @@ jQuery(function($){
 
 
         if (choicesSelected.length >= max) {
-            choices.find(':not([data-locked="true"])').each(function() {
+            choices.find('.courseChoice:not([data-locked="true"])').each(function() {
                 $(this).data('full', true);
                 if ($(this).prop('checked') == false) {
                     $(this).prop('disabled', true);
                 }
             });
         } else {
-            choices.find(':not([data-locked="true"])').each(function() {
+            choices.find('.courseChoice:not([data-locked="true"])').each(function() {
                 $(this).data('full', false);
                 $(this).prop('disabled', false);
             });
@@ -151,13 +151,13 @@ jQuery(function($){
         }
 
         if (choicesSelected.length >= max) {
-            choices.find(':not([data-locked="true"])').each(function() {
+            choices.find('.courseChoice:not([data-locked="true"])').each(function() {
                 if ($(this).prop('checked') == false) {
                     $(this).prop('disabled', true);
                 }
             });
         } else {
-            choices.find(':not([data-locked="true"])').each(function() {
+            choices.find('.courseChoice:not([data-locked="true"])').each(function() {
                 if ($(this).data('full') == false) {
                     $(this).prop('disabled', false);
                 }

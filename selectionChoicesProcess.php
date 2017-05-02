@@ -110,7 +110,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                                 if (empty($data['status'])) $data['status'] = 'Removed';
 
                                 $partialFail &= !$gateway->updateChoice($data);
-                            } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested' || $choice['status'] == '') {
+                            } else if ($choice['status'] == 'Removed' || $choice['status'] == 'Recommended' || $choice['status'] == 'Requested' || $choice['status'] == 'Selected' || $choice['status'] == '') {
+
                                 $partialFail &= !$gateway->updateChoice($data);
                             }
                         } else {

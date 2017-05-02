@@ -51,10 +51,11 @@ class SelectionsGateway
     public function selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent)
     {
         $data = array('courseSelectionBlockID' => $courseSelectionBlockID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
-        $sql = "SELECT courseSelectionChoice.gibbonCourseID, courseSelectionChoice.*
+        $sql = "SELECT courseSelectionChoice.gibbonCourseID, courseSelectionChoice.*, (CASE WHEN courseSelectionApproval.courseSelectionChoiceID > 0 THEN 'Approved' ELSE '' END) as approved
                 FROM courseSelectionOfferingBlock
                 JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
                 JOIN courseSelectionChoice ON (courseSelectionBlockCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 WHERE courseSelectionOfferingBlock.courseSelectionBlockID=:courseSelectionBlockID
                 AND courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                 AND courseSelectionChoice.status <> 'Removed'
@@ -114,7 +115,11 @@ class SelectionsGateway
     public function selectChoiceByCourseAndPerson($gibbonCourseID, $gibbonPersonIDStudent)
     {
         $data = array('gibbonCourseID' => $gibbonCourseID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
-        $sql = "SELECT * FROM courseSelectionChoice WHERE gibbonCourseID=:gibbonCourseID AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
+        $sql = "SELECT courseSelectionChoice.*, (CASE WHEN courseSelectionApproval.courseSelectionChoiceID > 0 THEN 'Approved' ELSE '' END) as approved
+                FROM courseSelectionChoice
+                LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                WHERE gibbonCourseID=:gibbonCourseID
+                AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
@@ -166,16 +171,22 @@ class SelectionsGateway
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
 
         if (!empty($courseIDList)) {
-            $sql = "UPDATE courseSelectionChoice SET status='Removed'
-                    WHERE gibbonSchoolYearID=:gibbonSchoolYearID
-                    AND gibbonPersonIDStudent=:gibbonPersonIDStudent
+            $sql = "UPDATE courseSelectionChoice
+                    LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                    SET courseSelectionChoice.status='Removed'
+                    WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                    AND courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                     AND gibbonCourseID NOT IN ({$courseIDList})
-                    AND (status='Requested' OR status='Selected' OR status='Approved' OR status='')";
+                    AND (courseSelectionChoice.status='Requested' OR courseSelectionChoice.status='Selected' OR courseSelectionChoice.status='')
+                    AND courseSelectionApproval.courseSelectionChoiceID IS NULL";
         } else {
-            $sql = "UPDATE courseSelectionChoice SET status='Removed'
-                    WHERE gibbonSchoolYearID=:gibbonSchoolYearID
-                    AND gibbonPersonIDStudent=:gibbonPersonIDStudent
-                    AND (status='Requested' OR status='Selected' OR status='Approved' OR status='')";
+            $sql = "UPDATE courseSelectionChoice
+                    LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                    SET courseSelectionChoice.status='Removed'
+                    WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                    AND courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
+                    AND (courseSelectionChoice.status='Requested' OR courseSelectionChoice.status='Selected' OR courseSelectionChoice.status='')
+                    AND courseSelectionApproval.courseSelectionChoiceID IS NULL";
         }
 
         $result = $this->pdo->executeQuery($data, $sql);
