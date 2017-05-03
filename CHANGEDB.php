@@ -81,3 +81,11 @@ $sql[$count][1]="
 UPDATE `gibbonAction` SET `name`='Total Requests by Course', `URLList`='report_requestsByCourse.php', `entryURL`='report_requestsByCourse.php' WHERE name='Course Selection Numbers' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
 ";
 
+//v0.0.09
+$count++;
+$sql[$count][0]="0.0.09" ;
+$sql[$count][1]="
+UPDATE `gibbonAction` SET `name`='Approve Requests by Course', `URLList`='approval_byCourse.php', `entryURL`='approval_byCourse.php', category='Approval' WHERE name='Course Approval by Class' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
+UPDATE `gibbonAction` SET `name`='Approve Requests by Offering', category='Approval' WHERE name='Course Approval by Offering' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
+UPDATE `gibbonAction` SET `name`='Copy Requests By Course' WHERE name='Copy Selections By Course' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
+";

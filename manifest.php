@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.08" ;
+$version="0.0.09" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 

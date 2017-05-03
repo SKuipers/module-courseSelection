@@ -27,7 +27,7 @@ use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_byClass.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_byCourse.php') == false) {
     //Acess denied
     echo "<div class='error'>" ;
         echo __('You do not have access to this action.');

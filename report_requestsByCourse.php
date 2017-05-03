@@ -117,7 +117,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
                 echo '<td>'.$course['count'].'</td>';
 
                 echo '<td>';
-                    // echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
 

@@ -389,7 +389,7 @@ class SelectionsGateway
     public function selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT COUNT(DISTINCT courseSelectionChoice.gibbonPersonIDStudent) as count, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+        $sql = "SELECT COUNT(DISTINCT courseSelectionChoice.gibbonPersonIDStudent) as count, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
                 FROM courseSelectionChoice
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
