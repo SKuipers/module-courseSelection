@@ -41,5 +41,5 @@ interface NodeEvaluator
      * @param   array  &$nodes
      * @return  bool
      */
-    public function evaluateTree(&$nodes) : bool;
+    public function evaluateTree(&$tree) : bool;
 }

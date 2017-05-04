@@ -34,5 +34,5 @@ interface NodeValidator
      * @param   int    $depth
      * @return  bool
      */
-    public function validateNode(&$node, $depth) : bool;
+    public function validateNode(&$node, &$tree) : bool;
 }

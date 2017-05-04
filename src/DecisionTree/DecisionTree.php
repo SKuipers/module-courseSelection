@@ -22,6 +22,9 @@ namespace Gibbon\Modules\CourseSelection\DecisionTree;
 /**
  * Decision Tree
  *
+ * A generic implementation of a basic decision tree: not tied to a specific type of data.
+ * The validator and evaluator interfaces provide hooks for making decisions.
+ *
  * @version v14
  * @since   3rd May 2017
  */
@@ -38,36 +41,37 @@ class DecisionTree
 
     public function buildTree(array &$decisions)
     {
-        $nodes = array();
+        $tree = array();
         $leaves = array();
 
         // Create an empty node and push it to the root of the tree
-        $nodes[] = new Node(array());
+        $tree[] = new Node(array());
 
         // Continue adding branches to the tree until the goal is met
-        while (!$this->isGoalReached($nodes)) {
-            $nodes = $this->createBranches($nodes, $leaves, $decisions);
+        while (!$this->isGoalSatisfied($tree)) {
+            $tree = $this->createBranches($tree, $leaves, $decisions);
         }
 
         return $leaves;
     }
 
-    protected function isGoalReached(&$nodes)
+    protected function isGoalSatisfied(&$tree)
     {
-        return (count($nodes) == 0) || $this->evaulator->evaluateTree($nodes);
+        return (count($tree) == 0) || $this->evaulator->evaluateTree($tree);
     }
 
-    protected function createBranches(&$nodes, &$leaves, &$decisions)
+    protected function createBranches(&$tree, &$leaves, &$decisions)
     {
-        $node = array_pop($nodes);
+        $node = array_pop($tree);
 
         $nodeDepth = $node->getDepth();
-        $treeDepth = (count($decisions) - 1);
+        $treeDepth = count($decisions);
 
-        if ($nodeDepth >= $treeDepth) {
-            // Complete and valid nodes become leaves
-            if ($this->validator->validateNode($node, $treeDepth)) {
-                $node->setWeight($this->evaulator->evaluateNode($node));
+        if ($nodeDepth == $treeDepth) {
+            // Complete (and valid) nodes become leaves
+            if ($this->validator->validateNode($node, $tree)) {
+                $weight = $this->evaulator->evaluateNode($node);
+                $node->setWeight($weight);
 
                 array_push($leaves, $node);
             }
@@ -83,11 +87,11 @@ class DecisionTree
                 $values = $node->getValues();
                 array_push($values, $branch);
 
-                // Each branch leads to a new node
-                array_push($nodes, new Node($values));
+                // Each branch leads to a new node on the tree
+                array_push($tree, new Node($values));
             }
         }
 
-        return $nodes;
+        return $tree;
     }
 }
