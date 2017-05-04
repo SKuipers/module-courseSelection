@@ -17,39 +17,29 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon\Modules\CourseSelection\Timetable;
+namespace Gibbon\Modules\CourseSelection\DecisionTree;
 
 /**
- * Node
+ * Interface for evaluating a node's weight
  *
  * @version v14
- * @since   3rd May 2017
+ * @since   4th May 2017
  */
-class Node
+interface NodeEvaluator
 {
-    protected $depth;
-    protected $values;
-    protected $weight;
+    /**
+     * Should return a weighting for the node, based on its suitability as a solution to the problem.
+     *
+     * @param   object  &$node
+     * @return  float
+     */
+    public function evaluateNode(&$node) : float;
 
-    public function __construct($depth, $values)
-    {
-        $this->depth = $depth;
-        $this->values = &$values;
-    }
-
-    public function getDepth() {
-        return $this->depth;
-    }
-
-    public function getValues() {
-        return $this->values;
-    }
-
-    public function getWeight() {
-        return $this->weight;
-    }
-
-    public function setWeight($weight) {
-        $this->weight = $weight;
-    }
+    /**
+     * Should return true if the tree is complete based on the problem conditions.
+     *
+     * @param   array  &$nodes
+     * @return  bool
+     */
+    public function evaluateTree(&$nodes) : bool;
 }
