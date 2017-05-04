@@ -19,33 +19,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Gibbon\Modules\CourseSelection\Timetable;
 
-use Gibbon\Modules\CourseSelection\DecisionTree\NodeValidator;
+use Gibbon\Modules\CourseSelection\DecisionTree\DecisionTree;
 
 /**
- * Implementation of the NodeValidator interface for the Timetabling Engine
+ * Problem solver for the Timetabling Engine: impemented as a decision tree
  *
  * @version v14
  * @since   4th May 2017
  */
-class Validator implements NodeValidator
+class Solver
 {
-    protected $environment;
+    protected $decisionTree;
 
-    public function __construct($environment = array())
+    public function __construct(Validator $validator, Evaluator $evaulator)
     {
-        $this->environment = $environment;
+        $this->decisionTree = new DecisionTree($validator, $evaulator);
     }
 
-    /**
-     * @param   object  &$node
-     * @param   array   &$tree
-     * @return  bool
-     */
-    public function validateNode(&$node, &$tree) : bool
+    public function makeDecisions(&$data) : array
     {
-        //$periods = array_count_values(array_column($node->getValues(), 'period'));
-        //return (count($periods) >= $depth);
-
-        return true;
+        return $this->decisionTree->buildTree($data);
     }
 }

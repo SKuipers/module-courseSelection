@@ -37,9 +37,6 @@ class Evaluator implements NodeEvaluator
     }
 
     /**
-     * Evaluate a node based on a set of conditions (timetable related in this case)
-     * and return a weighting to represent the node's viability as a solution to the problem
-     *
      * @param   object  &$node
      * @return  float
      */
@@ -49,12 +46,10 @@ class Evaluator implements NodeEvaluator
     }
 
     /**
-     * Evaluate a tree of nodes to determine if the goal condition has been reached.
-     *
      * @param   array  &$nodes
      * @return  bool
      */
-    public function evaluateTree(&$nodes) : bool
+    public function evaluateTree(&$tree) : bool
     {
         return false;
     }
