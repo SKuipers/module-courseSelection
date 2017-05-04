@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Gibbon\Modules\CourseSelection\Engine\DecisionTree;
+use Gibbon\Modules\CourseSelection\Timetable\DecisionTree;
 
 // Autoloader & Module includes
 $loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
