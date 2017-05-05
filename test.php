@@ -46,32 +46,55 @@ $mockData = array(
 // Do something with the results
 // Output some stats & logs
 
-
 $timetableGateway = new TimetableGateway($pdo);
 
-$engineSettings = new EngineSettings();
+// Build a set of course information for the school year
+$environmentResults = $timetableGateway->selectTimetabledCoursesBySchoolYear('012');
+$environmentData = ($environmentResults && $environmentResults->rowCount() > 0)? $environmentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
-$engine = new Engine($engineSettings);
+// Get the course selections grouped by student
+$studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear('012');
+$studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
-$engine->addData($mockData);
+// Limit the results (for now)
+$studentData = array_slice($studentData, 0, 1);
 
 
-$environment = array();
+$factory = new EngineFactory();
 
-$validator = new Validator($environment);
-$evaluator = new Evaluator($environment);
-$solver = new Solver($validator, $evaluator);
+$engine = $factory->createEngine();
+$engine->buildEngine($factory, $environmentData);
 
-$engine->startEngine($validator, $evaluator, $solver);
-$results = $engine->run();
+foreach ($studentData as $gibbonPersonID => $courses) {
+    $studentCourses = array();
+    foreach ($courses as $class) {
+        $studentCourses[$class['gibbonCourseID']][] = $class['className'];
+    }
 
+    $engine->addData($gibbonPersonID, array_values($studentCourses) );
+}
+
+$results = $engine->runEngine();
+
+$studentCount = count($results);
+$studentsWithResults = array();
+foreach ($results as $result) {
+    if (count($result) > 0) $studentsWithResults[] = $result;
+}
+
+$performance = $engine->getPerformance();
 
 echo '<pre>';
-echo 'Duration: '.$engine->getRunningTime().'ms'."\n";
+echo 'Duration: '.$performance['time']."\n";
+echo 'Memory: '.$performance['memory']."\n";
+echo "\n\n";
+echo 'Students: '.$studentCount."\n";
+echo 'Students without Results: '.($studentCount - count($studentsWithResults))."\n";
+
 // echo 'Iterations: '.$engine->iterations."\n";
 // echo 'Braches Created: '.$engine->branchesCreated."\n";
 // echo 'Leaves Created: '.$engine->leavesCreated."\n";
-echo 'Valid Results: '.count($results, COUNT_RECURSIVE)."\n";
+echo 'Total Valid Results: '.count($results, COUNT_RECURSIVE)."\n";
 echo "\n\n";
-//print_r($results);
+print_r($studentsWithResults);
 echo '</pre>';
