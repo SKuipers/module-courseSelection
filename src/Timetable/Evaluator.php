@@ -31,7 +31,7 @@ class Evaluator implements NodeEvaluator
 {
     protected $environment;
 
-    public function __construct($environment = array())
+    public function __construct(EngineEnvironment $environment)
     {
         $this->environment = $environment;
     }

@@ -31,21 +31,26 @@ class Validator implements NodeValidator
 {
     protected $environment;
 
-    public function __construct($environment = array())
+    public function __construct(EngineEnvironment $environment)
     {
         $this->environment = $environment;
     }
 
     /**
      * @param   object  &$node
-     * @param   array   &$tree
+     * @param   int     &$treeDepth
      * @return  bool
      */
-    public function validateNode(&$node, &$tree) : bool
+    public function validateNode(&$node, $treeDepth) : bool
     {
-        //$periods = array_count_values(array_column($node->getValues(), 'period'));
-        //return (count($periods) >= $depth);
+        $periods = array();
+        foreach ($node->getValues() as $value) {
+            $periods[] = $this->environment->get($value, 'period');
+        }
 
-        return true;
+        // Look for duplicates by counting the class periods
+        $periodCounts = array_count_values($periods);
+
+        return (count($periodCounts) >= $treeDepth);
     }
 }

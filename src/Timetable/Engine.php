@@ -34,6 +34,7 @@ use Gibbon\Modules\CourseSelection\DecisionTree\DecisionTree;
 class Engine
 {
     protected $settings;
+    protected $environment;
 
     protected $validator;
     protected $evaulator;
@@ -45,23 +46,33 @@ class Engine
     protected $dataSet = array();
     protected $resultSet = array();
 
-    public function __construct(EngineSettings $settings = null)
+    protected $performance = array();
+
+    public function __construct(EngineSettings $settings)
     {
-        $this->settings = $settings ?? new EngineSettings();
+        $this->settings = $settings;
     }
 
-    public function addData($data)
+    public function addData($gibbonPersonID, $data)
     {
-        if (empty($data) || !is_array($data) || empty($data[0]) || !is_array($data[0])) {
+        if (empty($data) || !is_array($data) || empty(next($data)) || !is_array(next($data))) {
             throw new \Exception('Invalid data fed into engine: not a valid two-dimensional array.');
         }
 
-        $this->dataSet[] = $data;
+        $this->dataSet[$gibbonPersonID] = $data;
     }
 
-    public function startEngine(Validator $validator, Evaluator $evaluator, Solver $solver)
+    public function buildEngine(EngineFactory $factory, $environmentData = array())
     {
-        if (empty($solver) || empty($validator) || empty($evaluator)) {
+        $this->environment = $factory->createEnvironment($environmentData);
+        $this->validator = $factory->createValidator($this->environment);
+        $this->evaluator = $factory->createEvaluator($this->environment);
+        $this->solver = $factory->createSolver($this->validator, $this->evaluator);
+    }
+
+    public function runEngine()
+    {
+        if (empty($this->solver) || empty($this->validator) || empty($this->evaluator)) {
             throw new \Exception('Engine cannot run: missing some parts!');
         }
 
@@ -69,24 +80,10 @@ class Engine
             throw new \Exception('Engine cannot run: no decisions to make. Feed some data into the engine.');
         }
 
-        $this->validator = $validator;
-        $this->evaluator = $evaluator;
-        $this->solver = $solver;
+        $this->startEngine();
 
-        $this->startTime = microtime(true);
-
-        return count($this->dataSet);
-    }
-
-    public function stopEngine()
-    {
-        $this->stopTime = microtime(true);
-    }
-
-    public function run()
-    {
-        foreach ($this->dataSet as $data) {
-            $this->resultSet[] = $this->solver->makeDecisions($data);
+        foreach ($this->dataSet as $gibbonPersonID => $data) {
+            $this->resultSet[$gibbonPersonID] = $this->solver->makeDecisions($data);
         }
 
         $this->stopEngine();
@@ -94,10 +91,28 @@ class Engine
         return $this->resultSet;
     }
 
-    public function getRunningTime()
+    protected function startEngine()
     {
-        return ($this->stopTime - $this->startTime);
+        $this->performance['startTime'] = microtime(true);
+        $this->performance['startMemory'] = memory_get_usage();
     }
 
+    protected function stopEngine()
+    {
+        $this->performance['stopTime'] = microtime(true);
+        $this->performance['stopMemory'] = memory_get_usage();
 
+        $units = array('bytes','KB','MB','GB','TB','PB');
+        $bytes = max( 0, ($this->performance['stopMemory'] - $this->performance['startMemory']));
+        $memory = round($bytes/pow(1024,($i=floor(log($bytes,1024)))),2).' '.$units[$i];
+        $time = number_format($this->performance['stopTime'] - $this->performance['startTime'], 6).' sec';
+
+        $this->performance['time'] = $time;
+        $this->performance['memory'] = $memory;
+    }
+
+    public function getPerformance()
+    {
+        return $this->performance;
+    }
 }

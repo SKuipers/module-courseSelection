@@ -20,6 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace Gibbon\Modules\CourseSelection\Timetable;
 
 use Gibbon\Modules\CourseSelection\DecisionTree\DecisionTree;
+use Gibbon\Modules\CourseSelection\DecisionTree\NodeValidator;
+use Gibbon\Modules\CourseSelection\DecisionTree\NodeEvaluator;
 
 /**
  * Problem solver for the Timetabling Engine: impemented as a decision tree
@@ -31,7 +33,7 @@ class Solver
 {
     protected $decisionTree;
 
-    public function __construct(Validator $validator, Evaluator $evaulator)
+    public function __construct(NodeValidator $validator, NodeEvaluator $evaulator)
     {
         $this->decisionTree = new DecisionTree($validator, $evaulator);
     }
