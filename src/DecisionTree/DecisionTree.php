@@ -68,11 +68,9 @@ class DecisionTree
         $treeDepth = count($decisions);
 
         if ($nodeDepth == $treeDepth) {
-            // Complete (and valid) nodes become leaves
             if ($this->validator->validateNode($node, $treeDepth)) {
-                $weight = $this->evaulator->evaluateNode($node);
-                $node->setWeight($weight);
-
+                // Complete (and valid) nodes become leaves
+                $node->weight = $this->evaulator->evaluateNode($node);
                 array_push($leaves, $node);
             }
         } else {
@@ -84,7 +82,7 @@ class DecisionTree
 
             foreach ($branches as $branch) {
                 // Combine the result of this decision with the previous decisions
-                $values = array_slice($node->getValues(), 0);
+                $values = array_slice($node->values, 0);
                 array_push($values, $branch);
 
                 // Each branch leads to a new node on the tree

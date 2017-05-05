@@ -27,31 +27,16 @@ namespace Gibbon\Modules\CourseSelection\DecisionTree;
  */
 class Node
 {
-    protected $values;
-    protected $weight;
+    public $values;
+    public $weight;
 
     public function __construct($values)
     {
         $this->values = $values;
     }
 
-    public function getValues()
-    {
-        return $this->values;
-    }
-
     public function getDepth()
     {
         return count($this->values);
-    }
-
-    public function getWeight()
-    {
-        return $this->weight;
-    }
-
-    public function setWeight($weight)
-    {
-        $this->weight = $weight;
     }
 }
