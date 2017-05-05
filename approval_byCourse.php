@@ -53,10 +53,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     // SELECT COURSE
-    $form = Form::create('courseApprovalByClass', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form = Form::create('courseApprovalByCourse', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
-    $form->addHiddenValue('q', '/modules/Course Selection/approval_byClass.php');
+    $form->addHiddenValue('q', '/modules/Course Selection/approval_byCourse.php');
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
     $form->addHiddenValue('sidebar', 'false');
 
