@@ -31,6 +31,8 @@ class Validator implements NodeValidator
 {
     protected $environment;
 
+    protected $nodeValidations = 0;
+
     public function __construct(EngineEnvironment $environment)
     {
         $this->environment = $environment;
@@ -43,14 +45,17 @@ class Validator implements NodeValidator
      */
     public function validateNode(&$node, $treeDepth) : bool
     {
-        $periods = array();
-        foreach ($node->getValues() as $value) {
-            $periods[] = $this->environment->get($value, 'period');
-        }
+        $this->nodeValidations++;
 
-        // Look for duplicates by counting the class periods
+        // Look for duplicates by counting the class period occurances
+        $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
         return (count($periodCounts) >= $treeDepth);
+    }
+
+    public function getNodeValidations()
+    {
+        return $this->nodeValidations;
     }
 }

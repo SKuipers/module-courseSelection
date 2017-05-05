@@ -31,6 +31,9 @@ class Evaluator implements NodeEvaluator
 {
     protected $environment;
 
+    protected $nodeEvaluations = 0;
+    protected $treeEvaluations = 0;
+
     public function __construct(EngineEnvironment $environment)
     {
         $this->environment = $environment;
@@ -42,6 +45,9 @@ class Evaluator implements NodeEvaluator
      */
     public function evaluateNode(&$node) : float
     {
+        $this->nodeEvaluations++;
+
+        usort($node->values, $this->nodeSorter('period') );
         return 0.0;
     }
 
@@ -51,6 +57,39 @@ class Evaluator implements NodeEvaluator
      */
     public function evaluateTree(&$tree) : bool
     {
+        $this->treeEvaluations++;
+
         return false;
+    }
+
+    public function getBestNodeInSet(&$nodes)
+    {
+        $bestResult = current($nodes);
+        $bestWeight = 0.0;
+
+        foreach ($nodes as $node) {
+            if ($node->weight > $bestWeight) {
+                $bestResult = $node;
+                $bestWeight = $node->weight;
+            }
+        }
+
+        return $bestResult;
+    }
+
+    public function getNodeEvaluations()
+    {
+        return $this->nodeEvaluations;
+    }
+
+    public function getTreeEvaluations()
+    {
+        return $this->treeEvaluations;
+    }
+
+    protected function nodeSorter($key) {
+        return function ($a, $b) use ($key) {
+            return strnatcmp($a[$key], $b[$key]);
+        };
     }
 }

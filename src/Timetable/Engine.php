@@ -53,13 +53,13 @@ class Engine
         $this->settings = $settings;
     }
 
-    public function addData($gibbonPersonID, $data)
+    public function addData($gibbonPersonIDStudent, $data)
     {
         if (empty($data) || !is_array($data) || empty(next($data)) || !is_array(next($data))) {
             throw new \Exception('Invalid data fed into engine: not a valid two-dimensional array.');
         }
 
-        $this->dataSet[$gibbonPersonID] = $data;
+        $this->dataSet[$gibbonPersonIDStudent] = $data;
     }
 
     public function buildEngine(EngineFactory $factory, $environmentData = array())
@@ -82,8 +82,10 @@ class Engine
 
         $this->startEngine();
 
-        foreach ($this->dataSet as $gibbonPersonID => $data) {
-            $this->resultSet[$gibbonPersonID] = $this->solver->makeDecisions($data);
+        foreach ($this->dataSet as $gibbonPersonIDStudent => $data) {
+            $results = $this->solver->makeDecisions($data);
+
+            $this->resultSet[$gibbonPersonIDStudent] = $this->evaluator->getBestNodeInSet($results);
         }
 
         $this->stopEngine();
@@ -109,6 +111,10 @@ class Engine
 
         $this->performance['time'] = $time;
         $this->performance['memory'] = $memory;
+
+        $this->performance['nodeValidations'] = $this->validator->getNodeValidations();
+        $this->performance['nodeEvaluations'] = $this->evaluator->getNodeEvaluations();
+        $this->performance['treeEvaluations'] = $this->evaluator->getTreeEvaluations();
     }
 
     public function getPerformance()
