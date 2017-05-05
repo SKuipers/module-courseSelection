@@ -47,7 +47,10 @@ class Evaluator implements NodeEvaluator
     {
         $this->nodeEvaluations++;
 
+        // Order the results (for interest sake)
+        // TODO: Remove later for performace boost
         usort($node->values, $this->nodeSorter('period') );
+
         return 0.0;
     }
 

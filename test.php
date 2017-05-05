@@ -57,44 +57,46 @@ $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear(
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
 // Limit the results (for now)
-$studentData = array_slice($studentData, 0, 1);
-
+//$studentData = array_slice($studentData, 0, 1);
 
 $factory = new EngineFactory();
 
 $engine = $factory->createEngine();
 $engine->buildEngine($factory, $environmentData);
 
-foreach ($studentData as $gibbonPersonID => $courses) {
+foreach ($studentData as $gibbonPersonIDStudent => $courses) {
+
     $studentCourses = array();
     foreach ($courses as $class) {
-        $studentCourses[$class['gibbonCourseID']][] = $class['className'];
+        $studentCourses[array_shift($class)][] = $class;
     }
 
-    $engine->addData($gibbonPersonID, array_values($studentCourses) );
+    $engine->addData($gibbonPersonIDStudent, array_values($studentCourses) );
 }
 
 $results = $engine->runEngine();
 
 $studentCount = count($results);
-$studentsWithResults = array();
+$studentsWithResults = 0;
 foreach ($results as $result) {
-    if (count($result) > 0) $studentsWithResults[] = $result;
+    if (count($result) > 0) $studentsWithResults++;
 }
 
 $performance = $engine->getPerformance();
 
 echo '<pre>';
-echo 'Duration: '.$performance['time']."\n";
-echo 'Memory: '.$performance['memory']."\n";
+echo "\n\n";
+echo 'Engine Duration: '.$performance['time']."\n";
+echo 'Engine Memory: '.$performance['memory']."\n";
+echo 'Total Memory: '.round(memory_get_usage()/1024, 2)."\n";
+echo "\n\n";
+echo 'Tree Iterations: '.number_format($performance['treeEvaluations'])."\n";
+echo 'Branches Created: '.number_format($performance['nodeValidations'])."\n";
+echo 'Leaves Created: '.number_format($performance['nodeEvaluations'])."\n";
 echo "\n\n";
 echo 'Students: '.$studentCount."\n";
-echo 'Students without Results: '.($studentCount - count($studentsWithResults))."\n";
-
-// echo 'Iterations: '.$engine->iterations."\n";
-// echo 'Braches Created: '.$engine->branchesCreated."\n";
-// echo 'Leaves Created: '.$engine->leavesCreated."\n";
-echo 'Total Valid Results: '.count($results, COUNT_RECURSIVE)."\n";
+echo 'Students without Results: '.$performance['incompleteResults']."\n";
 echo "\n\n";
-print_r($studentsWithResults);
+
+print_r($results);
 echo '</pre>';

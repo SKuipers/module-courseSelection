@@ -64,6 +64,7 @@ class Engine
 
     public function buildEngine(EngineFactory $factory, $environmentData = array())
     {
+        // Factory is responsible for creating and configuring the parts that go in the engine
         $this->environment = $factory->createEnvironment($environmentData);
         $this->validator = $factory->createValidator($this->environment);
         $this->evaluator = $factory->createEvaluator($this->environment);
@@ -84,8 +85,13 @@ class Engine
 
         foreach ($this->dataSet as $gibbonPersonIDStudent => $data) {
             $results = $this->solver->makeDecisions($data);
+            $bestResult = $this->evaluator->getBestNodeInSet($results);
 
-            $this->resultSet[$gibbonPersonIDStudent] = $this->evaluator->getBestNodeInSet($results);
+            if (empty($bestResult)) {
+                $this->performance['incompleteResults'] = @$this->performance['incompleteResults'] + 1;
+            }
+
+            $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
         }
 
         $this->stopEngine();
