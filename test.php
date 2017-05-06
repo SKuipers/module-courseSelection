@@ -67,6 +67,8 @@ $factory = new EngineFactory();
 
 $settings = $factory->createSettings();
 $settings->timetableConflictTollerance = 0;
+$settings->optimalWeight = 1.0;
+$settings->maximumOptimalResults = 5;
 
 $engine = $factory->createEngine($settings);
 $engine->buildEngine($environmentData);

@@ -29,8 +29,13 @@ namespace CourseSelection\Timetable;
  */
 class EngineSettings
 {
+    /**
+     * Default Configuration Settings
+     */
     protected $settings = array(
         'timetableConflictTollerance' => 0,
+        'optimalWeight'               => 1.0,
+        'maximumOptimalResults'       => 0,
     );
 
     public function __construct($settings = array())
@@ -41,7 +46,7 @@ class EngineSettings
     public function __get($key)
     {
         if (!isset($this->settings[$key])) {
-            throw new \Exception('Could not access engine setting: invalid key.');
+            throw new \Exception('Could not access engine setting: invalid key '.$key);
         }
 
         return $this->settings[$key];
@@ -50,7 +55,7 @@ class EngineSettings
     public function __set($key, $value)
     {
         if (!isset($this->settings[$key])) {
-            throw new \Exception('Could not access engine setting: invalid key.');
+            throw new \Exception('Could not access engine setting: invalid key '.$key);
         }
 
         $this->settings[$key] = $value;

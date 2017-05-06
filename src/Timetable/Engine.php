@@ -97,6 +97,9 @@ class Engine
         $this->startEngine();
 
         foreach ($this->dataSet as $gibbonPersonIDStudent => $data) {
+            $this->validator->reset();
+            $this->evaluator->reset();
+
             $results = $this->solver->makeDecisions($data);
             $bestResult = $this->evaluator->getBestNodeInSet($results);
 
@@ -121,6 +124,12 @@ class Engine
 
     protected function stopEngine()
     {
+        $this->performance = array_merge(
+            $this->performance,
+            $this->validator->getPerformance(),
+            $this->evaluator->getPerformance()
+        );
+
         $this->performance['stopTime'] = microtime(true);
         $this->performance['stopMemory'] = memory_get_usage();
 
@@ -131,11 +140,6 @@ class Engine
 
         $this->performance['time'] = $time;
         $this->performance['memory'] = $memory;
-
-        $this->performance['nodeValidations'] = $this->validator->getNodeValidations();
-        $this->performance['nodeEvaluations'] = $this->evaluator->getNodeEvaluations();
-        $this->performance['treeEvaluations'] = $this->evaluator->getTreeEvaluations();
-        $this->performance['incompleteResults'] = $this->evaluator->getIncompleteEvaluations();
         $this->performance['totalResults'] = count($this->resultSet);
     }
 }

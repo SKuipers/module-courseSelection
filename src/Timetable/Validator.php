@@ -30,14 +30,24 @@ use CourseSelection\DecisionTree\NodeValidator;
 class Validator implements NodeValidator
 {
     protected $environment;
+    protected $settings;
 
-    protected $nodeValidations = 0;
+    /**
+     * Performance Metrics
+     */
+    protected $performance = array(
+        'nodeValidations'   => 0,
+    );
 
-    protected $conflictTollerance = 0;
-
-    public function __construct(EngineEnvironment $environment)
+    public function __construct(EngineEnvironment $environment, EngineSettings $settings)
     {
         $this->environment = $environment;
+        $this->settings = $settings;
+    }
+
+    public function reset()
+    {
+
     }
 
     /**
@@ -47,22 +57,17 @@ class Validator implements NodeValidator
      */
     public function validateNode(&$node, $treeDepth) : bool
     {
-        $this->nodeValidations++;
+        $this->performance['nodeValidations']++;
 
         // Look for duplicates by counting the class period occurances
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
-        return (count($periodCounts) >= max(0, $treeDepth - $this->conflictTollerance) );
+        return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
     }
 
-    public function getNodeValidations()
+    public function getPerformance()
     {
-        return $this->nodeValidations;
-    }
-
-    public function setConflictTollerance($value)
-    {
-        $this->conflictTollerance = $value;
+        return $this->performance;
     }
 }

@@ -55,15 +55,14 @@ class EngineFactory
 
     public function createValidator(EngineEnvironment $environment, EngineSettings $settings) : Validator
     {
-        $validator = new Validator($environment);
-        $validator->setConflictTollerance($settings->timetableConflictTollerance);
+        $validator = new Validator($environment, $settings);
 
         return $validator;
     }
 
     public function createEvaluator(EngineEnvironment $environment, EngineSettings $settings) : Evaluator
     {
-        $evaluator = new Evaluator($environment);
+        $evaluator = new Evaluator($environment, $settings);
 
         return $evaluator;
     }

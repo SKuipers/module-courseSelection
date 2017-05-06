@@ -30,38 +30,68 @@ use CourseSelection\DecisionTree\NodeEvaluator;
 class Evaluator implements NodeEvaluator
 {
     protected $environment;
+    protected $settings;
 
-    protected $nodeEvaluations = 0;
-    protected $treeEvaluations = 0;
-    protected $incompleteEvaluations = 0;
+    /**
+     * Internal Counters
+     */
+    protected $optimalNodesEvaluated;
 
-    public function __construct(EngineEnvironment $environment)
+    /**
+     * Performance Metrics
+     */
+    protected $performance = array(
+        'nodeEvaluations'   => 0,
+        'treeEvaluations'   => 0,
+        'incompleteResults' => 0,
+    );
+
+    public function __construct(EngineEnvironment $environment, EngineSettings $settings)
     {
         $this->environment = $environment;
+        $this->settings = $settings;
+    }
+
+    public function reset()
+    {
+        $this->optimalNodesEvaluated = 0;
     }
 
     /**
      * @param   object  &$node
      * @return  float
      */
-    public function evaluateNode(&$node) : float
+    public function evaluateNodeWeight(&$node) : float
     {
-        $this->nodeEvaluations++;
+        $this->performance['nodeEvaluations']++;
 
         // Order the results (for interest sake)
         // TODO: Remove later for performace boost
-        usort($node->values, $this->nodeSorter('period') );
+        usort($node->values, $this->sortByNodeValue('period') );
 
-        return 0.0;
+        $weight = 0.0;
+
+        if ($weight >= $this->settings->optimalWeight) {
+            $this->optimalNodesEvaluated++;
+        }
+
+        return $weight;
     }
 
     /**
      * @param   array  &$nodes
      * @return  bool
      */
-    public function evaluateTree(&$tree) : bool
+    public function evaluateTreeCompletion(&$tree, &$leaves) : bool
     {
-        $this->treeEvaluations++;
+        $this->performance['treeEvaluations']++;
+
+        // The tree is potentially complete if we've already seen a number of optimal results
+        if (!empty($this->settings->maximumOptimalResults)) {
+            if ($this->optimalNodesEvaluated >= $this->settings->maximumOptimalResults) {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -78,27 +108,17 @@ class Evaluator implements NodeEvaluator
             }
         }
 
-        if (empty($bestResult)) $this->incompleteEvaluations++;
+        if (empty($bestResult)) $this->performance['incompleteEvaluations']++;
 
         return $bestResult;
     }
 
-    public function getNodeEvaluations()
+    public function getPerformance()
     {
-        return $this->nodeEvaluations;
+        return $this->performance;
     }
 
-    public function getTreeEvaluations()
-    {
-        return $this->treeEvaluations;
-    }
-
-    public function getIncompleteEvaluations()
-    {
-        return $this->incompleteEvaluations;
-    }
-
-    protected function nodeSorter($key) {
+    protected function sortByNodeValue($key) {
         return function ($a, $b) use ($key) {
             return strnatcmp($a[$key], $b[$key]);
         };
