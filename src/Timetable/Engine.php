@@ -66,9 +66,10 @@ class Engine
     {
         // Factory is responsible for creating and configuring the parts that go in the engine
         $this->environment = $factory->createEnvironment($environmentData);
+        $this->heuristic = $factory->createHeuristic($this->environment);
         $this->validator = $factory->createValidator($this->environment);
         $this->evaluator = $factory->createEvaluator($this->environment);
-        $this->solver = $factory->createSolver($this->validator, $this->evaluator);
+        $this->solver = $factory->createSolver($this->heuristic, $this->validator, $this->evaluator);
     }
 
     public function runEngine()

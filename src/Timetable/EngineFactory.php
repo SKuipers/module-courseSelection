@@ -49,6 +49,13 @@ class EngineFactory
         return new EngineEnvironment($environmentData);
     }
 
+    public function createHeuristic($environment)
+    {
+        $heuristic = new Heuristic($environment);
+
+        return $heuristic;
+    }
+
     public function createValidator($environment)
     {
         $validator = new Validator($environment);
@@ -63,9 +70,9 @@ class EngineFactory
         return $evaluator;
     }
 
-    public function createSolver($validator, $evaluator)
+    public function createSolver($heuristic, $validator, $evaluator)
     {
-        $solver = new Solver($validator, $evaluator);
+        $solver = new Solver($heuristic, $validator, $evaluator);
 
         return $solver;
     }
