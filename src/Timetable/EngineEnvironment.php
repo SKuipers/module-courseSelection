@@ -43,6 +43,6 @@ class EngineEnvironment
 
     public function set($course, $key, $value)
     {
-        $this->data[$key] = $value;
+        $this->data[$course][$key] = $value;
     }
 }

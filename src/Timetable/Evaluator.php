@@ -33,6 +33,7 @@ class Evaluator implements NodeEvaluator
 
     protected $nodeEvaluations = 0;
     protected $treeEvaluations = 0;
+    protected $incompleteEvaluations = 0;
 
     public function __construct(EngineEnvironment $environment)
     {
@@ -77,6 +78,8 @@ class Evaluator implements NodeEvaluator
             }
         }
 
+        if (empty($bestResult)) $this->incompleteEvaluations++;
+
         return $bestResult;
     }
 
@@ -88,6 +91,11 @@ class Evaluator implements NodeEvaluator
     public function getTreeEvaluations()
     {
         return $this->treeEvaluations;
+    }
+
+    public function getIncompleteEvaluations()
+    {
+        return $this->incompleteEvaluations;
     }
 
     protected function nodeSorter($key) {

@@ -55,7 +55,7 @@ class Engine
 
     public function addData($gibbonPersonIDStudent, $data)
     {
-        if (empty($data) || !is_array($data) || empty(next($data)) || !is_array(next($data))) {
+        if (empty($data) || !is_array($data) || !is_array(next($data))) {
             throw new \Exception('Invalid data fed into engine: not a valid two-dimensional array.');
         }
 
@@ -88,10 +88,6 @@ class Engine
             $results = $this->solver->makeDecisions($data);
             $bestResult = $this->evaluator->getBestNodeInSet($results);
 
-            if (empty($bestResult)) {
-                $this->performance['incompleteResults'] = @$this->performance['incompleteResults'] + 1;
-            }
-
             $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
         }
 
@@ -122,6 +118,7 @@ class Engine
         $this->performance['nodeValidations'] = $this->validator->getNodeValidations();
         $this->performance['nodeEvaluations'] = $this->evaluator->getNodeEvaluations();
         $this->performance['treeEvaluations'] = $this->evaluator->getTreeEvaluations();
+        $this->performance['incompleteResults'] = $this->evaluator->getIncompleteEvaluations();
     }
 
     public function getPerformance()
