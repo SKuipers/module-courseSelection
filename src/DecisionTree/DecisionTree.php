@@ -59,7 +59,7 @@ class DecisionTree
 
     protected function isGoalSatisfied(&$tree, &$leaves)
     {
-        return (count($tree) == 0) || $this->evaulator->evaluateTree($tree); //|| (count($leaves) >= 5)
+        return (count($tree) == 0) || $this->evaulator->evaluateTreeCompletion($tree, $leaves);
     }
 
     protected function createBranches(&$tree, &$leaves, &$decisions)
@@ -72,17 +72,14 @@ class DecisionTree
         if ($nodeDepth == $treeDepth) {
             if ($this->validator->validateNode($node, $treeDepth)) {
                 // Complete (and valid) nodes become leaves
-                $node->weight = $this->evaulator->evaluateNode($node);
+                $node->weight = $this->evaulator->evaluateNodeWeight($node);
                 array_push($leaves, $node);
             }
         } else {
             // Decisions in the tree become branches
             $branches = $decisions[$nodeDepth];
 
-            // Shake the tree a bit
-            //shuffle($branches);
-
-            // Arrange the branches by leat to most optimal
+            // Shake the tree a bit: sort branches by least to most optimal
             $branches = $this->heuristic->sortOptimalDecisions($branches, $node);
 
             foreach ($branches as $branch) {

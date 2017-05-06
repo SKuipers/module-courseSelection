@@ -33,7 +33,7 @@ interface NodeEvaluator
      * @param   object  &$node
      * @return  float
      */
-    public function evaluateNode(&$node) : float;
+    public function evaluateNodeWeight(&$node) : float;
 
     /**
      * Should return true if the tree is complete based on the problem conditions.
@@ -41,5 +41,5 @@ interface NodeEvaluator
      * @param   array  &$nodes
      * @return  bool
      */
-    public function evaluateTree(&$tree) : bool;
+    public function evaluateTreeCompletion(&$tree, &$leaves) : bool;
 }
