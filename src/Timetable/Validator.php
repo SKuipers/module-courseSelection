@@ -69,6 +69,8 @@ class Validator implements NodeValidator
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
+        $node->weight = (count($periodCounts) >= $treeDepth)? 1.0 : 0.0;
+
         return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
     }
 

@@ -65,7 +65,7 @@ $courseSelectionData = collect($studentData)->transform(function($courses, $gibb
 $factory = new EngineFactory();
 
 $settings = $factory->createSettings();
-$settings->timetableConflictTollerance = 0;
+$settings->timetableConflictTollerance = 1;
 $settings->optimalWeight = 1.0;
 $settings->maximumOptimalResults = 0;
 $settings->minimumClassEnrolment = 8;

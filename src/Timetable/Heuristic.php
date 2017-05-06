@@ -63,13 +63,13 @@ class Heuristic implements NodeHeuristic
             $aCount = $environment->get($a['className'], 'students');
             $bCount = $environment->get($b['className'], 'students');
 
-            //if ($aCount == 0) return -1;
-            //if ($bCount == 0) return 1;
+            // Avoid filling empty classes first
+            if ($aCount == 0) return -1;
 
+            // De-prioritize those that are over the minimum
             if ($aCount >= $this->settings->minimumClassEnrolment) {
                 return $bCount - $aCount;
             }
-            //if ($aCount >= $this->settings->minimumClassEnrolment) return -1;
             if ($bCount >= $this->settings->minimumClassEnrolment) return 1;
 
             return $aCount - $bCount;
