@@ -30,7 +30,7 @@ namespace CourseSelection\Timetable;
 class EngineSettings
 {
     protected $settings = array(
-        '' => '',
+        'timetableConflictTollerance' => 0,
     );
 
     public function __construct($settings = array())

@@ -37,6 +37,8 @@ class Heuristic implements NodeHeuristic
     }
 
     /**
+     * Sorts by conflicts first, then number of students in the class
+     *
      * @param   object &$node
      * @param   int    $depth
      * @return  bool

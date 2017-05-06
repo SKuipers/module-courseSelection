@@ -27,19 +27,16 @@ namespace CourseSelection\Timetable;
  */
 class EngineFactory
 {
-    protected $settings;
-
-    public function __construct($settingsData = array())
+    public function createEngine($settings = null) : Engine
     {
-        $this->settings = $this->createSettings($settingsData);
+        if (empty($settings)) {
+            $settings = $this->createSettings();
+        }
+
+        return new Engine($this, $settings);
     }
 
-    public function createEngine() : Engine
-    {
-        return new Engine($this->settings);
-    }
-
-    public function createSettings(array $settingsData) : EngineSettings
+    public function createSettings(array $settingsData = array()) : EngineSettings
     {
         return new EngineSettings($settingsData);
     }
@@ -49,21 +46,22 @@ class EngineFactory
         return new EngineEnvironment($environmentData);
     }
 
-    public function createHeuristic(EngineEnvironment $environment) : Heuristic
+    public function createHeuristic(EngineEnvironment $environment, EngineSettings $settings) : Heuristic
     {
         $heuristic = new Heuristic($environment);
 
         return $heuristic;
     }
 
-    public function createValidator(EngineEnvironment $environment) : Validator
+    public function createValidator(EngineEnvironment $environment, EngineSettings $settings) : Validator
     {
         $validator = new Validator($environment);
+        $validator->setConflictTollerance($settings->timetableConflictTollerance);
 
         return $validator;
     }
 
-    public function createEvaluator(EngineEnvironment $environment) : Evaluator
+    public function createEvaluator(EngineEnvironment $environment, EngineSettings $settings) : Evaluator
     {
         $evaluator = new Evaluator($environment);
 

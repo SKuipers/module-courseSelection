@@ -33,6 +33,8 @@ class Validator implements NodeValidator
 
     protected $nodeValidations = 0;
 
+    protected $conflictTollerance = 0;
+
     public function __construct(EngineEnvironment $environment)
     {
         $this->environment = $environment;
@@ -51,11 +53,16 @@ class Validator implements NodeValidator
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
-        return (count($periodCounts) >= $treeDepth);
+        return (count($periodCounts) >= max(0, $treeDepth - $this->conflictTollerance) );
     }
 
     public function getNodeValidations()
     {
         return $this->nodeValidations;
+    }
+
+    public function setConflictTollerance($value)
+    {
+        $this->conflictTollerance = $value;
     }
 }

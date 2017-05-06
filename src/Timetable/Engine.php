@@ -33,23 +33,35 @@ use CourseSelection\DecisionTree\DecisionTree;
  */
 class Engine
 {
+    /**
+     * Configuration Objects
+     */
+    protected $factory;
     protected $settings;
     protected $environment;
 
+    /**
+     * Replaceable Parts
+     */
+    protected $heuristic;
     protected $validator;
     protected $evaulator;
     protected $solver;
 
-    protected $startTime;
-    protected $stopTime;
-
+    /**
+     * Data Storage
+     */
     protected $dataSet = array();
     protected $resultSet = array();
 
+    /**
+     * Metrics
+     */
     protected $performance = array();
 
-    public function __construct(EngineSettings $settings)
+    public function __construct(EngineFactory $factory, EngineSettings $settings)
     {
+        $this->factory = $factory;
         $this->settings = $settings;
     }
 
@@ -62,19 +74,19 @@ class Engine
         $this->dataSet[$gibbonPersonIDStudent] = $data;
     }
 
-    public function buildEngine(EngineFactory $factory, $environmentData = array())
+    public function buildEngine($environmentData = array())
     {
         // Factory is responsible for creating and configuring the parts that go in the engine
-        $this->environment = $factory->createEnvironment($environmentData);
-        $this->heuristic = $factory->createHeuristic($this->environment);
-        $this->validator = $factory->createValidator($this->environment);
-        $this->evaluator = $factory->createEvaluator($this->environment);
-        $this->solver = $factory->createSolver($this->heuristic, $this->validator, $this->evaluator);
+        $this->environment = $this->factory->createEnvironment($environmentData);
+        $this->heuristic = $this->factory->createHeuristic($this->environment, $this->settings);
+        $this->validator = $this->factory->createValidator($this->environment, $this->settings);
+        $this->evaluator = $this->factory->createEvaluator($this->environment, $this->settings);
+        $this->solver = $this->factory->createSolver($this->heuristic, $this->validator, $this->evaluator);
     }
 
     public function runEngine()
     {
-        if (empty($this->solver) || empty($this->validator) || empty($this->evaluator)) {
+        if (empty($this->solver) || empty($this->heuristic) || empty($this->validator) || empty($this->evaluator)) {
             throw new \Exception('Engine cannot run: missing some parts!');
         }
 
@@ -94,6 +106,11 @@ class Engine
         $this->stopEngine();
 
         return $this->resultSet;
+    }
+
+    public function getPerformance()
+    {
+        return $this->performance;
     }
 
     protected function startEngine()
@@ -119,10 +136,6 @@ class Engine
         $this->performance['nodeEvaluations'] = $this->evaluator->getNodeEvaluations();
         $this->performance['treeEvaluations'] = $this->evaluator->getTreeEvaluations();
         $this->performance['incompleteResults'] = $this->evaluator->getIncompleteEvaluations();
-    }
-
-    public function getPerformance()
-    {
-        return $this->performance;
+        $this->performance['totalResults'] = count($this->resultSet);
     }
 }
