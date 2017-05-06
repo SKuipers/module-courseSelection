@@ -17,15 +17,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon\Modules\CourseSelection\Timetable;
+namespace CourseSelection\Timetable;
 
-use Gibbon\Modules\CourseSelection\Domain\TimetableGateway;
+use CourseSelection\Domain\TimetableGateway;
+use Illuminate\Support\Collection;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+require_once $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/Illuminate/Support/helpers.php';
 
-ini_set('memory_limit', '1024M');
-ini_set('max_execution_time', 300);
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('Illuminate\\', 'modules/Course Selection/src/Illuminate/');
+
+
+//ini_set('memory_limit', '1024M');
+//ini_set('max_execution_time', 300);
 
 $mockData = array(
     0 => array( 'ENG.A-1', 'ENG.A-2', 'ENG.B-1', 'ENG.B-2' ),
@@ -52,6 +57,7 @@ $timetableGateway = new TimetableGateway($pdo);
 $environmentResults = $timetableGateway->selectTimetabledCoursesBySchoolYear('012');
 $environmentData = ($environmentResults && $environmentResults->rowCount() > 0)? $environmentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
+
 // Get the course selections grouped by student
 $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear('012');
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP) : array();
@@ -59,20 +65,20 @@ $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentRes
 // Limit the results (for now)
 //$studentData = array_slice($studentData, 0, 1);
 
+$courseSelectionData = collect($studentData)->transform(function($courses, $gibbonPersonIDStudent) {
+    return collect($courses)->mapToGroups(function($item) {
+         return [$item['gibbonCourseID'] => $item];
+    })->toArray();
+});
+
 $factory = new EngineFactory();
 
 $engine = $factory->createEngine();
 $engine->buildEngine($factory, $environmentData);
 
-foreach ($studentData as $gibbonPersonIDStudent => $courses) {
-
-    $studentCourses = array();
-    foreach ($courses as $class) {
-        $studentCourses[array_shift($class)][] = $class;
-    }
-
-    $engine->addData($gibbonPersonIDStudent, array_values($studentCourses) );
-}
+$courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engine) {
+    $engine->addData($gibbonPersonIDStudent, array_values($courses) );
+});
 
 $results = $engine->runEngine();
 

@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon\Modules\CourseSelection\Timetable;
+namespace CourseSelection\Timetable;
 
-use Gibbon\Modules\CourseSelection\DecisionTree\NodeEvaluator;
+use CourseSelection\DecisionTree\NodeEvaluator;
 
 /**
  * Implementation of the NodeEvaluator interface for the Timetabling Engine

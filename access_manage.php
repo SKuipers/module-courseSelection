@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Gibbon\Modules\CourseSelection\SchoolYearNavigation;
-use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
+use CourseSelection\SchoolYearNavigation;
+use CourseSelection\Domain\AccessGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_manage.php') == false) {

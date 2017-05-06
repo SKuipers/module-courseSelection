@@ -19,10 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 
-use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
+use CourseSelection\Domain\OfferingsGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 
 $URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php';
 

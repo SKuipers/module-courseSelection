@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon\Modules\CourseSelection\Timetable;
+namespace CourseSelection\Timetable;
 
-use Gibbon\Modules\CourseSelection\Domain\TimetableGateway;
+use CourseSelection\Domain\TimetableGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 
 $mockData = array(
     0 => array( 'ENG.A-1', 'ENG.A-2', 'ENG.B-1', 'ENG.B-2' ),

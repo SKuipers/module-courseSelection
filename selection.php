@@ -19,12 +19,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
-use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
-use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
-use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use CourseSelection\Domain\AccessGateway;
+use CourseSelection\Domain\OfferingsGateway;
+use CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection.php') == false) {

@@ -21,7 +21,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.php') == false) {

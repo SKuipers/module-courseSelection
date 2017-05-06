@@ -18,11 +18,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
-use Gibbon\Modules\CourseSelection\SchoolYearNavigation;
-use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use CourseSelection\SchoolYearNavigation;
+use CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_studentsNotSelected.php') == false) {

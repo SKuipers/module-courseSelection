@@ -17,11 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon\Modules\CourseSelection\Timetable;
+namespace CourseSelection\Timetable;
 
-use Gibbon\Modules\CourseSelection\DecisionTree\DecisionTree;
-use Gibbon\Modules\CourseSelection\DecisionTree\NodeValidator;
-use Gibbon\Modules\CourseSelection\DecisionTree\NodeEvaluator;
+use CourseSelection\DecisionTree\DecisionTree;
+use CourseSelection\DecisionTree\NodeHeuristic;
+use CourseSelection\DecisionTree\NodeValidator;
+use CourseSelection\DecisionTree\NodeEvaluator;
 
 /**
  * Problem solver for the Timetabling Engine: impemented as a decision tree
@@ -33,9 +34,9 @@ class Solver
 {
     protected $decisionTree;
 
-    public function __construct(NodeValidator $validator, NodeEvaluator $evaulator)
+    public function __construct(NodeHeuristic $heuristic, NodeValidator $validator, NodeEvaluator $evaulator)
     {
-        $this->decisionTree = new DecisionTree($validator, $evaulator);
+        $this->decisionTree = new DecisionTree($heuristic, $validator, $evaulator);
     }
 
     public function makeDecisions(&$data) : array

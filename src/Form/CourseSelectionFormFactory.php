@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon\Modules\CourseSelection\Form;
+namespace CourseSelection\Form;
 
 use Gibbon\Forms\FormFactory;
-use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use CourseSelection\Domain\SelectionsGateway;
 
 /**
  * CourseSelectionFormFactory

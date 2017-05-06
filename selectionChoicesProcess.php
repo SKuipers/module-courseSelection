@@ -19,11 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 
-use Gibbon\Modules\CourseSelection\Domain\AccessGateway;
-use Gibbon\Modules\CourseSelection\Domain\SelectionsGateway;
+use CourseSelection\Domain\AccessGateway;
+use CourseSelection\Domain\SelectionsGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 
 $courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';
 $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? '';

@@ -19,10 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 
-use Gibbon\Modules\CourseSelection\Domain\OfferingsGateway;
+use CourseSelection\Domain\OfferingsGateway;
 
 // Autoloader & Module includes
-$loader->addNameSpace('Gibbon\Modules\CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings_manage_addEdit.php') == false) {
     exit;
@@ -30,7 +30,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     //Proceed!
     $data = array();
     $data['courseSelectionOfferingID'] = $_POST['courseSelectionOfferingID'] ?? '';
-            
+
     $courseSelectionBlockIDList = json_decode($_POST['blocklist']);
 
     if (empty($data['courseSelectionOfferingID']) || empty($courseSelectionBlockIDList)) {
@@ -40,10 +40,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
         $count = 1;
         foreach ($courseSelectionBlockIDList as $courseSelectionBlockID) {
-            
+
             $data['courseSelectionBlockID'] = $courseSelectionBlockID;
             $data['sequenceNumber'] = $count;
-            
+
             $inserted = $gateway->updateBlockOrder($data);
             $count++;
         }
