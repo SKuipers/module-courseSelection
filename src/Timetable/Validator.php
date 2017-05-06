@@ -59,6 +59,12 @@ class Validator implements NodeValidator
     {
         $this->performance['nodeValidations']++;
 
+        foreach ($node->values as $option) {
+            if ($this->environment->get($option['className'], 'students') >= $this->settings->maximumClassEnrolment) {
+                return false;
+            }
+        }
+
         // Look for duplicates by counting the class period occurances
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);

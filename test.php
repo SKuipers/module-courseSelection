@@ -53,7 +53,7 @@ $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear(
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
 // Limit the results (for now)
-$studentData = array_slice($studentData, 0, 100);
+//$studentData = array_slice($studentData, 0, 100);
 
 // Condense the result set down group by Student > Course > Classes
 $courseSelectionData = collect($studentData)->transform(function($courses, $gibbonPersonIDStudent) {
@@ -65,9 +65,10 @@ $courseSelectionData = collect($studentData)->transform(function($courses, $gibb
 $factory = new EngineFactory();
 
 $settings = $factory->createSettings();
-$settings->timetableConflictTollerance = 1;
+$settings->timetableConflictTollerance = 0;
 $settings->optimalWeight = 1.0;
 $settings->maximumOptimalResults = 0;
+$settings->minimumClassEnrolment = 8;
 $settings->maximumClassEnrolment = 24;
 
 $engine = $factory->createEngine($settings);

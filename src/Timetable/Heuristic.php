@@ -48,9 +48,9 @@ class Heuristic implements NodeHeuristic
         $environment = &$this->environment;
 
         // Filter options for classes that are not full
-        $options = array_filter($options, function($option) use ($environment) {
-            return $environment->get($option['className'], 'students') < $this->settings->maximumClassEnrolment;
-        });
+        // $options = array_filter($options, function($option) use ($environment) {
+        //     return $environment->get($option['className'], 'students') < $this->settings->maximumClassEnrolment;
+        // });
 
         $periods = array_column($node->values, 'period');
 
