@@ -48,7 +48,7 @@ class EngineFactory
 
     public function createHeuristic(EngineEnvironment $environment, EngineSettings $settings) : Heuristic
     {
-        $heuristic = new Heuristic($environment);
+        $heuristic = new Heuristic($environment, $settings);
 
         return $heuristic;
     }

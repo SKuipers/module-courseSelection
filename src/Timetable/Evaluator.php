@@ -108,7 +108,7 @@ class Evaluator implements NodeEvaluator
             }
         }
 
-        if (empty($bestResult)) $this->performance['incompleteEvaluations']++;
+        if (empty($bestResult)) $this->performance['incompleteResults']++;
 
         return $bestResult;
     }

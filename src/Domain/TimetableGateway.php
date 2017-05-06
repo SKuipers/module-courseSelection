@@ -40,7 +40,7 @@ class TimetableGateway
     public function selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as className, gibbonCourseClass.nameShort as period
+        $sql = "SELECT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as `0`, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
@@ -63,7 +63,9 @@ class TimetableGateway
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND courseSelectionChoice.status <> 'Removed'
-                AND courseSelectionChoice.status <> 'Recommended'";
+                AND courseSelectionChoice.status <> 'Recommended'
+                GROUP BY courseSelectionChoice.courseSelectionChoiceID, gibbonCourseClass.gibbonCourseClassID
+                ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }

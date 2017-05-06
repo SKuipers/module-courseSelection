@@ -33,6 +33,8 @@ class EngineSettings
      * Default Configuration Settings
      */
     protected $settings = array(
+        'minimumClassEnrolment'       => 8,
+        'maximumClassEnrolment'       => 24,
         'timetableConflictTollerance' => 0,
         'optimalWeight'               => 1.0,
         'maximumOptimalResults'       => 0,

@@ -30,15 +30,15 @@ use CourseSelection\DecisionTree\NodeHeuristic;
 class Heuristic implements NodeHeuristic
 {
     protected $environment;
+    protected $settings;
 
-    public function __construct(EngineEnvironment $environment)
+    public function __construct(EngineEnvironment $environment, EngineSettings $settings)
     {
         $this->environment = $environment;
+        $this->settings = $settings;
     }
 
     /**
-     * Sorts by conflicts first, then number of students in the class
-     *
      * @param   object &$node
      * @param   int    $depth
      * @return  bool
@@ -46,17 +46,33 @@ class Heuristic implements NodeHeuristic
     public function sortOptimalDecisions(&$options, &$node)
     {
         $environment = &$this->environment;
+
+        // Filter options for classes that are not full
+        $options = array_filter($options, function($option) use ($environment) {
+            return $environment->get($option['className'], 'students') < $this->settings->maximumClassEnrolment;
+        });
+
         $periods = array_column($node->values, 'period');
 
+        // Sorts by timetable conflicts first, then number of students in the class
         usort($options, function($a, $b) use ($environment, $periods) {
 
-            if (in_array($a['period'], $periods)) return 1;
+            if (in_array($a['period'], $periods)) return -1;
             if (in_array($b['period'], $periods)) return 1;
 
             $aCount = $environment->get($a['className'], 'students');
             $bCount = $environment->get($b['className'], 'students');
 
-            return $bCount - $aCount;
+            //if ($aCount == 0) return -1;
+            //if ($bCount == 0) return 1;
+
+            if ($aCount >= $this->settings->minimumClassEnrolment) {
+                return $bCount - $aCount;
+            }
+            //if ($aCount >= $this->settings->minimumClassEnrolment) return -1;
+            if ($bCount >= $this->settings->minimumClassEnrolment) return 1;
+
+            return $aCount - $bCount;
         });
 
         return $options;

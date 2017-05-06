@@ -30,7 +30,7 @@ $loader->addNameSpace('Illuminate\\', 'modules/Course Selection/src/Illuminate/'
 
 
 ini_set('memory_limit', '1024M');
-//ini_set('max_execution_time', 300);
+ini_set('max_execution_time', 45);
 
 
 // GOAL:
@@ -53,7 +53,7 @@ $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear(
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
 // Limit the results (for now)
-$studentData = array_slice($studentData, 0, 10);
+$studentData = array_slice($studentData, 0, 100);
 
 // Condense the result set down group by Student > Course > Classes
 $courseSelectionData = collect($studentData)->transform(function($courses, $gibbonPersonIDStudent) {
@@ -62,13 +62,13 @@ $courseSelectionData = collect($studentData)->transform(function($courses, $gibb
     })->toArray();
 });
 
-
 $factory = new EngineFactory();
 
 $settings = $factory->createSettings();
-$settings->timetableConflictTollerance = 0;
+$settings->timetableConflictTollerance = 1;
 $settings->optimalWeight = 1.0;
-$settings->maximumOptimalResults = 5;
+$settings->maximumOptimalResults = 0;
+$settings->maximumClassEnrolment = 24;
 
 $engine = $factory->createEngine($settings);
 $engine->buildEngine($environmentData);
@@ -80,6 +80,14 @@ $courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engi
 $results = $engine->runEngine();
 
 $performance = $engine->getPerformance();
+
+$classEnrolments = collect($engine->getEnvironment()->getData())->transform(function($class) {
+    return $class['students'];
+})->filter(function($class){
+    return $class > 0;
+});
+
+
 
 echo '<pre>';
 echo "\n\n";
@@ -94,6 +102,6 @@ echo "\n\n";
 echo 'Students: '.$performance['totalResults']."\n";
 echo 'Students without Results: '.$performance['incompleteResults']."\n";
 echo "\n\n";
-
+print_r($classEnrolments);
 print_r( array_slice($results, 0, 3) );
 echo '</pre>';
