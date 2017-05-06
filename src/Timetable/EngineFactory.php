@@ -34,43 +34,43 @@ class EngineFactory
         $this->settings = $this->createSettings($settingsData);
     }
 
-    public function createEngine()
+    public function createEngine() : Engine
     {
         return new Engine($this->settings);
     }
 
-    public function createSettings($settingsData)
+    public function createSettings(array $settingsData) : EngineSettings
     {
         return new EngineSettings($settingsData);
     }
 
-    public function createEnvironment($environmentData)
+    public function createEnvironment(array $environmentData) : EngineEnvironment
     {
         return new EngineEnvironment($environmentData);
     }
 
-    public function createHeuristic($environment)
+    public function createHeuristic(EngineEnvironment $environment) : Heuristic
     {
         $heuristic = new Heuristic($environment);
 
         return $heuristic;
     }
 
-    public function createValidator($environment)
+    public function createValidator(EngineEnvironment $environment) : Validator
     {
         $validator = new Validator($environment);
 
         return $validator;
     }
 
-    public function createEvaluator($environment)
+    public function createEvaluator(EngineEnvironment $environment) : Evaluator
     {
         $evaluator = new Evaluator($environment);
 
         return $evaluator;
     }
 
-    public function createSolver($heuristic, $validator, $evaluator)
+    public function createSolver(Heuristic $heuristic, Validator $validator, Evaluator $evaluator) : Solver
     {
         $solver = new Solver($heuristic, $validator, $evaluator);
 
