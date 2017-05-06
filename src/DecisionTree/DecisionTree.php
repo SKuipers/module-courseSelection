@@ -30,11 +30,13 @@ namespace CourseSelection\DecisionTree;
  */
 class DecisionTree
 {
+    protected $heuristic;
     protected $validator;
     protected $evaulator;
 
-    public function __construct(NodeValidator $validator, NodeEvaluator $evaulator)
+    public function __construct(NodeHeuristic $heuristic, NodeValidator $validator, NodeEvaluator $evaulator)
     {
+        $this->heuristic = $heuristic;
         $this->validator = $validator;
         $this->evaulator = $evaulator;
     }
@@ -48,22 +50,22 @@ class DecisionTree
         $tree[] = new Node(array());
 
         // Continue adding branches to the tree until the goal is met
-        while (!$this->isGoalSatisfied($tree)) {
+        while (!$this->isGoalSatisfied($tree, $leaves)) {
             $tree = $this->createBranches($tree, $leaves, $decisions);
         }
 
         return $leaves;
     }
 
-    protected function isGoalSatisfied(&$tree)
+    protected function isGoalSatisfied(&$tree, &$leaves)
     {
-        return (count($tree) == 0) || $this->evaulator->evaluateTree($tree);
+        return (count($tree) == 0) || $this->evaulator->evaluateTree($tree); //|| (count($leaves) >= 5)
     }
 
     protected function createBranches(&$tree, &$leaves, &$decisions)
     {
+        // Add a heuristic to select the best node, rather than just the next one?
         $node = array_pop($tree);
-
         $nodeDepth = $node->getDepth();
         $treeDepth = count($decisions);
 
@@ -78,7 +80,10 @@ class DecisionTree
             $branches = $decisions[$nodeDepth];
 
             // Shake the tree a bit
-            shuffle($branches);
+            //shuffle($branches);
+
+            // Arrange the branches by leat to most optimal
+            $branches = $this->heuristic->sortOptimalDecisions($branches, $node);
 
             foreach ($branches as $branch) {
                 // Combine the result of this decision with the previous decisions
