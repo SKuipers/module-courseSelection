@@ -104,7 +104,11 @@ class Engine
             $bestResult = $this->evaluator->getBestNodeInSet($results);
 
             $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
+
+            $this->environment->updateStudentCounts($bestResult->values);
         }
+
+        //$this->environment->combineSmallClasses($this->resultSet, $this->settings->minimumClassEnrolment, $this->settings->maximumClassEnrolment);
 
         $this->stopEngine();
 
@@ -114,6 +118,11 @@ class Engine
     public function getPerformance()
     {
         return $this->performance;
+    }
+
+    public function getEnvironment()
+    {
+        return $this->environment;
     }
 
     protected function startEngine()

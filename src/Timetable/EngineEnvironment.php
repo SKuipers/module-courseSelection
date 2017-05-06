@@ -45,4 +45,46 @@ class EngineEnvironment
     {
         $this->data[$course][$key] = $value;
     }
+
+    public function updateStudentCounts(&$results)
+    {
+        if (empty($results)) return;
+
+        foreach ($results as $result) {
+            $classEnrolment = $this->get($result['className'], 'students');
+            $this->set($result['className'], 'students', $classEnrolment+1);
+        }
+    }
+
+    public function combineSmallClasses(&$resultSet, $minimum, $maximum)
+    {
+        $smallCourses = array_reduce($this->data, function($classes, $class) use ($minimum) {
+            if ($class['students'] < $minimum) {
+                $classes[$class['courseNameShort']][] = $class;
+            }
+            return $classes;
+        }, array());
+
+        $combineClasses = array_reduce($smallCourses, function($classes, $courseClasses) use ($maximum) {
+
+            if (count($courseClasses) <= 1) return $classes;
+
+            $rootClass = current($courseClasses);
+
+            foreach ($courseClasses as $class) {
+                if ($rootClass['students'] + $class['students'] <= $maximum) {
+                    $classes[$rootClass['className']][] = $class['className'];
+                    $rootClass['students'] += $class['students'];
+                }
+            }
+
+            return $classes;
+        }, array());
+
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
 }
