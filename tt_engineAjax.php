@@ -6,9 +6,12 @@ Copyright (C) 2017, Sandra Kuipers
 
 include '../../functions.php';
 
-if (empty($secureFilePath)) {
-    $secureFilePath = $_SESSION[$guid]['absolutePath'].'/uploads';
-}
+use CourseSelection\BackgroundProcess;
 
-echo file_exists($secureFilePath.'/engine/batchProcessing.txt')? '1' : '0';
+// Autoloader & Module includes
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+
+$process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
+
+echo ($process->isProcessRunning('engine'))? '1' : '0';
 

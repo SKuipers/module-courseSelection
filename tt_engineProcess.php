@@ -7,6 +7,8 @@ Copyright (C) 2017, Sandra Kuipers
 include '../../functions.php';
 include '../../config.php';
 
+use CourseSelection\BackgroundProcess;
+
 // Autoloader & Module includes
 $loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 
@@ -26,21 +28,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         exit;
     } else {
 
-        if (empty($secureFilePath)) {
-            $secureFilePath = $_SESSION[$guid]['absolutePath'].'/uploads';
-            if (!is_dir($secureFilePath.'/engine')) {
-                mkdir($secureFilePath.'/engine', 0755);
-            }
-        }
+        $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
+        $process->startProcess('engine', __DIR__.'/tt_engineRun.php', array($gibbonSchoolYearID));
 
-        $cmd = PHP_BINDIR.'/php tt_engineRun.php '.escapeshellarg('gibbonSchoolYearID');
-
-        $outputfile = $secureFilePath. '/engine/batchOutput.txt';
-        $pidfile = $secureFilePath. '/engine/batchProcessing.txt';
-
-        exec(sprintf("%s > %s 2>&1 & echo $! > %s", $cmd, $outputfile, $pidfile));
-
-        $URL .= "&return=success0";
         header("Location: {$URL}");
         exit;
     }

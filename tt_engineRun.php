@@ -8,6 +8,7 @@ include '../../functions.php';
 include '../../config.php';
 
 use CourseSelection\Domain\TimetableGateway;
+use CourseSelection\BackgroundProcess;
 
 // Cancel out now if we're not running via CLI
 if (php_sapi_name() != 'cli') {
@@ -23,19 +24,13 @@ setCurrentSchoolYear($guid, $connection2);
 
 $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;
 
-if (empty($secureFilePath)) {
-    $secureFilePath = $_SESSION[$guid]['absolutePath'].'/uploads';
-}
+$processor = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
 
-// Write the processing file (that the engine watches)
-file_put_contents( $secureFilePath. '/engine/batchProcessing.txt', getmypid() );
 
 
 sleep(20);
 
-// Cleanup the processing file
-unlink( $secureFilePath. '/engine/batchProcessing.txt' );
-
+$processor->stopProcess('engine');
 
 
 $report = 'Complete!';
