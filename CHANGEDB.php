@@ -89,3 +89,36 @@ UPDATE `gibbonAction` SET `name`='Approve Requests by Course', `URLList`='approv
 UPDATE `gibbonAction` SET `name`='Approve Requests by Offering', category='Approval' WHERE name='Course Approval by Offering' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
 UPDATE `gibbonAction` SET `name`='Copy Requests By Course' WHERE name='Copy Selections By Course' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE gibbonModule.name='Course Selection');end
 ";
+
+//v0.1.00
+$count++;
+$sql[$count][0]="0.1.00" ;
+$sql[$count][1]="
+CREATE TABLE `courseSelectionTTResults` (
+  `courseSelectionTTResultsID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
+  `gibbonCourseID` INT(8) UNSIGNED NULL ,
+  `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `weight` DECIMAL(6,2) NULL ,
+  PRIMARY KEY (`courseSelectionTTResultsID`),
+  INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
+CREATE TABLE `courseSelectionTTFlag` (
+  `courseSelectionTTFlagID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
+  `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `type` VARCHAR(30) NULL ,
+  `reason` VARCHAR(255) NULL ,
+  PRIMARY KEY (`courseSelectionTTFlagID`),
+   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`, `gibbonCourseClassID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetablingResults', 'Timetabling Results', 'Performance and result counts from last timetable operation.', '');end
+INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'Timetabling Engine', 0, 'Timetable', '', 'tt_engine.php', 'tt_engine.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Course Selection' AND gibbonAction.name='Timetabling Engine'));end
+INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'View Results by Course', 0, 'Timetable', '', 'tt_resultsByCourse.php', 'tt_resultsByCourse.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Course Selection' AND gibbonAction.name='View Results by Course'));end
+INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'View Results by Student', 0, 'Timetable', '', 'tt_resultsByStudent.php', 'tt_resultsByStudent.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Course Selection' AND gibbonAction.name='View Results by Student'));end
+";

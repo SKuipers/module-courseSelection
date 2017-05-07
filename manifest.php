@@ -25,7 +25,7 @@ $description="Student Course Request and Approval System" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.0.09" ;
+$version="0.1.00" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -136,10 +136,31 @@ $moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
   PRIMARY KEY (`courseSelectionRecommendationID`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
+$moduleTables[]="CREATE TABLE `courseSelectionTTResults` (
+  `courseSelectionTTResultsID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
+  `gibbonCourseID` INT(8) UNSIGNED NULL ,
+  `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `weight` DECIMAL(6,2) NULL ,
+  PRIMARY KEY (`courseSelectionTTResultsID`),
+  INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
+
+$moduleTables[]="CREATE TABLE `courseSelectionTTFlag` (
+  `courseSelectionTTFlagID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
+  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
+  `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `type` VARCHAR(30) NULL ,
+  `reason` VARCHAR(255) NULL ,
+  PRIMARY KEY (`courseSelectionTTFlagID`),
+   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`, `gibbonCourseClassID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
+
+// TODO:
 // courseSelectionRequisite (Ruleset/Rule)
 // courseSelectionMeta
-// courseSelectionChoiceOffering
-// courseSelectionChoiceLog
 
 
 //gibbonSettings entries
@@ -154,6 +175,7 @@ $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`
 $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionInvalid', 'Message on Invalid', 'The text to display when an invalid selection has been made.', 'The form is incomplete or contains an invalid choice. Please check your course selections above.');";
 $gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionContinue', 'Message to Continue', 'The text to display when the course selection is in progress.', 'Continue selecting courses. You can submit a partial selection now and complete your choices at a later date.');";
 
+$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetablingResults', 'Timetabling Results', 'Performance and result counts from last timetable operation.', '');";
 
 
 //Action rows
@@ -426,6 +448,66 @@ $actionRows[] = array(
     'description'               => '',
     'URLList'                   => 'tools_copyByCourse.php',
     'entryURL'                  => 'tools_copyByCourse.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Timetabling Engine',
+    'precedence'                => '0',
+    'category'                  => 'Timetable',
+    'description'               => '',
+    'URLList'                   => 'tt_engine.php',
+    'entryURL'                  => 'tt_engine.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'View Results by Course',
+    'precedence'                => '0',
+    'category'                  => 'Timetable',
+    'description'               => '',
+    'URLList'                   => 'tt_resultsByCourse.php',
+    'entryURL'                  => 'tt_resultsByCourse.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'View Results by Student',
+    'precedence'                => '0',
+    'category'                  => 'Timetable',
+    'description'               => '',
+    'URLList'                   => 'tt_resultsByStudent.php',
+    'entryURL'                  => 'tt_resultsByStudent.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',
