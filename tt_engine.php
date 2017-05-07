@@ -31,4 +31,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
+    $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engineProcess.php');
+
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+
+    // $row = $form->addRow();
+    //     $row->addLabel('', __(''));
+    //     $row->addTextField('');
+
+    $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+    echo $form->getOutput();
+
 }
