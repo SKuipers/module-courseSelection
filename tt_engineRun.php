@@ -8,6 +8,7 @@ namespace CourseSelection\Timetable;
 
 use CourseSelection\BackgroundProcess;
 use CourseSelection\Domain\TimetableGateway;
+use CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
 
 // Cancel out now if we're not running via CLI
@@ -34,6 +35,7 @@ $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;
 
 $processor = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
 $timetableGateway = new TimetableGateway($pdo);
+$settingsGateway = new SettingsGateway($pdo);
 
 // Build a set of course information for the school year
 $environmentResults = $timetableGateway->selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID);
@@ -72,7 +74,6 @@ $courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engi
 // Run
 $results = $engine->runEngine();
 
-$performance = $engine->getPerformance();
 
 $data = array(
     'gibbonSchoolYearID' => $gibbonSchoolYearID,
@@ -92,6 +93,8 @@ foreach ($results as $gibbonPersonIDStudent => $result) {
     }
 }
 
+// Save the performance stats, may be interested in the results later ...
+$settingsGateway->update('Course Selection', 'timetablingResults', json_encode($engine->getPerformance()));
 
 // End the process and output the result to terminal (output file)
 $processor->stopProcess('engine');

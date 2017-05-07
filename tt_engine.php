@@ -48,9 +48,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
     $timetableGateway = new TimetableGateway($pdo);
 
-    $engineResults = $timetableGateway->selectAllResultsBySchoolYear($gibbonSchoolYearID);
+    $engineResults = $timetableGateway->countResultsBySchoolYear($gibbonSchoolYearID);
+    $engineResultCount = ($engineResults->rowCount() > 0)? $engineResults->fetchColumn(0) : 0;
 
-    if ($engineResults->rowCount() == 0) {
+    if ($engineResultCount == 0) {
 
         $form = Form::create('engineRun', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engineProcess.php');
 
@@ -68,5 +69,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         echo $form->getOutput();
     } else {
         echo 'Results go here';
+
+        $timetablingResults = getSettingByScope($connection2, 'Course Selection', 'timetablingResults');
+        $timetablingResults = json_decode($timetablingResults);
+
+        echo '<pre>';
+        print_r($timetablingResults);
+        echo '</pre>';
     }
 }
