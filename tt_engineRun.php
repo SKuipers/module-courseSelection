@@ -27,10 +27,16 @@ if (empty($secureFilePath)) {
     $secureFilePath = $_SESSION[$guid]['absolutePath'].'/uploads';
 }
 
+// Write the processing file (that the engine watches)
 file_put_contents( $secureFilePath. '/engine/batchProcessing.txt', getmypid() );
+
+
+sleep(20);
 
 // Cleanup the processing file
 unlink( $secureFilePath. '/engine/batchProcessing.txt' );
+
+
 
 $report = 'Complete!';
 

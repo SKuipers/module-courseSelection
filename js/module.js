@@ -241,3 +241,20 @@ function courseSelectionApprovalSave(checkbox, courseSelectionOfferingID, modpat
         }
     });
 }
+
+function checkTimetablingEngineStatus(modpath) {
+    $.ajax({
+        url: modpath + "tt_engineAjax.php",
+        data: {},
+        type: 'POST',
+        success: function(data) {
+            if (data == 1) {
+                console.log('Waiting...');
+                window.setTimeout(checkTimetablingEngineStatus(modpath), 2000);
+            } else {
+                console.log('Complete');
+                window.location.reload();
+            }
+        }
+    });
+}
