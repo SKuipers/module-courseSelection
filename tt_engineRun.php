@@ -80,16 +80,21 @@ $data = array(
 );
 
 foreach ($results as $gibbonPersonIDStudent => $result) {
-    if (!empty($result->values) && is_array($result->values)) {
-        $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+    $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+    $data['weight'] = $result->weight;
 
+    if (!empty($result->values) && is_array($result->values)) {
         foreach ($result->values as $class) {
             $data['gibbonCourseID'] = $class['gibbonCourseID'];
             $data['gibbonCourseClassID'] = $class['gibbonCourseClassID'];
-            $data['weight'] = $result->weight;
 
             $timetableGateway->insertResult($data);
         }
+    } else {
+        $data['gibbonCourseID'] = null;
+        $data['gibbonCourseClassID'] = null;
+
+        $timetableGateway->insertResult($data);
     }
 }
 
