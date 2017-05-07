@@ -94,14 +94,14 @@ UPDATE `gibbonAction` SET `name`='Copy Requests By Course' WHERE name='Copy Sele
 $count++;
 $sql[$count][0]="0.1.00" ;
 $sql[$count][1]="
-CREATE TABLE `courseSelectionTTResults` (
-  `courseSelectionTTResultsID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+CREATE TABLE `courseSelectionTTResult` (
+  `courseSelectionTTResultID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
   `gibbonCourseID` INT(8) UNSIGNED NULL ,
   `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
   `weight` DECIMAL(6,2) NULL ,
-  PRIMARY KEY (`courseSelectionTTResultsID`),
+  PRIMARY KEY (`courseSelectionTTResultID`),
   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
 CREATE TABLE `courseSelectionTTFlag` (
