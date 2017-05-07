@@ -106,6 +106,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background: #A88EDB;
 }
 
+.progressBar.fill {
+    background: #FFD263;
+}
+
 .drag-handle {
     cursor: move;
     height: 2px;

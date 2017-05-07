@@ -56,10 +56,43 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectAllResultsBySchoolYear($gibbonSchoolYearID)
+    public function selectCourseResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT * FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
+        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, COUNT(DISTINCT courseSelectionTTResult.gibbonPersonIDStudent) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' THEN 1 ELSE 0 END) as studentsFemale
+                FROM courseSelectionTTResult
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
+                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+                WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
+                GROUP BY gibbonCourseClass.gibbonCourseClassID
+        ";
+
+        if ($orderBy == 'count') {
+            $sql .= " ORDER BY students DESC, gibbonCourse.nameShort, gibbonCourse.name";
+        } else if ($orderBy == 'order') {
+            $sql .= " ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort, gibbonCourse.name";
+        } else if ($orderBy == 'name') {
+            $sql .= " ORDER BY gibbonCourse.name, gibbonCourse.nameShort";
+        } else {
+            $sql .= " ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
+        }
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function countResultsBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT COUNT(*) FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
 
         return $this->pdo->executeQuery($data, $sql);
     }
