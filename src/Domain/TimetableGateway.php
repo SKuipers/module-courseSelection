@@ -56,4 +56,41 @@ class TimetableGateway
 
         return $this->pdo->executeQuery($data, $sql);
     }
+
+    public function insertResult(array $data)
+    {
+        $sql = "INSERT INTO courseSelectionTTResult SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, gibbonCourseClassID=:gibbonCourseClassID, weight=:weight";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
+
+    public function insertFlag(array $data)
+    {
+        $sql = "INSERT INTO courseSelectionTTFlag SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseClassID=:gibbonCourseClassID, type=:type, reason=:reason";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
+
+    public function deleteAllResultsBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "DELETE FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        $sql = "DELETE FROM courseSelectionTTFlag WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    public function transformResultsIntoClassEnrolments($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "INSERT IGNORE INTO gibbonCourseClassPerson (gibbonCourseClassID, gibbonPersonID, role) SELECT gibbonCourseClassID, gibbonPersonIDStudent, 'Student' FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
 }
