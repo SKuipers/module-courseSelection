@@ -60,6 +60,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background-color: #D4F6DC;
 }
 
+.courseChoiceContainer[data-status='Conflict'] {
+    background-color: #F6CECB;
+}
+
 .courseProgressByOffering {
     display: inline-block;
     width: 400px;

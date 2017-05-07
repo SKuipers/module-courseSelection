@@ -65,8 +65,7 @@ class TimetableGateway
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
                 WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
-                GROUP BY gibbonCourseClass.gibbonCourseClassID
-        ";
+                GROUP BY gibbonCourseClass.gibbonCourseClassID";
 
         if ($orderBy == 'count') {
             $sql .= " ORDER BY students DESC, gibbonCourse.nameShort, gibbonCourse.name";
@@ -81,10 +80,33 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID)
+    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "";
+        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort
+                FROM courseSelectionTTResult
+                LEFT JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
+                LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
+                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
+                JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID)
+                JOIN courseSelectionOfferingRestriction ON (
+                    courseSelectionOfferingRestriction.gibbonSchoolYearID=gibbonStudentEnrolment.gibbonSchoolYearID
+                    AND courseSelectionOfferingRestriction.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
+                JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND courseSelectionOffering.gibbonSchoolYearID=courseSelectionTTResult.gibbonSchoolYearID
+                AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
+                GROUP BY gibbonPerson.gibbonPersonID, courseSelectionTTResult.courseSelectionTTResultID
+        ";
+
+        if ($orderBy == 'count') {
+            $sql .= " ORDER BY approvalCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else if ($orderBy == 'rollGroup') {
+            $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else {
+            $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
+        }
 
         return $this->pdo->executeQuery($data, $sql);
     }

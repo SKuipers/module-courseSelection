@@ -32,28 +32,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
-    echo '<h2>';
-    echo __('Filter');
-    echo '</h2>';
-
-    $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
-
-    $form->setClass('noIntBorder fullWidth');
-    $form->addHiddenValue('q', '/modules/Course Selection/tt_resultsByCourse.php');
-
-    $row = $form->addRow();
-        $row->addLabel('sort', __('Sort By'));
-        $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'order' => __('Report Order'), 'count' => __('Students')))->selected($sort);
-
-    $row = $form->addRow();
-        $row->addSubmit('Go');
-
-    echo $form->getOutput();
-
-    echo '<h2>';
-    echo __('Report Data');
-    echo '</h2>';
-
     $timetableGateway = new TimetableGateway($pdo);
     $classResults = $timetableGateway->selectCourseResultsBySchoolYear($gibbonSchoolYearID, $sort);
 
@@ -62,6 +40,32 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         echo __("There are no records to display.") ;
         echo '</div>';
     } else {
+        echo '<h2>';
+        echo __('Filter');
+        echo '</h2>';
+
+        $form = Form::create('resultsByCourse', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+
+        $form->setClass('noIntBorder fullWidth');
+        $form->addHiddenValue('q', '/modules/Course Selection/tt_resultsByCourse.php');
+
+        $row = $form->addRow();
+            $row->addLabel('sort', __('Sort By'));
+            $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'order' => __('Report Order'), 'count' => __('Students')))->selected($sort);
+
+        $row = $form->addRow();
+            $row->addSubmit('Go');
+
+        echo $form->getOutput();
+
+        echo '<h2>';
+        echo __('Report Data');
+        echo '</h2>';
+
+        echo '<div class="paginationTop">';
+        echo __('Records').': '.$classResults->rowCount();
+        echo '</div>';
+
         echo '<table class="fullWidth colorOddEven" cellspacing="0">';
 
         echo '<tr class="head">';
