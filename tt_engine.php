@@ -30,7 +30,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             echo '<tbody><tr>';
             echo '<td style="text-align:center;padding: 0px 40px 15px 40px !important;">';
                 echo "<img style='margin:15px;' src='./themes/".$_SESSION[$guid]["gibbonThemeName"]."/img/loading.gif'/><br/>";
-                echo '<span>'.__('Processing! Please wait ...').'</span><br/>';
+                echo '<span>'.__('Processing! Please wait a moment ...').'</span><br/>';
             echo '</td>';
             echo '</tr></tbody>';
         echo '</table>';
@@ -52,7 +52,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     $engineResultCount = ($engineResults->rowCount() > 0)? $engineResults->fetchColumn(0) : 0;
 
     if ($engineResultCount == 0) {
-
+        // RUN
         $form = Form::create('engineRun', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engineProcess.php');
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
@@ -63,18 +63,48 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         //     $row->addTextField('');
 
         $row = $form->addRow();
-            $row->addFooter();
-            $row->addSubmit();
+            $row->addContent('<input type="submit" value="'.__('Run').'" class="shortWidth">')->setClass('right');
 
         echo $form->getOutput();
     } else {
-        echo 'Results go here';
-
+        // RESULTS
         $timetablingResults = getSettingByScope($connection2, 'Course Selection', 'timetablingResults');
         $timetablingResults = json_decode($timetablingResults);
 
         echo '<pre>';
         print_r($timetablingResults);
         echo '</pre>';
+
+        // GO LIVE
+        $form = Form::create('engineGoLive', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engine_goLive.php');
+
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+
+        $row = $form->addRow();
+            $thickboxGoLive = "onclick=\"tb_show('','".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_goLive.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";
+            $row->addContent('<input type="button" value="'.__('Go Live!').'" class="shortWidth" style="background: #444444;color:#ffffff;" '.$thickboxGoLive.'>')->setClass('right');
+
+        echo $form->getOutput();
+
+        echo '<h4>';
+        echo __('Reset');
+        echo '</h4>';
+
+        // RESET
+        $form = Form::create('engineClear', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engine_clear.php');
+
+        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+
+        $row = $form->addRow();
+            $row->addAlert(__('Resetting the engine will delete ALL timetabling results, which allows the engine to run again. Course selections will not be affected.'), 'error');
+
+        $row = $form->addRow();
+            $thickboxClear = "onclick=\"tb_show('','".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_clear.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";
+            $row->addContent('<input type="button" value="'.__('Clear All Results').'" class="shortWidth" style="background: #B10D0D;color:#ffffff;" '.$thickboxClear.'>')->setClass('right');
+
+        echo $form->getOutput();
+
     }
 }
