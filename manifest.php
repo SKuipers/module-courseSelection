@@ -127,7 +127,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionTTResult` (
   `courseSelectionTTResultID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
-  `gibbonCourseID` INT(8) UNSIGNED NULL ,
+  `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
   `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
   `weight` DECIMAL(6,2) NULL ,
   PRIMARY KEY (`courseSelectionTTResultID`),
