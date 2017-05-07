@@ -250,7 +250,7 @@ function checkTimetablingEngineStatus(modpath) {
         success: function(data) {
             if (data == 1) {
                 console.log('Waiting...');
-                window.setTimeout(checkTimetablingEngineStatus(modpath), 2000);
+                window.setTimeout(checkTimetablingEngineStatus(modpath), 1000);
             } else {
                 console.log('Complete');
                 window.location.reload();
