@@ -46,8 +46,9 @@ class Validator implements NodeValidator
     {
         $this->performance['nodeValidations']++;
 
+        // Invalidate this node if there are any full classes
         foreach ($node->values as $option) {
-            if ($this->environment->get($option['className'], 'students') >= $this->settings->maximumClassEnrolment) {
+            if ($this->environment->get($option['className'], 'students') >= $this->settings->maximumStudents) {
                 return false;
             }
         }
@@ -56,7 +57,7 @@ class Validator implements NodeValidator
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
-        $node->weight = (count($periodCounts) >= $treeDepth)? 1.0 : 0.0;
+        $node->weight = (count($periodCounts) >= $treeDepth)? 1.0 : -1.0;
 
         return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
     }

@@ -56,12 +56,12 @@ class Evaluator implements NodeEvaluator
         // TODO: Remove later for performace boost
         usort($node->values, $this->sortByNodeValue('period') );
 
-        $weight = 0.0;
+        $weight = $node->weight;
         // $weights = array();
 
         // foreach ($node->values as $option) {
-        //     $classEnrolmentCount = $this->environment->get($option['className'], 'students');
-        //     $weights[] = 1.0 - ($classEnrolmentCount / $this->settings->maximumClassEnrolment);
+        //     $studentCount = $this->environment->get($option['className'], 'students');
+        //     $weights[] = 1.0 - ($studentCount / $this->settings->maximumStudents);
         // }
 
         // $weight = array_sum($weights) / count($weights);
