@@ -98,7 +98,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
             if ($student['choiceCount'] < $student['minSelect']) continue;
 
             // Skip approved selections
-            if ($student['approvalCount'] >= $student['choiceCount'] && $student['approvalCount'] > 0) continue;
+            if ($student['approvalCount'] >= $student['choiceCount'] && $student['choiceCount'] > 0) continue;
 
             if ($student['approvalCount'] > 0) {
                 $status = 'Partially Approved';
