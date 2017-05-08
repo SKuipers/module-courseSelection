@@ -46,12 +46,15 @@ class TimetableGateway
                 FROM courseSelectionChoice
                 JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
-                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
+                JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
+                LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND courseSelectionChoice.status <> 'Removed'
                 AND courseSelectionChoice.status <> 'Recommended'
+                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
                 GROUP BY courseSelectionChoice.courseSelectionChoiceID, gibbonCourseClass.gibbonCourseClassID
-                ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort";
+                ORDER BY gibbonYearGroup.sequenceNumber DESC, RAND(), gibbonCourse.orderBy, gibbonCourse.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }
@@ -90,12 +93,8 @@ class TimetableGateway
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                 JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID)
-                JOIN courseSelectionOfferingRestriction ON (
-                    courseSelectionOfferingRestriction.gibbonSchoolYearID=gibbonStudentEnrolment.gibbonSchoolYearID
-                    AND courseSelectionOfferingRestriction.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
-                JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
                 WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
-                AND courseSelectionOffering.gibbonSchoolYearID=courseSelectionTTResult.gibbonSchoolYearID
+                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
                 GROUP BY gibbonPerson.gibbonPersonID, courseSelectionTTResult.courseSelectionTTResultID
         ";
