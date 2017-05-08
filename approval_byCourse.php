@@ -32,7 +32,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $selectionsGateway = new SelectionsGateway($pdo);
 
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
-    $showRemoved = $_GET['showRemoved'] ?? 'N';
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 
@@ -54,17 +53,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         $row->addSelect('gibbonCourseID')->fromResults($courseResults)->isRequired()->selected($gibbonCourseID);
 
     $row = $form->addRow();
-        $row->addLabel('showRemoved', __('Show removed selections?'));
-        $row->addYesNo('showRemoved')->selected($showRemoved);
-
-    $row = $form->addRow();
         $row->addSubmit();
 
     echo $form->getOutput();
 
     // LIST STUDENTS
     if (!empty($gibbonCourseID)) {
-        $studentChoicesResults = $selectionsGateway->selectChoicesByCourse($gibbonCourseID, ($showRemoved == 'N')? array('Removed') : array());
+        $studentChoicesResults = $selectionsGateway->selectChoicesByCourse($gibbonCourseID, array('Removed'));
 
         if ($studentChoicesResults->rowCount() == 0) {
             echo '<div class="error">';
@@ -81,6 +76,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
             echo '<tr class="head">';
                 echo '<th>';
                     echo __('Student');
+                echo '</th>';
+                echo '<th>';
+                    echo __('Roll Group');
                 echo '</th>';
                 echo '<th>';
                     echo __('Status');
@@ -106,7 +104,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                         echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                         echo '</a>';
                     echo '</td>';
-
+                    echo '<td>'.$student['rollGroupName'].'</td>';
                     echo '<td>'.$student['status'].'</td>';
                     echo '<td>';
 
@@ -120,10 +118,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                     echo '</td>';
                     echo '<td>';
                         if (!empty($student['courseSelectionOfferingID'])) {
-                            echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                            echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;";
+
+                            echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byOffering.php&sidebar=false&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."#".$student['gibbonPersonID']."'><img title='".__('Go to Approval')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_right.png'/></a>";
                         } else {
                             echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selection.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                         }
+
+
                     echo '</td>';
                 echo '</tr>';
             }
