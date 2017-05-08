@@ -47,7 +47,9 @@ $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentRes
 
 // Condense the result set down group by Student > Course > Classes
 $courseSelectionData = collect($studentData)->transform(function($courses, $gibbonPersonIDStudent) {
-    return collect($courses)->mapToGroups(function($item) {
+    return collect($courses)->filter(function($item) {
+        return !empty($item['gibbonCourseClassID']);
+    })->mapToGroups(function($item) {
          return [$item['gibbonCourseID'] => $item];
     })->toArray();
 });
@@ -59,9 +61,9 @@ $settings = $factory->createSettings();
 $settings->timetableConflictTollerance = 0;
 $settings->optimalWeight = 1.0;
 $settings->maximumOptimalResults = 0;
-$settings->minimumClassEnrolment = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
-$settings->targetClassEnrolment = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
-$settings->maximumClassEnrolment = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
+$settings->minimumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
+$settings->targetStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
+$settings->maximumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
 // Build the engine
 $engine = $factory->createEngine($settings);

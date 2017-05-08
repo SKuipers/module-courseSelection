@@ -20,9 +20,9 @@ class EngineSettings
      * Default Configuration Settings
      */
     protected $settings = array(
-        'minimumClassEnrolment'       => 8,
-        'targetClassEnrolment'        => 14,
-        'maximumClassEnrolment'       => 24,
+        'minimumStudents'       => 8,
+        'targetStudents'        => 14,
+        'maximumStudents'       => 24,
         'timetableConflictTollerance' => 0,
         'optimalWeight'               => 1.0,
         'maximumOptimalResults'       => 0,
