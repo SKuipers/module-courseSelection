@@ -58,11 +58,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
-        // $row = $form->addRow();
-        //     $row->addLabel('', __(''));
-        //     $row->addTextField('');
+        $classEnrolmentMinimum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
+        $classEnrolmentTarget = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
+        $classEnrolmentMaximum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
         $row = $form->addRow();
+            $row->addLabel('enrolmentInfo', __('Class Enrolment Targets'))->description(__('Edit in Settings'))->wrap('<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/settings.php">', '</a>');
+            $row->addTextField('enrolment')->readonly()->setValue(sprintf(__('Min: %1$s  Target: %2$s  Max: %3$s'), $classEnrolmentMinimum, $classEnrolmentTarget, $classEnrolmentMaximum));
+
+        $row = $form->addRow();
+            $row->addAlert(__("Click run when you're ready to begin timetabling. Once complete you'll see the results here, as well as be able to view them by Course and Student. The timetabling engine will take a moment to process: <b>it's okay to leave or close this page while waiting.</b>"), 'message');
+
+        $row = $form->addRow();
+            $row->addContent();
             $row->addContent('<input type="submit" value="'.__('Run').'" class="shortWidth">')->setClass('right');
 
         echo $form->getOutput();

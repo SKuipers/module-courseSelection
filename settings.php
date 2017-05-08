@@ -74,6 +74,23 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
         $row->addTextArea($setting['name'])->setRows(4)->setValue($setting['value']);
 
+    $form->addRow()->addHeading(__('Timetabling'));
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addNumber($setting['name'])->setValue($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addNumber($setting['name'])->setValue($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+        $row->addNumber($setting['name'])->setValue($setting['value']);
+
     $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();

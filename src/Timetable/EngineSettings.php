@@ -21,6 +21,7 @@ class EngineSettings
      */
     protected $settings = array(
         'minimumClassEnrolment'       => 8,
+        'targetClassEnrolment'        => 14,
         'maximumClassEnrolment'       => 24,
         'timetableConflictTollerance' => 0,
         'optimalWeight'               => 1.0,

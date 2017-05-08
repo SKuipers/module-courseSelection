@@ -56,11 +56,12 @@ $courseSelectionData = collect($studentData)->transform(function($courses, $gibb
 $factory = new EngineFactory();
 
 $settings = $factory->createSettings();
-$settings->timetableConflictTollerance = 1;
+$settings->timetableConflictTollerance = 0;
 $settings->optimalWeight = 1.0;
 $settings->maximumOptimalResults = 0;
-$settings->minimumClassEnrolment = 8;
-$settings->maximumClassEnrolment = 24;
+$settings->minimumClassEnrolment = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
+$settings->targetClassEnrolment = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
+$settings->maximumClassEnrolment = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
 // Build the engine
 $engine = $factory->createEngine($settings);

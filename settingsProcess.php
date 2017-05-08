@@ -46,6 +46,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $selectionContinue = $_POST['selectionContinue'] ?? '';
     $partialFail &= !$settingsGateway->update('Course Selection', 'selectionContinue', $selectionContinue);
 
+    $classEnrolmentMinimum = $_POST['classEnrolmentMinimum'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'classEnrolmentMinimum', $classEnrolmentMinimum);
+
+    $classEnrolmentTarget = $_POST['classEnrolmentTarget'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'classEnrolmentTarget', $classEnrolmentTarget);
+
+    $classEnrolmentMaximum = $_POST['classEnrolmentMaximum'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'classEnrolmentMaximum', $classEnrolmentMaximum);
+
     if ($partialFail == true) {
         $URL .= '&return=warning2';
         header("Location: {$URL}");

@@ -28,8 +28,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $sort = $_GET['sort'] ?? 'surname';
-    $min = $_GET['min'] ?? '';
-    $max = $_GET['max'] ?? '';
+    $min = $_GET['min'] ?? getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
+    $max = $_GET['max'] ?? getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);

@@ -8,6 +8,7 @@ include '../../functions.php';
 include '../../config.php';
 
 use CourseSelection\BackgroundProcess;
+use CourseSelection\Domain\SettingsGateway;
 
 // Autoloader & Module includes
 $loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
@@ -27,6 +28,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         header("Location: {$URL}");
         exit;
     } else {
+        $settingsGateway = new SettingsGateway($pdo);
+
+        // Save any changes made to timetabling settings
+
 
         $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
         $process->startProcess('engine', __DIR__.'/tt_engineRun.php', array($gibbonSchoolYearID));
