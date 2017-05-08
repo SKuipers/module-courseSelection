@@ -58,7 +58,7 @@ $courseSelectionData = collect($studentData)->transform(function($courses, $gibb
 $factory = new EngineFactory();
 
 $settings = $factory->createSettings();
-$settings->timetableConflictTollerance = 0;
+$settings->timetableConflictTollerance = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance');
 $settings->optimalWeight = 1.0;
 $settings->maximumOptimalResults = 0;
 $settings->minimumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');

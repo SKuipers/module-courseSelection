@@ -31,7 +31,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $settingsGateway = new SettingsGateway($pdo);
 
         // Save any changes made to timetabling settings
-
+        $timetableConflictTollerance = $_POST['timetableConflictTollerance'] ?? '0';
+        $settingsGateway->update('Course Selection', 'timetableConflictTollerance', $timetableConflictTollerance);
 
         $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
         $process->startProcess('engine', __DIR__.'/tt_engineRun.php', array($gibbonSchoolYearID));

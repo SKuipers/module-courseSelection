@@ -152,9 +152,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel('priorityCoreCourse', __('Core Course Priority'));
             $row->addSelect('priorityCoreCourse')->fromArray($priorities)->selected('0.5');
 
+        $setting = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance', true);
         $row = $form->addRow();
-            $row->addLabel('timetableConflictTollerance', __('Timetable Conflict Tollerance'));
-            $row->addNumber('timetableConflictTollerance')->minimum(0)->maximum(5)->setValue('0');
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addNumber($setting['name'])->isRequired()->minimum(0)->maximum(5)->setValue($setting['value']);
 
         $row = $form->addRow();
             $row->addAlert(__("Click run when you're ready to begin timetabling. Once complete you'll see the results here, as well as be able to view them by Course and Student. The timetabling engine will take a moment to process: <b>it's okay to leave or close this page while waiting.</b>"), 'message');
