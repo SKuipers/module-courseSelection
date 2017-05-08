@@ -6,12 +6,18 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use CourseSelection\Domain\TimetableGateway;
+use CourseSelection\Domain\SelectionsGateway;
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\BackgroundProcess;
+use Illuminate\Support\Collection;
 
 // Autoloader & Module includes
 $loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+$loader->addNameSpace('Illuminate\\', 'modules/Course Selection/src/Illuminate/');
+
 include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+require_once $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/Illuminate/Support/helpers.php';
+
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine.php') == false) {
     //Acess denied
@@ -47,24 +53,108 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     $timetableGateway = new TimetableGateway($pdo);
+    $selectionsGateway = new selectionsGateway($pdo);
 
     $engineResults = $timetableGateway->countResultsBySchoolYear($gibbonSchoolYearID);
     $engineResultCount = ($engineResults->rowCount() > 0)? $engineResults->fetchColumn(0) : 0;
 
     if ($engineResultCount == 0) {
+        $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
+        $studentCollection = collect($studentResults->fetchAll());
+
+        if (!$studentResults || $studentResults->rowCount() == 0) {
+            echo "<div class='error'>" ;
+                echo __('There are no approved course selections for this school year.');
+            echo "</div>" ;
+            return;
+        }
+
+        $students = $studentCollection->reduce(function($students, $item){
+            $students[$item['gibbonPersonIDStudent']] = 1;
+            return $students;
+        }, array());
+
+        $courses = $studentCollection->reduce(function($courses, $item){
+            $courses[$item['gibbonCourseID']] = $item['className'];
+            return $courses;
+        }, array());
+
+        $incompleteResults = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID);
+        $incompleteCollection = collect($incompleteResults->fetchAll());
+
+        $unapprovedCount = $incompleteCollection->reduce(function($total, $item){
+            $total += ($item['choiceCount'] > 0 && $item['approvalCount'] < $item['choiceCount'])? 1 : 0;
+            return $total;
+        }, 0);
+
+        $classlessCount = collect($courses)->reduce(function($total, $item){
+            $total += (count($item) == 0)? 1 : 0;
+            return $total;
+        }, 0);
+
         // RUN
         $form = Form::create('engineRun', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engineProcess.php');
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
+        $row = $form->addRow();
+            $column = $row->addColumn();
+        if ($unapprovedCount > 0) {
+            $column->addAlert(sprintf(__('There are %1$s students with unapproved or incomplete course requests. If you continue with the timetabling process, those course requests will not be included.'), $unapprovedCount), 'warning');
+        } else {
+            $column->addAlert(__("All student course requests have been approved. You're ready to do some timetabling!"), 'success');
+        }
+
+        if ($classlessCount > 0) {
+            $column->addAlert(sprintf(__('There are %1$s requested courses  that do not have any classes. If you continue with the timetabling process, those courses will not be included.'), $classlessCount), 'warning');
+        }
+
+        $row = $form->addRow();
+            $row->addLabel('studentCountInfo', __('Total Students'))->setClass('mediumWidth');
+            $row->addTextField('studentCount')->readonly()->setValue(count($students));
+
+        $row = $form->addRow();
+            $row->addLabel('courseCountInfo', __('Total Courses'))->setClass('mediumWidth');
+            $row->addTextField('courseCount')->readonly()->setValue(count($courses));
+
         $classEnrolmentMinimum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
         $classEnrolmentTarget = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
         $classEnrolmentMaximum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
         $row = $form->addRow();
-            $row->addLabel('enrolmentInfo', __('Class Enrolment Targets'))->description(__('Edit in Settings'))->wrap('<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/settings.php">', '</a>');
+            $row->addLabel('enrolmentInfo', __('Enrolment Targets'))->description(__('Edit in Settings'))->wrap('<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/settings.php">', '</a>');
             $row->addTextField('enrolment')->readonly()->setValue(sprintf(__('Min: %1$s  Target: %2$s  Max: %3$s'), $classEnrolmentMinimum, $classEnrolmentTarget, $classEnrolmentMaximum));
+
+        $enrolmentGoals = array('fill' => __('Fill to maximum (less classes)'), 'balance' => __('Balance each class (more classes)'));
+
+        $row = $form->addRow();
+            $row->addLabel('classEnrolmentGoal', __('Class Enrolment Goal'));
+            $row->addSelect('classEnrolmentGoal')->fromArray($enrolmentGoals);
+
+        $studentOrders = array('yearGroupDesc' => __('Year Group, descending'));
+
+        $row = $form->addRow();
+            $row->addLabel('studentOrder', __('Student Order'))->setClass('mediumWidth');
+            $row->addSelect('studentOrder')->fromArray($studentOrders);
+
+        $priorities = array('' => __('None'), '0.5' => __('Low'), '1.0' => __('Medium'), '1.5' => __('High'),);
+
+        $row = $form->addRow();
+            $row->addLabel('priorityTargetEnrolment', __('Target Enrolment Priority'));
+            $row->addSelect('priorityTargetEnrolment')->fromArray($priorities)->selected('0.5');
+
+        $row = $form->addRow();
+            $row->addLabel('priorityGender', __('Gender Balance Priority'));
+            $row->addSelect('priorityGender')->fromArray($priorities)->selected('0.5');
+
+        $row = $form->addRow();
+            $row->addLabel('priorityCoreCourse', __('Core Course Priority'));
+            $row->addSelect('priorityCoreCourse')->fromArray($priorities)->selected('0.5');
+
+        $row = $form->addRow();
+            $row->addLabel('timetableConflictTollerance', __('Timetable Conflict Tollerance'));
+            $row->addNumber('timetableConflictTollerance')->minimum(0)->maximum(5)->setValue('0');
 
         $row = $form->addRow();
             $row->addAlert(__("Click run when you're ready to begin timetabling. Once complete you'll see the results here, as well as be able to view them by Course and Student. The timetabling engine will take a moment to process: <b>it's okay to leave or close this page while waiting.</b>"), 'message');
@@ -106,7 +196,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
         $row = $form->addRow();
-            $row->addAlert(__('Resetting the engine will delete ALL timetabling results, which allows the engine to run again. Course selections will not be affected.'), 'error');
+            $row->addAlert(__('Resetting the engine will delete ALL timetabling results, which allows the engine to run again. Course requests will not be deleted.'), 'error');
 
         $row = $form->addRow();
             $thickboxClear = "onclick=\"tb_show('','".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_clear.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";
