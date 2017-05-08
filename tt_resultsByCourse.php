@@ -79,12 +79,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo __('Students');
             echo '</th>';
             echo '<th>';
-                echo __('Gender Balance');
+                echo __('Balance');
             echo '</th>';
             echo '<th style="width: 80px;">';
                 echo __('Actions');
             echo '</th>';
         echo '</tr>';
+
+        $classEnrolmentMaximum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
         while ($class = $classResults->fetch()) {
             $rowClass = ($class['students'] < 8)? 'dull' : '';
@@ -92,11 +94,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo '<td>'.$class['courseName'].'</td>';
                 echo '<td>'.$class['courseNameShort'].'.'.$class['classNameShort'].'</td>';
                 echo '<td>'.$class['students'].'</td>';
-                echo '<td>';
+                echo '<td style="width:25%">';
                     if ($class['students'] > 0) {
-                    $balance = (($class['studentsFemale'] / $class['students']) * 100.0);
-                        echo '<div class="progressBar fill" style="width:100%" title="'.__('Male').' '.$class['studentsMale'].'">';
-                            echo '<div class="complete" style="width:'.$balance.'%;" title="'.__('Female').' '.$class['studentsFemale'].'"></div>';
+                    $femaleBalance = (($class['studentsFemale'] / $classEnrolmentMaximum) * 100.0);
+                    $maleBalance = (($class['studentsMale'] / $classEnrolmentMaximum) * 100.0);
+
+                        echo '<div class="progressBar fill" style="width:100%">';
+                            echo '<div class="complete" style="width:'.$femaleBalance.'%;" title="'.__('Female').' '.$class['studentsFemale'].'"></div>';
+                            echo '<div class="highlight" style="width:'.$maleBalance.'%;" title="'.__('Male').' '.$class['studentsMale'].'"></div>';
                     }
                     echo '</div>';
                 echo '</td>';
