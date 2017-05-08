@@ -55,10 +55,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     $timetableGateway = new TimetableGateway($pdo);
     $selectionsGateway = new selectionsGateway($pdo);
 
-    $engineResults = $timetableGateway->countResultsBySchoolYear($gibbonSchoolYearID);
-    $engineResultCount = ($engineResults->rowCount() > 0)? $engineResults->fetchColumn(0) : 0;
+    $engineResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID);
 
-    if ($engineResultCount == 0) {
+    if (!$engineResults || $engineResults->rowCount() == 0) {
         $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
         $studentCollection = collect($studentResults->fetchAll());
 
@@ -82,14 +81,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $incompleteResults = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID);
         $incompleteCollection = collect($incompleteResults->fetchAll());
 
-        $unapprovedCount = $incompleteCollection->reduce(function($total, $item){
-            $total += ($item['choiceCount'] > 0 && $item['approvalCount'] < $item['choiceCount'])? 1 : 0;
-            return $total;
+        $unapprovedCount = $incompleteCollection->reduce(function($count, $item){
+            $count += ($item['choiceCount'] > 0 && $item['approvalCount'] < $item['choiceCount'])? 1 : 0;
+            return $count;
         }, 0);
 
-        $classlessCount = collect($courses)->reduce(function($total, $item){
-            $total += (count($item) == 0)? 1 : 0;
-            return $total;
+        $classlessCount = collect($courses)->reduce(function($count, $item){
+            $count += (count($item) == 0)? 1 : 0;
+            return $count;
         }, 0);
 
         // RUN
@@ -167,11 +166,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         echo $form->getOutput();
     } else {
         // RESULTS
-        $timetablingResults = getSettingByScope($connection2, 'Course Selection', 'timetablingResults');
-        $timetablingResults = json_decode($timetablingResults);
+        $stats = getSettingByScope($connection2, 'Course Selection', 'timetablingResults');
+        $stats = json_decode($stats, true);
+
+        $resultsCollection = collect($engineResults->fetchAll());
+
+        $conflicts = $resultsCollection->filter(function($item) {
+            return (!empty($item['gibbonCourseClassID']) && $item['weight'] <= 0.0);
+        })->groupBy('gibbonPersonIDStudent');
+
+        $conflictCount = count($conflicts);
 
         echo '<pre>';
-        print_r($timetablingResults);
+        print_r($stats);
         echo '</pre>';
 
         // GO LIVE
@@ -179,6 +186,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+
+        $progressPercent = round((($stats['totalResults'] - $stats['incompleteResults'] - $conflictCount) / $stats['totalResults']) * 100.0);
+        $conflictPercent = round(($conflictCount / $stats['totalResults']) * 100.0);
+
+        $progressBar = '<div class="progressBar" style="width:100%">';
+        $progressBar .= '<div class="complete" style="width:'.$progressPercent.'%;" title="'.__('Successful').' '.$progressPercent.'%"></div>';
+        $progressBar .= '<div class="highlight" style="width:'.$conflictPercent.'%;" title="'.__('Conflicts').' '.$conflictPercent.'%"></div>';
+        $progressBar .= '</div>';
+
+        $row = $form->addRow();
+            $row->addContent($progressBar)->prepend(__('Success Rate'));
 
         $row = $form->addRow();
             $thickboxGoLive = "onclick=\"tb_show('','".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_goLive.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";

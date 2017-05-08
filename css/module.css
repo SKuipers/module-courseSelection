@@ -106,8 +106,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }
 
 .progressBar .complete {
+    display: inline-block;
     height: 100%;
     background: #A88EDB;
+}
+
+.progressBar .highlight {
+    display: inline-block;
+    height: 100%;
+    background: #FFD263;
 }
 
 .progressBar.fill {

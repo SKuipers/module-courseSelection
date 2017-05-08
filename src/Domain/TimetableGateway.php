@@ -86,7 +86,7 @@ class TimetableGateway
     public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort
+        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID
                 FROM courseSelectionTTResult
                 LEFT JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
                 LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
@@ -106,14 +106,6 @@ class TimetableGateway
         } else {
             $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
         }
-
-        return $this->pdo->executeQuery($data, $sql);
-    }
-
-    public function countResultsBySchoolYear($gibbonSchoolYearID)
-    {
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT COUNT(*) FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
 
         return $this->pdo->executeQuery($data, $sql);
     }
