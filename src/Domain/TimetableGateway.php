@@ -59,6 +59,22 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+    public function selectTimetabledStudentsBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.gender, gibbonCourseClassPerson.gibbonCourseClassID as currentClassEnrolment
+                FROM gibbonPerson
+                JOIN courseSelectionChoice ON (courseSelectionChoice.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID)
+                JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.gibbonPersonID=gibbonPerson.gibbonPersonID)
+                WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                GROUP BY gibbonPerson.gibbonPersonID";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function selectCourseResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);

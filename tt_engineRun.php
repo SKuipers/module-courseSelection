@@ -41,12 +41,15 @@ $settingsGateway = new SettingsGateway($pdo);
 $courseResults = $timetableGateway->selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID);
 $courseData = ($courseResults && $courseResults->rowCount() > 0)? $courseResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
+$studentResults = $timetableGateway->selectTimetabledStudentsBySchoolYear($gibbonSchoolYearID);
+$studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
+
 // Get the course selections grouped by student
-$studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
-$studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP) : array();
+$selectionsResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
+$selectionsData = ($selectionsResults && $selectionsResults->rowCount() > 0)? $selectionsResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
 // Condense the result set down group by Student > Course > Classes
-$courseSelectionData = collect($studentData)->transform(function($courses, $gibbonPersonIDStudent) {
+$courseSelectionData = collect($selectionsData)->transform(function($courses, $gibbonPersonIDStudent) {
     return collect($courses)->filter(function($item) {
         return !empty($item['gibbonCourseClassID']);
     })->mapToGroups(function($item) {
@@ -69,13 +72,13 @@ $settings->maximumStudents = getSettingByScope($connection2, 'Course Selection',
 // Engine Environment
 $environment = $factory->createEnvironment();
 $environment->setCourseData($courseData);
-$environment->setStudentData();
+$environment->setStudentData($studentData);
 
 // Build the engine
 $engine = $factory->createEngine($settings);
 $engine->buildEngine($environment);
 
-// Add the student data
+// Add the student course selections data
 $courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engine) {
     $engine->addData($gibbonPersonIDStudent, array_values($courses) );
 });
@@ -87,9 +90,10 @@ $data = array(
     'gibbonSchoolYearID' => $gibbonSchoolYearID,
 );
 
+// Make this a method, somewhere?
 foreach ($results as $gibbonPersonIDStudent => $result) {
     $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-    $data['weight'] = $result->weight;
+    $data['weight'] = $result->weight ?? 0.0;
 
     if (!empty($result->values) && is_array($result->values)) {
         foreach ($result->values as $class) {
