@@ -24,10 +24,10 @@ class TimetableGateway
         $this->pdo = $pdo;
     }
 
-    public function selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID)
+    public function selectTimetabledClassesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as `0`, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period
+        $sql = "SELECT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as `0`, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period, 0 as enrolmentGroup
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)

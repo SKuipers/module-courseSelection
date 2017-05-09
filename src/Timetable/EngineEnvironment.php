@@ -16,17 +16,27 @@ namespace CourseSelection\Timetable;
  */
 class EngineEnvironment
 {
-    protected $courseData = array();
+    protected $classData = array();
     protected $studentData = array();
 
-    public function getCourseData()
+    protected $enrolmentData = array();
+
+    public function getClassData()
     {
-        return $this->courseData;
+        return $this->classData;
     }
 
-    public function setCourseData($courseData = array())
+    public function setClassData($classData = array())
     {
-        $this->courseData = $courseData;
+        $this->classData = $classData;
+
+        foreach ($this->classData as &$course) {
+            // Class enrolments can be grouped for purposes of combining student numbers across courses (from course meta data)
+            $course['enrolmentGroup'] = (!empty($course['enrolmentGroup']))? $course['enrolmentGroup'] : $course['className'];
+
+            // Build the initial class enrolment counts
+            $this->enrolmentData[$course['enrolmentGroup']] = $course['students'] ?? 0;
+        }
     }
 
     public function getStudentData()
@@ -39,14 +49,14 @@ class EngineEnvironment
         $this->studentData = $studentData;
     }
 
-    public function getCourseValue($courseID, $key)
+    public function getClassValue($classID, $key)
     {
-        return (isset($this->courseData[$courseID][$key]))? $this->courseData[$courseID][$key] : null;
+        return (isset($this->classData[$classID][$key]))? $this->classData[$classID][$key] : null;
     }
 
-    public function setCourseValue($courseID, $key, $value)
+    public function setClassValue($classID, $key, $value)
     {
-        $this->courseData[$courseID][$key] = $value;
+        $this->classData[$classID][$key] = $value;
     }
 
     public function getStudentValue($studentID, $key)
@@ -59,39 +69,24 @@ class EngineEnvironment
         $this->studentData[$studentID][$key] = $value;
     }
 
-    public function updateStudentCounts(&$results)
+    public function getEnrolmentCount($classID)
+    {
+        $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
+        return $this->enrolmentData[$enrolmentGroup];
+    }
+
+    public function incrementEnrolmentCount($classID, $increment = 1)
+    {
+        $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
+        $this->enrolmentData[$enrolmentGroup] += $increment;
+    }
+
+    public function updateEnrolmentCountsFromResults(&$results)
     {
         if (empty($results)) return;
 
         foreach ($results as $result) {
-            $classEnrolment = $this->getCourseValue($result['className'], 'students');
-            $this->setCourseValue($result['className'], 'students', $classEnrolment+1);
+            $this->incrementEnrolmentCount($result['className']);
         }
-    }
-
-    public function combineSmallClasses(&$resultSet, $minimum, $maximum)
-    {
-        $smallCourses = array_reduce($this->courseData, function($classes, $class) use ($minimum) {
-            if ($class['students'] < $minimum) {
-                $classes[$class['courseNameShort']][] = $class;
-            }
-            return $classes;
-        }, array());
-
-        $combineClasses = array_reduce($smallCourses, function($classes, $courseClasses) use ($maximum) {
-
-            if (count($courseClasses) <= 1) return $classes;
-
-            $rootClass = current($courseClasses);
-
-            foreach ($courseClasses as $class) {
-                if ($rootClass['students'] + $class['students'] <= $maximum) {
-                    $classes[$rootClass['className']][] = $class['className'];
-                    $rootClass['students'] += $class['students'];
-                }
-            }
-
-            return $classes;
-        }, array());
     }
 }

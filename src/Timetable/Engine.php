@@ -102,10 +102,8 @@ class Engine
 
             $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
 
-            $this->environment->updateStudentCounts($bestResult->values);
+            $this->environment->updateEnrolmentCountsFromResults($bestResult->values);
         }
-
-        //$this->environment->combineSmallClasses($this->resultSet, $this->settings->minimumClassEnrolment, $this->settings->maximumClassEnrolment);
 
         $this->stopEngine();
 

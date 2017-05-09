@@ -37,10 +37,11 @@ $processor = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/en
 $timetableGateway = new TimetableGateway($pdo);
 $settingsGateway = new SettingsGateway($pdo);
 
-// Build a set of course information for the school year
-$courseResults = $timetableGateway->selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID);
-$courseData = ($courseResults && $courseResults->rowCount() > 0)? $courseResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
+// Build a set of class information for the school year
+$classResults = $timetableGateway->selectTimetabledClassesBySchoolYear($gibbonSchoolYearID);
+$classData = ($classResults && $classResults->rowCount() > 0)? $classResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
+// Build a set of students information
 $studentResults = $timetableGateway->selectTimetabledStudentsBySchoolYear($gibbonSchoolYearID);
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
@@ -71,7 +72,7 @@ $settings->maximumStudents = getSettingByScope($connection2, 'Course Selection',
 
 // Engine Environment
 $environment = $factory->createEnvironment();
-$environment->setCourseData($courseData);
+$environment->setClassData($classData);
 $environment->setStudentData($studentData);
 
 // Build the engine
