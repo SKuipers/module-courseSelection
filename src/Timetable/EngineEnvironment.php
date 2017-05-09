@@ -16,21 +16,47 @@ namespace CourseSelection\Timetable;
  */
 class EngineEnvironment
 {
-    protected $data = array();
+    protected $courseData = array();
+    protected $studentData = array();
 
-    public function __construct($data = array())
+    public function getCourseData()
     {
-        $this->data = $data;
+        return $this->courseData;
     }
 
-    public function get($course, $key)
+    public function setCourseData($courseData = array())
     {
-        return (isset($this->data[$course][$key]))? $this->data[$course][$key] : null;
+        $this->courseData = $courseData;
     }
 
-    public function set($course, $key, $value)
+    public function getStudentData()
     {
-        $this->data[$course][$key] = $value;
+        return $this->studentData;
+    }
+
+    public function setStudentData($studentData = array())
+    {
+        $this->studentData = $studentData;
+    }
+
+    public function getCourseValue($courseID, $key)
+    {
+        return (isset($this->courseData[$courseID][$key]))? $this->courseData[$courseID][$key] : null;
+    }
+
+    public function setCourseValue($courseID, $key, $value)
+    {
+        $this->courseData[$courseID][$key] = $value;
+    }
+
+    public function getStudentValue($studentID, $key)
+    {
+        return (isset($this->studentData[$studentID][$key]))? $this->studentData[$studentID][$key] : null;
+    }
+
+    public function setStudentValue($studentID, $key, $value)
+    {
+        $this->studentData[$studentID][$key] = $value;
     }
 
     public function updateStudentCounts(&$results)
@@ -38,14 +64,14 @@ class EngineEnvironment
         if (empty($results)) return;
 
         foreach ($results as $result) {
-            $classEnrolment = $this->get($result['className'], 'students');
-            $this->set($result['className'], 'students', $classEnrolment+1);
+            $classEnrolment = $this->getCourseValue($result['className'], 'students');
+            $this->setCourseValue($result['className'], 'students', $classEnrolment+1);
         }
     }
 
     public function combineSmallClasses(&$resultSet, $minimum, $maximum)
     {
-        $smallCourses = array_reduce($this->data, function($classes, $class) use ($minimum) {
+        $smallCourses = array_reduce($this->courseData, function($classes, $class) use ($minimum) {
             if ($class['students'] < $minimum) {
                 $classes[$class['courseNameShort']][] = $class;
             }
@@ -67,11 +93,5 @@ class EngineEnvironment
 
             return $classes;
         }, array());
-
-    }
-
-    public function getData()
-    {
-        return $this->data;
     }
 }

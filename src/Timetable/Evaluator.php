@@ -60,7 +60,7 @@ class Evaluator implements NodeEvaluator
         // $weights = array();
 
         // foreach ($node->values as $option) {
-        //     $studentCount = $this->environment->get($option['className'], 'students');
+        //     $studentCount = $this->environment->getCourseValue($option['className'], 'students');
         //     $weights[] = 1.0 - ($studentCount / $this->settings->maximumStudents);
         // }
 

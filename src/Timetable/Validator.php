@@ -48,7 +48,7 @@ class Validator implements NodeValidator
 
         // Invalidate this node if there are any full classes
         foreach ($node->values as $option) {
-            if ($this->environment->get($option['className'], 'students') >= $this->settings->maximumStudents) {
+            if ($this->environment->getCourseValue($option['className'], 'students') >= $this->settings->maximumStudents) {
                 return false;
             }
         }

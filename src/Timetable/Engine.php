@@ -52,6 +52,16 @@ class Engine
         $this->settings = $settings;
     }
 
+    public function getPerformance()
+    {
+        return $this->performance;
+    }
+
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
     public function addData($gibbonPersonIDStudent, $data)
     {
         if (empty($data) || !is_array($data) || !is_array(next($data))) {
@@ -61,10 +71,10 @@ class Engine
         $this->dataSet[$gibbonPersonIDStudent] = $data;
     }
 
-    public function buildEngine($environmentData = array())
+    public function buildEngine(EngineEnvironment $environment)
     {
         // Factory is responsible for creating and configuring the parts that go in the engine
-        $this->environment = $this->factory->createEnvironment($environmentData);
+        $this->environment = $environment;
         $this->heuristic = $this->factory->createHeuristic($this->environment, $this->settings);
         $this->validator = $this->factory->createValidator($this->environment, $this->settings);
         $this->evaluator = $this->factory->createEvaluator($this->environment, $this->settings);
@@ -100,16 +110,6 @@ class Engine
         $this->stopEngine();
 
         return $this->resultSet;
-    }
-
-    public function getPerformance()
-    {
-        return $this->performance;
-    }
-
-    public function getEnvironment()
-    {
-        return $this->environment;
     }
 
     protected function startEngine()

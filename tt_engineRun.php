@@ -38,8 +38,8 @@ $timetableGateway = new TimetableGateway($pdo);
 $settingsGateway = new SettingsGateway($pdo);
 
 // Build a set of course information for the school year
-$environmentResults = $timetableGateway->selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID);
-$environmentData = ($environmentResults && $environmentResults->rowCount() > 0)? $environmentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
+$courseResults = $timetableGateway->selectTimetabledCoursesBySchoolYear($gibbonSchoolYearID);
+$courseData = ($courseResults && $courseResults->rowCount() > 0)? $courseResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
 // Get the course selections grouped by student
 $studentResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
@@ -57,6 +57,7 @@ $courseSelectionData = collect($studentData)->transform(function($courses, $gibb
 
 $factory = new EngineFactory();
 
+// Engine Settings
 $settings = $factory->createSettings();
 $settings->timetableConflictTollerance = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance');
 $settings->optimalWeight = 1.0;
@@ -65,9 +66,14 @@ $settings->minimumStudents = getSettingByScope($connection2, 'Course Selection',
 $settings->targetStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
 $settings->maximumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
+// Engine Environment
+$environment = $factory->createEnvironment();
+$environment->setCourseData($courseData);
+$environment->setStudentData();
+
 // Build the engine
 $engine = $factory->createEngine($settings);
-$engine->buildEngine($environmentData);
+$engine->buildEngine($environment);
 
 // Add the student data
 $courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engine) {
@@ -76,7 +82,6 @@ $courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engi
 
 // Run
 $results = $engine->runEngine();
-
 
 $data = array(
     'gibbonSchoolYearID' => $gibbonSchoolYearID,

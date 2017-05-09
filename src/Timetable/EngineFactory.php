@@ -28,9 +28,9 @@ class EngineFactory
         return new EngineSettings($settingsData);
     }
 
-    public function createEnvironment(array $environmentData) : EngineEnvironment
+    public function createEnvironment() : EngineEnvironment
     {
-        return new EngineEnvironment($environmentData);
+        return new EngineEnvironment();
     }
 
     public function createHeuristic(EngineEnvironment $environment, EngineSettings $settings) : Heuristic
