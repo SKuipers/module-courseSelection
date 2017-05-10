@@ -27,13 +27,14 @@ class TimetableGateway
     public function selectTimetabledClassesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonCourseClass.gibbonCourseClassID as groupBy, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period, gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.enrolmentGroup, courseSelectionMetaData.timetablePriority as priority
+        $sql = "SELECT gibbonCourseClass.gibbonCourseClassID as groupBy, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' THEN 1 ELSE 0 END) as studentsFemale, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period, gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.enrolmentGroup, courseSelectionMetaData.timetablePriority as priority
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
                 JOIN courseSelectionOfferingRestriction ON (courseSelectionOfferingRestriction.courseSelectionOfferingID=courseSelectionOffering.courseSelectionOfferingID AND FIND_IN_SET(courseSelectionOfferingRestriction.gibbonYearGroupID, gibbonCourse.gibbonYearGroupIDList))
                 LEFT JOIN courseSelectionMetaData ON (courseSelectionMetaData.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
+                LEFT JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonCourseClassPerson.gibbonPersonID)
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY gibbonCourseClass.gibbonCourseClassID";
 

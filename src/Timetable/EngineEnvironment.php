@@ -32,11 +32,14 @@ class EngineEnvironment
 
         foreach ($this->classData as &$course) {
             // Class enrolments can be grouped for purposes of combining student numbers across courses (from course meta data)
-            $enrolmentGroup = (!empty($course['enrolmentGroup']))? $course['enrolmentGroup'] : $course['gibbonCourseClassID'];
+            $period = $course['period'] ?? 0;
+            $enrolmentGroup = $course['enrolmentGroup'] ?? $course['gibbonCourseClassID'];
             $this->setClassValue($course['gibbonCourseClassID'], 'enrolmentGroup', $enrolmentGroup);
 
             // Build the initial class enrolment counts
-            $this->enrolmentData[$enrolmentGroup][$course['period']] = $course['students'] ?? 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['total'] = $course['students'] ?? 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['M'] = $course['studentsMale'] ?? 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['F'] = $course['studentsFemale'] ?? 0;
         }
     }
 
@@ -52,7 +55,7 @@ class EngineEnvironment
 
     public function getClassValue($classID, $key)
     {
-        return (isset($this->classData[$classID][$key]))? $this->classData[$classID][$key] : null;
+        return (isset($this->classData[$classID][$key]))? $this->classData[$classID][$key] : 0;
     }
 
     public function setClassValue($classID, $key, $value)
@@ -62,7 +65,7 @@ class EngineEnvironment
 
     public function getStudentValue($studentID, $key)
     {
-        return (isset($this->studentData[$studentID][$key]))? $this->studentData[$studentID][$key] : null;
+        return (isset($this->studentData[$studentID][$key]))? $this->studentData[$studentID][$key] : 0;
     }
 
     public function setStudentValue($studentID, $key, $value)
@@ -70,20 +73,22 @@ class EngineEnvironment
         $this->studentData[$studentID][$key] = $value;
     }
 
-    public function getEnrolmentCount($classID)
+    public function getEnrolmentCount($classID, $group = 'total')
     {
         $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
         $period = $this->getClassValue($classID, 'period');
 
-        return $this->enrolmentData[$enrolmentGroup][$period];
+        return $this->enrolmentData[$enrolmentGroup][$period][$group];
     }
 
-    public function incrementEnrolmentCount($classID, $increment = 1)
+    public function incrementEnrolmentCount($classID, $studentID, $increment = 1)
     {
         $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
         $period = $this->getClassValue($classID, 'period');
+        $gender = $this->getStudentValue($studentID, 'gender');
 
-        $this->enrolmentData[$enrolmentGroup][$period] += $increment;
+        $this->enrolmentData[$enrolmentGroup][$period]['total'] += $increment;
+        $this->enrolmentData[$enrolmentGroup][$period][$gender] += $increment;
     }
 
     public function updateEnrolmentCountsFromResults(&$results)
@@ -91,7 +96,7 @@ class EngineEnvironment
         if (empty($results)) return;
 
         foreach ($results as $result) {
-            $this->incrementEnrolmentCount($result['gibbonCourseClassID']);
+            $this->incrementEnrolmentCount($result['gibbonCourseClassID'], $result->key);
         }
     }
 }
