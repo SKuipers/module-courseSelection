@@ -42,8 +42,8 @@ class Heuristic implements NodeHeuristic
             if (in_array($a['period'], $periods)) return -2;
             if (in_array($b['period'], $periods)) return 2;
 
-            $aCount = $environment->getClassValue($a['className'], 'students');
-            $bCount = $environment->getClassValue($b['className'], 'students');
+            $aCount = $environment->getEnrolmentCount($a['className']);
+            $bCount = $environment->getEnrolmentCount($b['className']);
 
             // Avoid filling empty classes first
             if ($aCount == 0) return -1;

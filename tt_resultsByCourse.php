@@ -92,7 +92,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             $rowClass = ($class['students'] < 8)? 'dull' : '';
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>'.$class['courseName'].'</td>';
-                echo '<td>'.$class['courseNameShort'].'.'.$class['classNameShort'].'</td>';
+                echo '<td>'.$class['className'].'</td>';
                 echo '<td>'.$class['students'].'</td>';
                 echo '<td style="width:25%">';
                     if ($class['students'] > 0) {

@@ -32,10 +32,11 @@ class EngineEnvironment
 
         foreach ($this->classData as &$course) {
             // Class enrolments can be grouped for purposes of combining student numbers across courses (from course meta data)
-            $course['enrolmentGroup'] = (!empty($course['enrolmentGroup']))? $course['enrolmentGroup'] : $course['className'];
+            $enrolmentGroup = (!empty($course['enrolmentGroup']))? $course['enrolmentGroup'] : $course['className'];
+            $this->setClassValue($course['className'], 'enrolmentGroup', $enrolmentGroup);
 
             // Build the initial class enrolment counts
-            $this->enrolmentData[$course['enrolmentGroup']] = $course['students'] ?? 0;
+            $this->enrolmentData[$enrolmentGroup][$course['period']] = $course['students'] ?? 0;
         }
     }
 
@@ -72,13 +73,17 @@ class EngineEnvironment
     public function getEnrolmentCount($classID)
     {
         $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
-        return $this->enrolmentData[$enrolmentGroup];
+        $period = $this->getClassValue($classID, 'period');
+
+        return $this->enrolmentData[$enrolmentGroup][$period];
     }
 
     public function incrementEnrolmentCount($classID, $increment = 1)
     {
         $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
-        $this->enrolmentData[$enrolmentGroup] += $increment;
+        $period = $this->getClassValue($classID, 'period');
+
+        $this->enrolmentData[$enrolmentGroup][$period] += $increment;
     }
 
     public function updateEnrolmentCountsFromResults(&$results)
