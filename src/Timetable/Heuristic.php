@@ -34,6 +34,15 @@ class Heuristic implements NodeHeuristic
     {
         $environment = &$this->environment;
 
+        // Look for any existing enrolments and return them if found (eg: no decisions to make)
+        $currentEnrolment = array_filter($options, function($item){
+            return ($item['currentEnrolment'] == 1);
+        });
+
+        if (count($currentEnrolment) > 0) {
+            return $currentEnrolment;
+        }
+
         $periods = array_column($node->values, 'period');
 
         // Sorts by timetable conflicts first, then number of students in the class
