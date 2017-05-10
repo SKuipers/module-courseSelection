@@ -62,7 +62,7 @@ class DecisionTree
         if ($nodeDepth == $treeDepth) {
             if ($this->validator->validateNode($node, $treeDepth)) {
                 // Complete (and valid) nodes become leaves
-                $node->weight = $this->evaulator->evaluateNodeWeight($node);
+                $node->weight = $this->evaulator->evaluateNodeWeight($node, $treeDepth);
                 array_push($leaves, $node);
             }
         } else {

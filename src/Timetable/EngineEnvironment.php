@@ -96,6 +96,8 @@ class EngineEnvironment
         if (empty($results)) return;
 
         foreach ($results as $result) {
+            if (empty($result)) continue;
+
             $this->incrementEnrolmentCount($result['gibbonCourseClassID'], $result->key);
         }
     }

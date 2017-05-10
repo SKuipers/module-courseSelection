@@ -48,23 +48,36 @@ class Evaluator implements NodeEvaluator
      * @param   object  &$node
      * @return  float
      */
-    public function evaluateNodeWeight(&$node) : float
+    public function evaluateNodeWeight(&$node, $treeDepth) : float
     {
         $this->performance['nodeEvaluations']++;
 
-        // Order the results (for interest sake)
-        // TODO: Remove later for performace boost
-        usort($node->values, $this->sortByNodeValue('period') );
+        $weight = $node->weight ?? 0.0;
 
-        $weight = $node->weight;
-        // $weights = array();
+        // Sub-weighting: Gender Balance
+        $gender = $this->environment->getStudentValue($node->key, 'gender');
 
-        // foreach ($node->values as $option) {
-        //     $studentCount = $this->environment->getEnrolmentCount($option['gibbonCourseClassID']);
-        //     $weights[] = 1.0 - ($studentCount / $this->settings->maximumStudents);
-        // }
+        // Sub-weighting: Class Enrolment
 
-        // $weight = array_sum($weights) / count($weights);
+
+        // Sub-weighting: Timetable Conflicts
+        // $periods = array_column($node->values, 'period');
+        // $periodCounts = array_count_values($periods);
+
+        // $confictCount = array_reduce($periodCounts, function($total, $item) {
+        //     $total += ($item > 1)? $item : 0;
+        //     return $total;
+        // }, 0);
+
+        if ($node->conflicts > 1) {
+            $weight += $node->conflicts * -1;
+        } else {
+            $weight += 1.0;
+        }
+
+        if (count($node->values) < $treeDepth) {
+            $weight += count($node->values) - $treeDepth;
+        }
 
         if ($weight >= $this->settings->optimalWeight) {
             $this->optimalNodesEvaluated++;
@@ -94,7 +107,7 @@ class Evaluator implements NodeEvaluator
     public function getBestNodeInSet(&$nodes)
     {
         $bestResult = current($nodes);
-        $bestWeight = 0.0;
+        $bestWeight = -INF;
 
         foreach ($nodes as $node) {
             if ($node->weight > $bestWeight) {

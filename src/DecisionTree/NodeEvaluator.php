@@ -20,7 +20,7 @@ interface NodeEvaluator
      * @param   object  &$node
      * @return  float
      */
-    public function evaluateNodeWeight(&$node) : float;
+    public function evaluateNodeWeight(&$node, $treeDepth) : float;
 
     /**
      * Should return true if the tree is complete based on the problem conditions.

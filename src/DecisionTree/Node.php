@@ -16,7 +16,7 @@ class Node
 {
     public $key;
     public $values;
-    public $weight;
+    public $weight = 0.0;
 
     public function __construct($values)
     {

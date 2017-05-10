@@ -47,8 +47,11 @@ class Validator implements NodeValidator
         $this->performance['nodeValidations']++;
 
         // Invalidate this node if there are any full classes
-        foreach ($node->values as $option) {
+        foreach ($node->values as &$option) {
             if ($this->environment->getEnrolmentCount($option['gibbonCourseClassID']) >= $this->settings->maximumStudents) {
+                //unset($option);
+                //$node->weight -= 5.0;
+                //$node->invalid = true;
                 return false;
             }
         }
@@ -57,7 +60,10 @@ class Validator implements NodeValidator
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
-        $node->weight = (count($periodCounts) >= $treeDepth)? 1.0 : -1.0;
+        $node->conflicts = $confictCount = array_reduce($periodCounts, function($total, $item) {
+            $total += ($item > 1)? $item : 0;
+            return $total;
+        }, 0);
 
         return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
     }
