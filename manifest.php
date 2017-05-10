@@ -8,11 +8,11 @@ Copyright (C) 2017, Sandra Kuipers
 
 //Basic variables
 $name="Course Selection" ;
-$description="Student Course Request and Approval System" ;
+$description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.1.01" ;
+$version="0.1.02" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -146,9 +146,18 @@ $moduleTables[]="CREATE TABLE `courseSelectionTTFlag` (
    INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`, `gibbonCourseClassID`, `scope`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
 
+$moduleTables[]="CREATE TABLE `courseSelectionMetaData` (
+  `courseSelectionMetaDataID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `enrolmentGroup` VARCHAR(30) NULL ,
+  `timetablePriority` DECIMAL(6,2) NULL ,
+  `tags` VARCHAR(255) NULL ,
+  PRIMARY KEY (`courseSelectionMetaDataID`),
+  UNIQUE KEY (`gibbonCourseID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
+
 // TODO:
 // courseSelectionRequisite (Ruleset/Rule)
-// courseSelectionMeta
 
 
 //gibbonSettings entries

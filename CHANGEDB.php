@@ -132,5 +132,18 @@ INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`val
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetableConflictTollerance', 'Timetablling Conflict Tollerance', 'Maximum number of conflicts allowed per student.', '0');end
 ALTER TABLE `courseSelectionTTFlag` ADD `scope` ENUM('Course','Student') NULL AFTER `gibbonCourseClassID`;end
 ALTER TABLE `courseSelectionTTFlag` DROP INDEX `gibbonSchoolYear`, ADD INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`, `gibbonCourseClassID`, `scope`);end
+";
 
+//v0.1.02
+$count++;
+$sql[$count][0]="0.1.02" ;
+$sql[$count][1]="CREATE TABLE `courseSelectionMetaData` (
+  `courseSelectionMetaDataID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
+  `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
+  `enrolmentGroup` VARCHAR(30) NULL ,
+  `timetablePriority` DECIMAL(6,2) NULL ,
+  `tags` VARCHAR(255) NULL ,
+  PRIMARY KEY (`courseSelectionMetaDataID`),
+  UNIQUE KEY (`gibbonCourseID`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
 ";
