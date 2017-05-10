@@ -129,6 +129,23 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+    public function selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)
+    {
+        $data = array('gibbonPersonIDStudent' => $gibbonPersonIDStudent, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourse.gibbonCourseID
+                FROM courseSelectionChoice
+                JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                LEFT JOIN courseSelectionTTResult ON (courseSelectionTTResult.gibbonCourseID=courseSelectionChoice.gibbonCourseID AND courseSelectionTTResult.gibbonPersonIDStudent=courseSelectionChoice.gibbonPersonIDStudent)
+                WHERE courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
+                AND courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND courseSelectionTTResult.gibbonCourseClassID IS NULL
+                GROUP BY courseSelectionChoice.courseSelectionChoiceID
+        ";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function insertResult(array $data)
     {
         $sql = "INSERT INTO courseSelectionTTResult SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, gibbonCourseClassID=:gibbonCourseClassID, weight=:weight";

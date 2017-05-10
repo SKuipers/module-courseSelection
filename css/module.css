@@ -61,6 +61,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }
 
 .courseChoiceContainer[data-status='Conflict'] {
+    background-color: #FFD2A9;
+}
+
+.courseChoiceContainer[data-status='Failed'] {
     background-color: #F6CECB;
 }
 

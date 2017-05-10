@@ -123,6 +123,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                         echo '</div>';
                     }
                 }
+
+                $incompleteResults = $timetableGateway->selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $student['gibbonPersonID']);
+                if ($incompleteResults && $incompleteResults->rowCount() > 0) {
+                    while ($class = $incompleteResults->fetch()) {
+                        echo '<div class="courseChoiceContainer" data-status="Failed" title="'.$class['courseNameShort'].'">';
+                        echo '<span style="width:35px; display:inline-block;"></span>';
+                        echo $class['courseName'];
+
+                        echo '<span class="pullRight courseTag small emphasis">'.__('Failed!').'</span>';
+                        echo '</div>';
+                    }
+                }
+
                 echo '</td>';
                 echo '<td>'.$student['weight'].'</td>';
 
