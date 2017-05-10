@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
-            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes')))->selected($sort);
+            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'weight' => __('Weight')))->selected($sort);
 
         $row = $form->addRow();
             $row->addSubmit('Go');

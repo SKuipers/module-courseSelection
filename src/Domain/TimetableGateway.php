@@ -119,6 +119,8 @@ class TimetableGateway
             $sql .= " ORDER BY approvalCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'rollGroup') {
             $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+        } else if ($orderBy == 'weight') {
+            $sql .= " ORDER BY courseSelectionTTResult.weight, gibbonPerson.surname, gibbonPerson.preferredName";
         } else {
             $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
         }
