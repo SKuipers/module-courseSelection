@@ -78,7 +78,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         }, array());
 
         $courses = $studentCollection->reduce(function($courses, $item){
-            $courses[$item['gibbonCourseID']] = $item['className'];
+            $courses[$item['gibbonCourseID']] = $item['gibbonCourseClassID'];
             return $courses;
         }, array());
 
