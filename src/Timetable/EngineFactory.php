@@ -59,10 +59,10 @@ class EngineFactory
     public function createValidator(EngineEnvironment $environment, EngineSettings $settings) : Validator
     {
         switch ($settings->validator) {
-            case 'Conflict':    $validator = new ConflictValidator($environment, $settings);
+            case 'Conflict':    $validator = new ConflictValidator($environment, $settings); break;
 
             default:
-            case 'Simple':      $validator = new SimpleValidator($environment, $settings);
+            case 'Simple':      $validator = new SimpleValidator($environment, $settings); break;
         }
 
         return $validator;
@@ -71,10 +71,10 @@ class EngineFactory
     public function createEvaluator(EngineEnvironment $environment, EngineSettings $settings) : Evaluator
     {
         switch ($settings->evaluator) {
-            case 'Weighted':    $evaluator = new WeightedEvaluator($environment, $settings);
+            case 'Weighted':    $evaluator = new WeightedEvaluator($environment, $settings); break;
 
             default:
-            case 'Simple':      $evaluator = new SimpleEvaluator($environment, $settings);
+            case 'Simple':      $evaluator = new SimpleEvaluator($environment, $settings); break;
         }
 
         return $evaluator;
