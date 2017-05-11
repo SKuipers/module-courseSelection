@@ -179,17 +179,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             return (!empty($item['gibbonCourseClassID']) && $item['weight'] <= 0.0);
         })->groupBy('gibbonPersonIDStudent');
 
-        $conflictCount = count($conflicts);
-
-        echo '<pre>';
-        print_r($stats);
-        echo '</pre>';
+        $conflictCount = count($conflicts) ?? 0;
 
         // GO LIVE
         $form = Form::create('engineGoLive', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engine_goLive.php');
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+
+        $row = $form->addRow()->addHeading(__('Timetabling Results'));
 
         $progressPercent = round((($stats['totalResults'] - $stats['incompleteResults'] - $conflictCount) / $stats['totalResults']) * 100.0);
         $conflictPercent = round(($conflictCount / $stats['totalResults']) * 100.0);
@@ -201,6 +199,61 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $row = $form->addRow();
             $row->addContent($progressBar)->prepend(__('Success Rate'));
+
+
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Total Timetables'));
+            $row->addTextField('')->readonly()->setValue(strval($stats['totalResults']));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Timetabling Conflicts'));
+            $row->addTextField('')->readonly()->setValue(strval($conflictCount));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Timetabling Failures'));
+            $row->addTextField('')->readonly()->setValue(strval($stats['incompleteResults']));
+
+        $row = $form->addRow();
+            $row->addContent('');
+            $row->addButton('View Results by Course', "window.location='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/tt_resultsByCourse.php'."'");
+            $row->addButton('View Results by Student', "window.location='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/tt_resultsByStudent.php'."'")->addClass('shortWidth');
+
+        $row = $form->addRow()->addHeading(__('Engine Stats'));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Time Elapsed'));
+            $row->addTextField('')->readonly()->setValue(number_format(floatval($stats['time']), 2).' '.__('seconds'));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Memory Consumed'));
+            $row->addTextField('')->readonly()->setValue($stats['memory']);
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Total Timetable Combinations'));
+            $row->addTextField('')->readonly()->setValue(number_format($stats['treeEvaluations']));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Valid Timetable Combinations'));
+            $row->addTextField('')->readonly()->setValue(number_format($stats['nodeValidations']));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Average Combinations per Student'));
+            $row->addTextField('')->readonly()->setValue(number_format($stats['treeEvaluations'] / intval($stats['totalResults']), 0));
+
+
+        if ($conflictCount > 0 || $stats['incompleteResults'] > 0) {
+            $alert = sprintf(__('There are %1$s timetables with conflics and %2$s failed timetables, these students will not recieve complete timetables when the timetabling goes live.'), $conflictCount, $stats['incompleteResults']);
+            $alertStatus = 'warning';
+        } else {
+            $alert = sprintf(__('Congrats! All %1$s timetables have been created successfully. You\'re ready to take this timetable live.'), $stats['totalResults']);
+            $alertStatus = 'success';
+        }
+
+        $alert .= '<br/><br/>'.__('Taking the timetable live will turn all results into student enrolments for the selected school year. After going live the new student enrolments can be managed as usual from the Timetable Admin module.');
+
+        $row = $form->addRow();
+            $row->addAlert($alert, $alertStatus);
 
         $row = $form->addRow();
             $thickboxGoLive = "onclick=\"tb_show('','".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_goLive.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";

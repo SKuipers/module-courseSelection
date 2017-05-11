@@ -57,7 +57,7 @@ class TimetableGateway
                 AND courseSelectionChoice.status <> 'Recommended'
                 AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
                 GROUP BY courseSelectionChoice.courseSelectionChoiceID, gibbonCourseClass.gibbonCourseClassID
-                ORDER BY gibbonYearGroup.sequenceNumber DESC, RAND(), gibbonCourse.orderBy, gibbonCourse.nameShort";
+                ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(courseSelectionChoice.gibbonPersonIDStudent), gibbonCourse.orderBy, gibbonCourse.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }
