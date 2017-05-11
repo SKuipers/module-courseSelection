@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
-            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'weight' => __('Weight')))->selected($sort);
+            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'count' => __('Conflicts'), 'weight' => __('Weight')))->selected($sort);
 
         $row = $form->addRow();
             $row->addSubmit('Go');
@@ -84,7 +84,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo __('Weight');
             echo '</th>';
             echo '<th>';
-                echo __('Flags');
+                echo __('Conflicts');
             echo '</th>';
             echo '<th style="width: 80px;">';
                 echo __('Actions');
@@ -106,6 +106,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo '<td>'.$student['rollGroupName'].'</td>';
                 echo '<td>';
 
+                $conflictCount = 0;
                 if (!empty($studentClasses) && !empty($student['classNameShort'])) {
                     usort($studentClasses, function($a, $b) { return strnatcmp($a['classNameShort'], $b['classNameShort']); } );
                     $conflicts = array_count_values(array_column($studentClasses, 'classNameShort'));
@@ -121,6 +122,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                             echo '<span class="pullRight courseTag small emphasis">'.__($status).'</span>';
                         }
                         echo '</div>';
+
+                        $conflictCount += ($conflicts[$class['classNameShort']] > 1)? 1 : 0;
                     }
                 }
 
@@ -138,9 +141,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
                 echo '</td>';
                 echo '<td>'.$student['weight'].'</td>';
-
-                echo '<td>';
-                echo '</td>';
+                echo '<td>'.$conflictCount.'</td>';
 
                 echo '<td>';
                 echo '</td>';

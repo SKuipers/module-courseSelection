@@ -102,8 +102,8 @@ class WeightedEvaluator extends Evaluator
     {
         $weight = 0.0;
 
-        if (!empty($node->conflicts)) {
-            $weight += $node->conflicts * -1.0;
+        if (!empty($node->conflicts) && count($node->conflicts) > 0) {
+            $weight += count($node->conflicts) * -1.0;
         }
 
         return $weight;

@@ -100,6 +100,10 @@ $data = array(
     'gibbonSchoolYearID' => $gibbonSchoolYearID,
 );
 
+$flagData = array(
+    'gibbonSchoolYearID' => $gibbonSchoolYearID,
+);
+
 // Make this a method, somewhere?
 foreach ($results as $gibbonPersonIDStudent => $result) {
     $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
@@ -117,6 +121,19 @@ foreach ($results as $gibbonPersonIDStudent => $result) {
         $data['gibbonCourseClassID'] = null;
 
         $timetableGateway->insertResult($data);
+    }
+
+    if (!empty($result->conflicts) && count($result->conflicts) > 0) {
+        $flagData['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+        $flagData['scope'] = 'Student';
+        $flagData['type'] = 'Conflict';
+
+        foreach ($result->conflicts as $conflict) {
+            $flagData['gibbonCourseClassID'] = $conflict;
+            $flagData['reason'] = '';
+        }
+
+        $timetableGateway->insertFlag($flagData);
     }
 }
 

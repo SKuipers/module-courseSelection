@@ -37,10 +37,12 @@ class ConflictValidator extends Validator
         $periods = array_column($node->values, 'period');
         $periodCounts = array_count_values($periods);
 
-        $node->conflicts = $confictCount = array_reduce($periodCounts, function($total, $item) {
-            $total += ($item > 1)? $item : 0;
-            return $total;
-        }, 0);
+        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use ($periodCounts) {
+            if (isset($item['period']) && $periodCounts[$item['period']] > 1) {
+                $conflicts[] = $item['gibbonCourseClassID'];
+            }
+            return $conflicts;
+        }, array());
 
         return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
     }

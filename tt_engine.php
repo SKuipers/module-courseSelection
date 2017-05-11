@@ -191,7 +191,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $resultsCollection = collect($engineResults->fetchAll());
 
         $conflicts = $resultsCollection->filter(function($item) {
-            return (!empty($item['gibbonCourseClassID']) && $item['weight'] <= 0.0);
+            return (!empty($item['flagType']) && $item['flagType'] == 'Conflict');
         })->groupBy('gibbonPersonIDStudent');
 
         $conflictCount = count($conflicts) ?? 0;

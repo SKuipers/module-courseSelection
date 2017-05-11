@@ -103,8 +103,9 @@ class TimetableGateway
     public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID
+        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, courseSelectionTTFlag.type as flagType, COUNT(DISTINCT courseSelectionTTFlag.gibbonCourseClassID) as flagCount
                 FROM courseSelectionTTResult
+                LEFT JOIN courseSelectionTTFlag ON (courseSelectionTTFlag.gibbonSchoolYearID=courseSelectionTTResult.gibbonSchoolYearID AND courseSelectionTTFlag.gibbonPersonIDStudent=courseSelectionTTResult.gibbonPersonIDStudent AND courseSelectionTTFlag.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID AND scope='Student')
                 LEFT JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
                 LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
@@ -117,7 +118,7 @@ class TimetableGateway
         ";
 
         if ($orderBy == 'count') {
-            $sql .= " ORDER BY approvalCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+            $sql .= " ORDER BY flagCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'rollGroup') {
             $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'weight') {
@@ -156,7 +157,7 @@ class TimetableGateway
 
     public function insertFlag(array $data)
     {
-        $sql = "INSERT INTO courseSelectionTTFlag SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseClassID=:gibbonCourseClassID, scope:scope, type=:type, reason=:reason";
+        $sql = "INSERT INTO courseSelectionTTFlag SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseClassID=:gibbonCourseClassID, scope=:scope, type=:type, reason=:reason ON DUPLICATE KEY UPDATE type=:type, reason=:reason";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
