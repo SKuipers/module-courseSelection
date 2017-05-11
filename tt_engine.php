@@ -200,8 +200,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $row = $form->addRow();
             $row->addContent($progressBar)->prepend(__('Success Rate'));
 
-
-
         $row = $form->addRow();
             $row->addLabel('', __('Total Timetables'));
             $row->addTextField('')->readonly()->setValue(strval($stats['totalResults']));
@@ -230,12 +228,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addTextField('')->readonly()->setValue($stats['memory']);
 
         $row = $form->addRow();
-            $row->addLabel('', __('Total Timetable Combinations'));
+            $row->addLabel('', __('Total Engine Iterations'));
             $row->addTextField('')->readonly()->setValue(number_format($stats['treeEvaluations']));
 
         $row = $form->addRow();
-            $row->addLabel('', __('Valid Timetable Combinations'));
+            $row->addLabel('', __('Total Timetable Combinations'));
             $row->addTextField('')->readonly()->setValue(number_format($stats['nodeValidations']));
+
+        $row = $form->addRow();
+            $row->addLabel('', __('Valid Timetable Combinations'));
+            $row->addTextField('')->readonly()->setValue(number_format($stats['nodeEvaluations']));
 
         $row = $form->addRow();
             $row->addLabel('', __('Average Combinations per Student'));
