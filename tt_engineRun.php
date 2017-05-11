@@ -70,6 +70,10 @@ $settings->minimumStudents = getSettingByScope($connection2, 'Course Selection',
 $settings->targetStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
 $settings->maximumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
+$settings->heuristic = 'Class Size';
+$settings->validator = 'Conflict';
+$settings->evaluator = 'Weighted';
+
 // Engine Environment
 $environment = $factory->createEnvironment();
 $environment->setClassData($classData);
