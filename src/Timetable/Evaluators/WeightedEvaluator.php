@@ -26,31 +26,16 @@ class WeightedEvaluator extends Evaluator
         $weightCumulative = 0.0;
 
         // Sub-weighting: Gender Balance
-        $genderBalancePriority = 10;
-        $genderBalanceWeight = $this->getGenderBalanceWeight($node);
-
-        // Add the weighted value to the total
-        $weightTotal += $genderBalancePriority;
-        $weightCumulative += ($genderBalancePriority * $genderBalanceWeight);
-
-
+        $weightTotal += $this->settings->genderBalancePriority;
+        $weightCumulative += ($this->settings->genderBalancePriority * $this->getGenderBalanceWeight($node));
 
         // Sub-weighting: Class Enrolment
-        $enrolmentPriority = 20;
-        $enrolmentWeight = $this->getEnrolmentWeight($node);
-
-        // Add the weighted value to the total
-        $weightTotal += $enrolmentPriority;
-        $weightCumulative += ($enrolmentPriority * $enrolmentWeight);
-
+        $weightTotal += $this->settings->targetEnrolmentPriority;
+        $weightCumulative += ($this->settings->targetEnrolmentPriority * $this->getEnrolmentWeight($node));
 
         // Sub-weighting: Timetable Conflicts
-        $conflictPriority = 30;
-        $conflictWeight = $this->getConflictWeight($node);
-
-        // Add the weighted value to the total
-        $weightTotal += $conflictPriority;
-        $weightCumulative += ($conflictPriority * $conflictWeight);
+        $weightTotal += $this->settings->avoidConflictPriority;
+        $weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
 
 
         // MISSING VALUES?
@@ -58,13 +43,14 @@ class WeightedEvaluator extends Evaluator
         //     $weight += count($node->values) - $treeDepth;
         // }
 
+
+        // Get the weighted weight :P
+        $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
+
         // Possibly use this to short-cut out of result sets that already have a number of optimal results?
         if ($weight >= $this->settings->optimalWeight) {
             $this->optimalNodesEvaluated++;
         }
-
-        // Get the weighted weight :P
-        $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
 
         return $weight;
     }

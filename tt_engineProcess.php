@@ -31,6 +31,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $settingsGateway = new SettingsGateway($pdo);
 
         // Save any changes made to timetabling settings
+        $genderBalancePriority = $_POST['genderBalancePriority'] ?? '0.5';
+        $settingsGateway->update('Course Selection', 'genderBalancePriority', $genderBalancePriority);
+
+        $targetEnrolmentPriority = $_POST['targetEnrolmentPriority'] ?? '1.0';
+        $settingsGateway->update('Course Selection', 'targetEnrolmentPriority', $targetEnrolmentPriority);
+
+        $coreCoursePriority = $_POST['coreCoursePriority'] ?? '1.0';
+        $settingsGateway->update('Course Selection', 'coreCoursePriority', $coreCoursePriority);
+
+        $avoidConflictPriority = $_POST['avoidConflictPriority'] ?? '2.0';
+        $settingsGateway->update('Course Selection', 'avoidConflictPriority', $avoidConflictPriority);
+
         $timetableConflictTollerance = $_POST['timetableConflictTollerance'] ?? '0';
         $settingsGateway->update('Course Selection', 'timetableConflictTollerance', $timetableConflictTollerance);
 

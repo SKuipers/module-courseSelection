@@ -129,7 +129,7 @@ $sql[$count][0]="0.1.01" ;
 $sql[$count][1]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentMinimum', 'Minimum Students per Class', 'Timetabling will aim to fill every class beyond the minimum.', '');end
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentTarget', 'Target Students per Class', 'An ideal amount for timetabling to aim for.', '');end
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentMaximum', 'Maximum Students per Class', 'Timetabling will not exceed this amount.', '');end
-INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetableConflictTollerance', 'Timetablling Conflict Tollerance', 'Maximum number of conflicts allowed per student.', '0');end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetableConflictTollerance', 'Timetabling Conflict Tollerance', 'Maximum number of conflicts allowed per student.', '0');end
 ALTER TABLE `courseSelectionTTFlag` ADD `scope` ENUM('Course','Student') NULL AFTER `gibbonCourseClassID`;end
 ALTER TABLE `courseSelectionTTFlag` DROP INDEX `gibbonSchoolYear`, ADD INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`, `gibbonCourseClassID`, `scope`);end
 ";
@@ -146,4 +146,8 @@ $sql[$count][1]="CREATE TABLE `courseSelectionMetaData` (
   PRIMARY KEY (`courseSelectionMetaDataID`),
   UNIQUE KEY (`gibbonCourseID`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'genderBalancePriority', 'Gender Balanace Priority', '', '0.5');end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'targetEnrolmentPriority', 'Target Enrolment Priority', '', '1.0');end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'coreCoursePriority', 'Core Course Priority', '', '1.0');end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'avoidConflictPriority', 'Avoid Conflict Priority', '', '2.0');end
 ";

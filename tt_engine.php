@@ -141,19 +141,34 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel('studentOrder', __('Student Order'))->setClass('mediumWidth');
             $row->addSelect('studentOrder')->fromArray($studentOrders);
 
-        $priorities = array('' => __('None'), '0.5' => __('Low'), '1.0' => __('Medium'), '1.5' => __('High'),);
+        $priorities = array(
+            '0.0'  => __('None'),
+            '0.25' => __('Very Low'),
+            '0.5'  => __('Low'),
+            '1.0'  => __('Medium'),
+            '1.5'  => __('High'),
+            '2.0'  => __('Very High'),
+        );
 
+        $setting = getSettingByScope($connection2, 'Course Selection', 'genderBalancePriority', true);
         $row = $form->addRow();
-            $row->addLabel('priorityTargetEnrolment', __('Target Enrolment Priority'));
-            $row->addSelect('priorityTargetEnrolment')->fromArray($priorities)->selected('0.5');
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
+        $setting = getSettingByScope($connection2, 'Course Selection', 'targetEnrolmentPriority', true);
         $row = $form->addRow();
-            $row->addLabel('priorityGender', __('Gender Balance Priority'));
-            $row->addSelect('priorityGender')->fromArray($priorities)->selected('0.5');
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
+        $setting = getSettingByScope($connection2, 'Course Selection', 'coreCoursePriority', true);
         $row = $form->addRow();
-            $row->addLabel('priorityCoreCourse', __('Core Course Priority'));
-            $row->addSelect('priorityCoreCourse')->fromArray($priorities)->selected('0.5');
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
+
+        $setting = getSettingByScope($connection2, 'Course Selection', 'avoidConflictPriority', true);
+        $row = $form->addRow();
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
         $setting = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance', true);
         $row = $form->addRow();

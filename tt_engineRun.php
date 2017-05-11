@@ -70,6 +70,11 @@ $settings->minimumStudents = getSettingByScope($connection2, 'Course Selection',
 $settings->targetStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
 $settings->maximumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
+$settings->genderBalancePriority = getSettingByScope($connection2, 'Course Selection', 'genderBalancePriority');
+$settings->targetEnrolmentPriority = getSettingByScope($connection2, 'Course Selection', 'targetEnrolmentPriority');
+$settings->coreCoursePriority = getSettingByScope($connection2, 'Course Selection', 'coreCoursePriority');
+$settings->avoidConflictPriority = getSettingByScope($connection2, 'Course Selection', 'avoidConflictPriority');
+
 $settings->heuristic = 'Class Size';
 $settings->validator = 'Conflict';
 $settings->evaluator = 'Weighted';
