@@ -20,9 +20,12 @@ class EngineSettings
      * Default Configuration Settings
      */
     protected $settings = array(
-        'minimumStudents'       => 8,
-        'targetStudents'        => 14,
-        'maximumStudents'       => 24,
+        'heuristic'                   => 'Class Size',
+        'validator'                   => 'Conflict',
+        'evaluator'                   => 'Weighted',
+        'minimumStudents'             => 8,
+        'targetStudents'              => 14,
+        'maximumStudents'             => 24,
         'timetableConflictTollerance' => 0,
         'optimalWeight'               => 1.0,
         'maximumOptimalResults'       => 0,

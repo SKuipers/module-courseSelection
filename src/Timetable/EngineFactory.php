@@ -12,6 +12,7 @@ use CourseSelection\Timetable\Evaluators\Evaluator;
 use CourseSelection\Timetable\Heuristics\Heuristic;
 use CourseSelection\Timetable\Validators\SimpleValidator;
 use CourseSelection\Timetable\Validators\ConflictValidator;
+use CourseSelection\Timetable\Evaluators\SimpleEvaluator;
 use CourseSelection\Timetable\Evaluators\WeightedEvaluator;
 use CourseSelection\Timetable\Heuristics\ClassSizeHeuristic;
 use CourseSelection\Timetable\Heuristics\RandomizeHeuristic;
@@ -43,9 +44,9 @@ class EngineFactory
         return new EngineEnvironment();
     }
 
-    public function createHeuristic(string $type, EngineEnvironment $environment, EngineSettings $settings) : Heuristic
+    public function createHeuristic(EngineEnvironment $environment, EngineSettings $settings) : Heuristic
     {
-        switch ($type) {
+        switch ($settings->heuristic) {
             case 'Class Size':  $heuristic = new ClassSizeHeuristic($environment, $settings); break;
 
             default:
@@ -55,23 +56,25 @@ class EngineFactory
         return $heuristic;
     }
 
-    public function createValidator(string $type, EngineEnvironment $environment, EngineSettings $settings) : Validator
+    public function createValidator(EngineEnvironment $environment, EngineSettings $settings) : Validator
     {
-        switch ($type) {
-            case 'Conflict':   $validator = new ConflictValidator($environment, $settings);
+        switch ($settings->validator) {
+            case 'Conflict':    $validator = new ConflictValidator($environment, $settings);
 
             default:
-            case 'Simple':   $validator = new SimpleValidator($environment, $settings);
+            case 'Simple':      $validator = new SimpleValidator($environment, $settings);
         }
 
         return $validator;
     }
 
-    public function createEvaluator(string $type, EngineEnvironment $environment, EngineSettings $settings) : Evaluator
+    public function createEvaluator(EngineEnvironment $environment, EngineSettings $settings) : Evaluator
     {
-        switch ($type) {
+        switch ($settings->evaluator) {
+            case 'Weighted':    $evaluator = new WeightedEvaluator($environment, $settings);
+
             default:
-            case 'Weighted':   $evaluator = new WeightedEvaluator($environment, $settings);
+            case 'Simple':      $evaluator = new SimpleEvaluator($environment, $settings);
         }
 
         return $evaluator;
