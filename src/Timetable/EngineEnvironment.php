@@ -91,14 +91,14 @@ class EngineEnvironment
         $this->enrolmentData[$enrolmentGroup][$period][$gender] += $increment;
     }
 
-    public function updateEnrolmentCountsFromResults(&$results)
+    public function updateEnrolmentCountsFromResult(&$result)
     {
-        if (empty($results)) return;
+        if (empty($result)) return;
 
-        foreach ($results as $result) {
-            if (empty($result)) continue;
+        foreach ($result->values as $value) {
+            if (empty($value)) continue;
 
-            $this->incrementEnrolmentCount($result['gibbonCourseClassID'], $result->key);
+            $this->incrementEnrolmentCount($value['gibbonCourseClassID'], $value['gibbonPersonID']);
         }
     }
 }
