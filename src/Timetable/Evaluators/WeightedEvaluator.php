@@ -55,6 +55,12 @@ class WeightedEvaluator extends Evaluator
         return $weight;
     }
 
+    /**
+     * Normalized from -1 to 1
+     *
+     * @param    object  &$node
+     * @return   float
+     */
     protected function getGenderBalanceWeight(&$node)
     {
         $weight = 0.0;
@@ -78,9 +84,15 @@ class WeightedEvaluator extends Evaluator
             $weight += $balance;
         }
 
-        return $weight;
+        return $weight / count($node->values);
     }
 
+    /**
+     * Normalized from 0 to 1
+     *
+     * @param    object  &$node
+     * @return   float
+     */
     protected function getEnrolmentWeight(&$node)
     {
         $weight = 0.0;
@@ -95,9 +107,15 @@ class WeightedEvaluator extends Evaluator
             $weight += $percent;
         }
 
-        return $weight;
+        return $weight / count($node->values);
     }
 
+    /**
+     * Not normalized? -n to 0
+     *
+     * @param    object  &$node
+     * @return   float
+     */
     protected function getConflictWeight(&$node)
     {
         $weight = 0.0;
@@ -107,13 +125,5 @@ class WeightedEvaluator extends Evaluator
         }
 
         return $weight;
-
-        // $periods = array_column($node->values, 'period');
-        // $periodCounts = array_count_values($periods);
-
-        // $confictCount = array_reduce($periodCounts, function($total, $item) {
-        //     $total += ($item > 1)? $item : 0;
-        //     return $total;
-        // }, 0);
     }
 }
