@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
+namespace CourseSelection\Timetable\Solvers;
 
 use CourseSelection\DecisionTree\DecisionTree;
 use CourseSelection\DecisionTree\NodeHeuristic;

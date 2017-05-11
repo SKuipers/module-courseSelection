@@ -6,6 +6,15 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection\Timetable;
 
+use CourseSelection\Timetable\Validators\Validator;
+use CourseSelection\Timetable\Evaluators\Evaluator;
+use CourseSelection\Timetable\Heuristics\Heuristic;
+use CourseSelection\Timetable\Solvers\Solver;
+use CourseSelection\Timetable\Validators\ConflictValidator;
+use CourseSelection\Timetable\Evaluators\WeightedEvaluator;
+use CourseSelection\Timetable\Heuristics\ClassSizeHeuristic;
+use CourseSelection\Timetable\Heuristics\RandomizeHeuristic;
+
 /**
  * Timetabling Engine: Factory
  *
@@ -33,23 +42,34 @@ class EngineFactory
         return new EngineEnvironment();
     }
 
-    public function createHeuristic(EngineEnvironment $environment, EngineSettings $settings) : Heuristic
+    public function createHeuristic(string $type, EngineEnvironment $environment, EngineSettings $settings) : Heuristic
     {
-        $heuristic = new Heuristic($environment, $settings);
+        switch ($type) {
+            case 'Class Size':  $heuristic = new ClassSizeHeuristic($environment, $settings); break;
+
+            default:
+            case 'Randomize':   $heuristic = new RandomizeHeuristic($environment, $settings); break;
+        }
 
         return $heuristic;
     }
 
-    public function createValidator(EngineEnvironment $environment, EngineSettings $settings) : Validator
+    public function createValidator(string $type, EngineEnvironment $environment, EngineSettings $settings) : Validator
     {
-        $validator = new Validator($environment, $settings);
+        switch ($type) {
+            default:
+            case 'Conflict':   $validator = new ConflictValidator($environment, $settings);
+        }
 
         return $validator;
     }
 
-    public function createEvaluator(EngineEnvironment $environment, EngineSettings $settings) : Evaluator
+    public function createEvaluator(string $type, EngineEnvironment $environment, EngineSettings $settings) : Evaluator
     {
-        $evaluator = new Evaluator($environment, $settings);
+        switch ($type) {
+            default:
+            case 'Weighted':   $evaluator = new WeightedEvaluator($environment, $settings);
+        }
 
         return $evaluator;
     }

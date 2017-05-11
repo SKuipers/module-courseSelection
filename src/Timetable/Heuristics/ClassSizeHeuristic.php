@@ -4,33 +4,22 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
-
-use CourseSelection\DecisionTree\NodeHeuristic;
+namespace CourseSelection\Timetable\Heuristics;
 
 /**
- * Implementation of the NodeHeuristic interface for the Timetabling Engine
+ * Timetabling Heuristic that orders the results to fill empty classes first
  *
  * @version v14
- * @since   6th May 2017
+ * @since   11th May 2017
  */
-class Heuristic implements NodeHeuristic
+class ClassSizeHeuristic extends Heuristic
 {
-    protected $environment;
-    protected $settings;
-
-    public function __construct(EngineEnvironment $environment, EngineSettings $settings)
-    {
-        $this->environment = $environment;
-        $this->settings = $settings;
-    }
-
     /**
      * @param   object &$node
      * @param   int    $depth
      * @return  bool
      */
-    public function sortOptimalDecisions(&$options, &$node)
+    public function sortDecisions(&$options, &$node)
     {
         $environment = &$this->environment;
 
@@ -48,8 +37,8 @@ class Heuristic implements NodeHeuristic
         // Sorts by timetable conflicts first, then number of students in the class
         usort($options, function($a, $b) use ($environment, $periods) {
 
-            if (in_array($a['period'], $periods)) return -2;
-            if (in_array($b['period'], $periods)) return 2;
+            //if (in_array($a['period'], $periods)) return -2;
+            //if (in_array($b['period'], $periods)) return 2;
 
             $aCount = $environment->getEnrolmentCount($a['gibbonCourseClassID']);
             $bCount = $environment->getEnrolmentCount($b['gibbonCourseClassID']);

@@ -4,39 +4,16 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
-
-use CourseSelection\DecisionTree\NodeValidator;
+namespace CourseSelection\Timetable\Validators;
 
 /**
- * Implementation of the NodeValidator interface for the Timetabling Engine
+ * Validator that looks for timetabling conflicts
  *
  * @version v14
  * @since   4th May 2017
  */
-class Validator implements NodeValidator
+class ConflictValidator extends Validator
 {
-    protected $environment;
-    protected $settings;
-
-    /**
-     * Performance Metrics
-     */
-    protected $performance = array(
-        'nodeValidations'   => 0,
-    );
-
-    public function __construct(EngineEnvironment $environment, EngineSettings $settings)
-    {
-        $this->environment = $environment;
-        $this->settings = $settings;
-    }
-
-    public function reset()
-    {
-
-    }
-
     /**
      * @param   object  &$node
      * @param   int     &$treeDepth
@@ -66,10 +43,5 @@ class Validator implements NodeValidator
         }, 0);
 
         return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
-    }
-
-    public function getPerformance()
-    {
-        return $this->performance;
     }
 }
