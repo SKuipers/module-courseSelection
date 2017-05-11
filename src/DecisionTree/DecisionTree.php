@@ -70,7 +70,7 @@ class DecisionTree
             $branches = $decisions[$nodeDepth];
 
             // Shake the tree a bit: sort branches by least to most optimal
-            $branches = $this->heuristic->sortOptimalDecisions($branches, $node);
+            $branches = $this->heuristic->sortDecisions($branches, $node);
 
             foreach ($branches as $branch) {
                 // Combine the result of this decision with the previous decisions

@@ -21,5 +21,5 @@ interface NodeHeuristic
      * @param   int    $depth
      * @return  bool
      */
-    public function sortOptimalDecisions(&$options, &$node);
+    public function sortDecisions(&$options, &$node);
 }
