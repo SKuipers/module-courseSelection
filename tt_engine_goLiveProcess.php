@@ -31,10 +31,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $copied = $timetableGateway->transformResultsIntoClassEnrolments($gibbonSchoolYearID);
 
-        if ($copied) {
-            $deleted = $timetableGateway->deleteAllResultsBySchoolYear($gibbonSchoolYearID);
-        }
-
         if ($copied == false || $deleted == false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
