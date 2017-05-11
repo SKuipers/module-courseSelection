@@ -52,9 +52,7 @@ class DecisionTree
     protected function createBranches(&$tree, &$leaves, &$decisions)
     {
         // Add a heuristic to select the best node, rather than just the next one?
-        $node = end($tree);
-        $node->key = key($tree);
-        array_pop($tree);
+        $node = array_pop($tree);
 
         $nodeDepth = $node->getDepth();
         $treeDepth = count($decisions);

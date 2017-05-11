@@ -14,7 +14,6 @@ namespace CourseSelection\DecisionTree;
  */
 class Node
 {
-    public $key;
     public $values;
     public $weight = 0.0;
 

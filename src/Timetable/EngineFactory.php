@@ -6,10 +6,11 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection\Timetable;
 
+use CourseSelection\Timetable\Solvers\Solver;
 use CourseSelection\Timetable\Validators\Validator;
 use CourseSelection\Timetable\Evaluators\Evaluator;
 use CourseSelection\Timetable\Heuristics\Heuristic;
-use CourseSelection\Timetable\Solvers\Solver;
+use CourseSelection\Timetable\Validators\SimpleValidator;
 use CourseSelection\Timetable\Validators\ConflictValidator;
 use CourseSelection\Timetable\Evaluators\WeightedEvaluator;
 use CourseSelection\Timetable\Heuristics\ClassSizeHeuristic;
@@ -57,8 +58,10 @@ class EngineFactory
     public function createValidator(string $type, EngineEnvironment $environment, EngineSettings $settings) : Validator
     {
         switch ($type) {
-            default:
             case 'Conflict':   $validator = new ConflictValidator($environment, $settings);
+
+            default:
+            case 'Simple':   $validator = new SimpleValidator($environment, $settings);
         }
 
         return $validator;

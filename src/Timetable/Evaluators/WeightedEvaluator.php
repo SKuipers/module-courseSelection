@@ -25,7 +25,7 @@ class WeightedEvaluator extends Evaluator
         $weight = $node->weight ?? 0.0;
 
         // Sub-weighting: Gender Balance
-        $gender = $this->environment->getStudentValue($node->key, 'gender');
+        $gender = $this->environment->getStudentValue(current($node->values)['gibbonPersonID'], 'gender');
 
         // Sub-weighting: Class Enrolment
 
@@ -39,7 +39,7 @@ class WeightedEvaluator extends Evaluator
         //     return $total;
         // }, 0);
 
-        if ($node->conflicts > 1) {
+        if (!empty($node->conflicts)) {
             $weight += $node->conflicts * -1;
         } else {
             $weight += 1.0;

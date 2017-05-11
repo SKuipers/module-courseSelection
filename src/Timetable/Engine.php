@@ -76,7 +76,7 @@ class Engine
         // Factory is responsible for creating and configuring the parts that go in the engine
         $this->environment = $environment;
         $this->heuristic = $this->factory->createHeuristic('Randomize', $this->environment, $this->settings);
-        $this->validator = $this->factory->createValidator('Conflict', $this->environment, $this->settings);
+        $this->validator = $this->factory->createValidator('Simple', $this->environment, $this->settings);
         $this->evaluator = $this->factory->createEvaluator('Weighted', $this->environment, $this->settings);
         $this->solver = $this->factory->createSolver($this->heuristic, $this->validator, $this->evaluator);
     }
