@@ -24,12 +24,13 @@ class ConflictValidator extends Validator
         $this->performance['nodeValidations']++;
 
         // Invalidate this node if there are any full classes
-        foreach ($node->values as &$option) {
-            if ($this->environment->getEnrolmentCount($option['gibbonCourseClassID']) >= $this->settings->maximumStudents) {
-                //unset($option);
-                //$node->weight -= 5.0;
+        foreach ($node->values as $key => &$value) {
+
+            if ($this->environment->getEnrolmentCount($value['gibbonCourseClassID']) >= $this->settings->maximumStudents) {
+                unset($node->values[$key]);
                 //$node->invalid = true;
-                return false;
+                //return false;
+                // TOTO: FLAG ME - INCOMPELTE
             }
         }
 
