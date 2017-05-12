@@ -41,8 +41,9 @@ class WeightedEvaluator extends Evaluator
         // Get the weighted weight :P
         $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
 
-        // Sub-weighting: Incomplete Timetable
-        $weight -= $treeDepth - count($node->values);
+        // Sub-weighting: Incomplete Timetable?
+        //$weight -= $treeDepth - count($node->values);
+        $weight += $this->getIncompleteWeight($node);
 
         // Possibly use this to short-cut out of result sets that already have a number of optimal results?
         if ($weight >= $this->settings->optimalWeight) {
@@ -122,5 +123,13 @@ class WeightedEvaluator extends Evaluator
         }
 
         return $weight;
+    }
+
+    protected function getIncompleteWeight(&$node)
+    {
+        return array_reduce($node->values, function($total, $item) {
+            $total += (!empty($item['flag']))? -1 : 0;
+            return $total;
+        }, 0);
     }
 }

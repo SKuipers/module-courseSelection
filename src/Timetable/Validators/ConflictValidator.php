@@ -27,10 +27,9 @@ class ConflictValidator extends Validator
         foreach ($node->values as $key => &$value) {
 
             if ($this->environment->getEnrolmentCount($value['gibbonCourseClassID']) >= $this->settings->maximumStudents) {
-                unset($node->values[$key]);
-                //$node->invalid = true;
-                //return false;
-                // TOTO: FLAG ME - INCOMPELTE
+                // FLAGGED: Incomplete
+                $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
+                $this->createFlag($value, 'Incomplete', 'Full class: '.$className);
             }
         }
 
@@ -52,8 +51,22 @@ class ConflictValidator extends Validator
     {
         if (empty($node->conflicts) || count($node->conflicts) == 0) return;
 
-        $environment = &$this->environment;
+        $conflictIDs = array_column($node->conflicts, 'gibbonCourseClassID');
 
+        if ($this->settings->autoResolveConflicts == false) {
+            foreach ($node->values as &$value) {
+                if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
+                    // FLAGGED: Conflict
+                    $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
+                    $this->createFlag($value, 'Conflict', 'Class : '.$className);
+                }
+            }
+            //$node->conflicts = array();
+
+            return;
+        }
+
+        $environment = &$this->environment;
         $remove = array();
 
         // Group conflicts by period to handle them in sets
@@ -74,14 +87,28 @@ class ConflictValidator extends Validator
 
         // Filter the removed items out of the node values
         if (!empty($remove)) {
+            //
+            // $node->values = array_filter($node->values, function($item) use ($removeIDs) {
+            //     return !in_array($item['gibbonCourseClassID'], $removeIDs);
+            // });
+
             $removeIDs = array_column($remove, 'gibbonCourseClassID');
-            $node->values = array_filter($node->values, function($item) use ($removeIDs) {
-                return !in_array($item['gibbonCourseClassID'], $removeIDs);
-            });
 
-            $node->conflicts = array();
+            foreach ($node->values as &$value) {
+                if (in_array($value['gibbonCourseClassID'], $removeIDs)) {
+                    // FLAGGED: Conflict Resolved
+                    $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
+                    $this->createFlag($value, 'Conflict Resolved', 'Class removed: '.$className);
+                }
+            }
 
-            // TOTO: FLAG ME - CONFLICT RESOLVED / INCOMPLETE
+            //$node->conflicts = array();
         }
+    }
+
+    protected function createFlag(&$value, $flag, $reason = '')
+    {
+        $value['flag'] = $flag;
+        $value['reason'] = $reason;
     }
 }

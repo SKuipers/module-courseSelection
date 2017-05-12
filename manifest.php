@@ -130,20 +130,11 @@ $moduleTables[]="CREATE TABLE `courseSelectionTTResult` (
   `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
   `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
   `weight` DECIMAL(6,2) NULL ,
+  `status` ENUM('Complete','Flagged','Failed') NULL DEFAULT 'Complete',
+  `flag` VARCHAR(30) NULL,
+  `reason` VARCHAR(255) NULL,
   PRIMARY KEY (`courseSelectionTTResultID`),
   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`)
-) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
-
-$moduleTables[]="CREATE TABLE `courseSelectionTTFlag` (
-  `courseSelectionTTFlagID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
-  `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
-  `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
-  `gibbonCourseClassID` INT(8) UNSIGNED ZEROFILL NULL ,
-  `scope` ENUM('Course','Student') NULL,
-  `type` VARCHAR(30) NULL ,
-  `reason` VARCHAR(255) NULL ,
-  PRIMARY KEY (`courseSelectionTTFlagID`),
-   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`, `gibbonCourseClassID`, `scope`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
 
 $moduleTables[]="CREATE TABLE `courseSelectionMetaData` (

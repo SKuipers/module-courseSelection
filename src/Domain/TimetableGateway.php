@@ -103,11 +103,10 @@ class TimetableGateway
     public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, courseSelectionTTFlag.type as flagType, COUNT(DISTINCT courseSelectionTTFlag.gibbonCourseClassID) as flagCount
+        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, courseSelectionTTResult.flag as flagType, courseSelectionTTResult.status as status
                 FROM courseSelectionTTResult
-                LEFT JOIN courseSelectionTTFlag ON (courseSelectionTTFlag.gibbonSchoolYearID=courseSelectionTTResult.gibbonSchoolYearID AND courseSelectionTTFlag.gibbonPersonIDStudent=courseSelectionTTResult.gibbonPersonIDStudent AND courseSelectionTTFlag.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID AND scope='Student')
-                LEFT JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
                 LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
+                LEFT JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                 JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID)
@@ -118,7 +117,7 @@ class TimetableGateway
         ";
 
         if ($orderBy == 'count') {
-            $sql .= " ORDER BY flagCount DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+            $sql .= " ORDER BY status DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'rollGroup') {
             $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'weight') {
@@ -149,7 +148,7 @@ class TimetableGateway
 
     public function insertResult(array $data)
     {
-        $sql = "INSERT INTO courseSelectionTTResult SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, gibbonCourseClassID=:gibbonCourseClassID, weight=:weight";
+        $sql = "INSERT INTO courseSelectionTTResult SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, gibbonCourseClassID=:gibbonCourseClassID, weight=:weight, status=:status, flag=:flag, reason=:reason";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -178,7 +177,7 @@ class TimetableGateway
     public function transformResultsIntoClassEnrolments($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "INSERT IGNORE INTO gibbonCourseClassPerson (gibbonCourseClassID, gibbonPersonID, role) SELECT gibbonCourseClassID, gibbonPersonIDStudent, 'Student' FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID";
+        $sql = "INSERT IGNORE INTO gibbonCourseClassPerson (gibbonCourseClassID, gibbonPersonID, role) SELECT gibbonCourseClassID, gibbonPersonIDStudent, 'Student' FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID AND status='Complete'";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();

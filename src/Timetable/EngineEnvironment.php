@@ -97,6 +97,7 @@ class EngineEnvironment
 
         foreach ($result->values as $value) {
             if (empty($value)) continue;
+            if (!empty($value['flag'])) continue;
 
             $this->incrementEnrolmentCount($value['gibbonCourseClassID'], $value['gibbonPersonID']);
         }

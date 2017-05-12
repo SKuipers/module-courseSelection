@@ -97,13 +97,8 @@ $courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engi
 // Run
 $results = $engine->runEngine();
 
-$data = array(
-    'gibbonSchoolYearID' => $gibbonSchoolYearID,
-);
-
-$flagData = array(
-    'gibbonSchoolYearID' => $gibbonSchoolYearID,
-);
+$data = array('gibbonSchoolYearID' => $gibbonSchoolYearID,);
+$flagData = array('gibbonSchoolYearID' => $gibbonSchoolYearID,);
 
 // Make this a method, somewhere?
 foreach ($results as $gibbonPersonIDStudent => $result) {
@@ -114,27 +109,18 @@ foreach ($results as $gibbonPersonIDStudent => $result) {
         foreach ($result->values as $class) {
             $data['gibbonCourseID'] = $class['gibbonCourseID'];
             $data['gibbonCourseClassID'] = $class['gibbonCourseClassID'];
+            $data['status'] = (!empty($class['flag']))? 'Flagged' : 'Complete';
+            $data['flag'] = $class['flag'] ?? null;
+            $data['reason'] = $class['reason'] ?? null;
 
             $timetableGateway->insertResult($data);
         }
     } else {
         $data['gibbonCourseID'] = null;
         $data['gibbonCourseClassID'] = null;
+        $data['status'] = 'Failed';
 
         $timetableGateway->insertResult($data);
-    }
-
-    if (!empty($result->conflicts) && count($result->conflicts) > 0) {
-        $flagData['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-        $flagData['scope'] = 'Student';
-        $flagData['type'] = 'Conflict';
-
-        foreach ($result->conflicts as $conflict) {
-            $flagData['gibbonCourseClassID'] = $conflict['gibbonCourseClassID'];
-            $flagData['reason'] = '';
-        }
-
-        $timetableGateway->insertFlag($flagData);
     }
 }
 
