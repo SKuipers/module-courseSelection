@@ -78,7 +78,7 @@ class TimetableGateway
     public function selectCourseResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT GROUP_CONCAT(DISTINCT gibbonCourse.name ORDER BY gibbonCourse.name SEPARATOR '<br>') as courseName, GROUP_CONCAT(DISTINCT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort SEPARATOR '<br>') as className, COUNT(DISTINCT courseSelectionTTResult.gibbonPersonIDStudent) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' THEN 1 ELSE 0 END) as studentsFemale, (CASE WHEN courseSelectionMetaData.enrolmentGroup IS NOT NULL THEN CONCAT(courseSelectionMetaData.enrolmentGroup,'.',gibbonCourseClass.nameShort) ELSE CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) END) as enrolmentGroupName
+        $sql = "SELECT GROUP_CONCAT(DISTINCT gibbonCourse.name ORDER BY gibbonCourse.name SEPARATOR '<br>') as courseName, gibbonCourse.gibbonCourseID, GROUP_CONCAT(DISTINCT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort SEPARATOR '<br>') as className, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' AND courseSelectionTTResult.status = 'Complete' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' AND courseSelectionTTResult.status = 'Complete' THEN 1 ELSE 0 END) as studentsFemale, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Flagged' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as issues, (CASE WHEN courseSelectionMetaData.enrolmentGroup IS NOT NULL THEN CONCAT(courseSelectionMetaData.enrolmentGroup,'.',gibbonCourseClass.nameShort) ELSE CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) END) as enrolmentGroupName
                 FROM courseSelectionTTResult
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
@@ -87,8 +87,10 @@ class TimetableGateway
                 WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY enrolmentGroupName";
 
-        if ($orderBy == 'count') {
+        if ($orderBy == 'students') {
             $sql .= " ORDER BY students DESC, gibbonCourse.nameShort, gibbonCourse.name";
+        } else if ($orderBy == 'issues') {
+            $sql .= " ORDER BY issues DESC, gibbonCourse.nameShort, gibbonCourse.name";
         } else if ($orderBy == 'order') {
             $sql .= " ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort, gibbonCourse.name";
         } else if ($orderBy == 'name') {
@@ -100,10 +102,10 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname')
+    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname', $gibbonCourseID = null)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, courseSelectionTTResult.flag as flagType, courseSelectionTTResult.status as status
+        $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, courseSelectionTTResult.status, courseSelectionTTResult.flag, courseSelectionTTResult.reason
                 FROM courseSelectionTTResult
                 LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
                 LEFT JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
@@ -113,11 +115,17 @@ class TimetableGateway
                 WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
-                GROUP BY gibbonPerson.gibbonPersonID, courseSelectionTTResult.courseSelectionTTResultID
         ";
 
+        if (!empty($gibbonCourseID)) {
+            $data['gibbonCourseID'] = $gibbonCourseID;
+            $sql .= " AND courseSelectionTTResult.gibbonCourseID=:gibbonCourseID";
+        }
+
+        $sql .= " GROUP BY gibbonPerson.gibbonPersonID, courseSelectionTTResult.courseSelectionTTResultID";
+
         if ($orderBy == 'count') {
-            $sql .= " ORDER BY status DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
+            $sql .= " ORDER BY flag DESC, LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'rollGroup') {
             $sql .= " ORDER BY LENGTH(gibbonRollGroup.nameShort), gibbonRollGroup.nameShort, gibbonPerson.surname, gibbonPerson.preferredName";
         } else if ($orderBy == 'weight') {
@@ -129,7 +137,7 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)
+    public function selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent, $gibbonCourseID = null)
     {
         $data = array('gibbonPersonIDStudent' => $gibbonPersonIDStudent, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourse.gibbonCourseID
@@ -140,8 +148,14 @@ class TimetableGateway
                 WHERE courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                 AND courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND courseSelectionTTResult.gibbonCourseClassID IS NULL
-                GROUP BY courseSelectionChoice.courseSelectionChoiceID
         ";
+
+        if (!empty($gibbonCourseID)) {
+            $data['gibbonCourseID'] = $gibbonCourseID;
+            $sql .= " AND courseSelectionChoice.gibbonCourseID=:gibbonCourseID";
+        }
+
+        $sql .= " GROUP BY courseSelectionChoice.courseSelectionChoiceID";
 
         return $this->pdo->executeQuery($data, $sql);
     }

@@ -27,13 +27,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     }
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+    $gibbonCourseID = $_REQUEST['gibbonCourseID'] ?? null;
+
     $sort = $_GET['sort'] ?? 'surname';
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     $timetableGateway = new TimetableGateway($pdo);
-    $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort);
+    $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort, $gibbonCourseID);
 
     if (!$studentResults || $studentResults->rowCount() == 0) {
         echo '<div class="error">';
@@ -48,10 +50,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $form->setClass('noIntBorder fullWidth');
         $form->addHiddenValue('q', '/modules/Course Selection/tt_resultsByStudent.php');
+        $form->addHiddenValue('gibbonCourseID', $gibbonCourseID);
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
-            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'count' => __('Conflicts'), 'weight' => __('Weight')))->selected($sort);
+            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'count' => __('Issues'), 'weight' => __('Weight')))->selected($sort);
 
         $row = $form->addRow();
             $row->addSubmit('Go');
@@ -77,17 +80,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             echo '<th>';
                 echo __('Grade');
             echo '</th>';
-            echo '<th>';
+            echo '<th style="width:50%">';
                 echo __('Classes');
             echo '</th>';
             echo '<th>';
                 echo __('Weight');
             echo '</th>';
             echo '<th>';
-                echo __('Conflicts');
-            echo '</th>';
-            echo '<th style="width: 80px;">';
-                echo __('Actions');
+                echo __('Issues');
             echo '</th>';
         echo '</tr>';
 
@@ -109,25 +109,26 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 $conflictCount = 0;
                 if (!empty($studentClasses) && !empty($student['classNameShort'])) {
                     usort($studentClasses, function($a, $b) { return strnatcmp($a['classNameShort'], $b['classNameShort']); } );
-                    $conflicts = array_count_values(array_column($studentClasses, 'classNameShort'));
 
                     foreach ($studentClasses as $class) {
-                        $status = ($conflicts[$class['classNameShort']] > 1)? 'Conflict' : '';
+                        $status = ($class['status'] != 'Complete')? 'Conflict' : '';
 
-                        echo '<div class="courseChoiceContainer" data-status="'.$status.'" title="'.$class['courseNameShort'].'.'.$class['classNameShort'].'">';
-                        echo '<span style="width:35px; display:inline-block;">'.$class['classNameShort'].'</span>';
-                        echo $class['courseName'];
+                        echo '<div class="courseChoiceContainer" data-status="'.$status.'">';
+                        echo '<span style="width:35px;">'.$class['classNameShort'].'</span>';
+                        echo '<span title="'.$class['courseNameShort'].'.'.$class['classNameShort'].'">';
+                            echo $class['courseName'];
+                        echo '</span>';
 
                         if ($status != '') {
-                            echo '<span class="pullRight courseTag small emphasis">'.__($status).'</span>';
+                            echo '<span class="pullRight courseTag small emphasis" title="'.$class['reason'].'">'.__($class['flag']).'</span>';
                         }
                         echo '</div>';
 
-                        $conflictCount += ($conflicts[$class['classNameShort']] > 1)? 1 : 0;
+                        $conflictCount += (!empty($class['flag']))? 1 : 0;
                     }
                 }
 
-                $incompleteResults = $timetableGateway->selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $student['gibbonPersonID']);
+                $incompleteResults = $timetableGateway->selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $student['gibbonPersonID'], $gibbonCourseID);
                 if ($incompleteResults && $incompleteResults->rowCount() > 0) {
                     while ($class = $incompleteResults->fetch()) {
                         echo '<div class="courseChoiceContainer" data-status="Failed" title="'.$class['courseNameShort'].'">';
@@ -142,9 +143,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo '</td>';
                 echo '<td>'.$student['weight'].'</td>';
                 echo '<td>'.$conflictCount.'</td>';
-
-                echo '<td>';
-                echo '</td>';
             echo '</tr>';
         }
 

@@ -142,12 +142,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addSelect('studentOrder')->fromArray($studentOrders);
 
         $priorities = array(
-            '0.0'  => __('None'),
-            '0.25' => __('Very Low'),
-            '0.5'  => __('Low'),
-            '1.0'  => __('Medium'),
-            '1.5'  => __('High'),
-            '2.0'  => __('Very High'),
+            '0' => __('None'),
+            '1' => __('Very Low'),
+            '2' => __('Low'),
+            '4' => __('Medium'),
+            '6' => __('High'),
+            '8' => __('Very High'),
         );
 
         $setting = getSettingByScope($connection2, 'Course Selection', 'genderBalancePriority', true);
@@ -196,7 +196,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $resultsCollection = collect($engineResults->fetchAll());
 
         $conflicts = $resultsCollection->filter(function($item) {
-            return (!empty($item['flagType']) && $item['flagType'] == 'Conflict');
+            return (!empty($item['flag']));
         })->groupBy('gibbonPersonIDStudent');
 
         $conflictCount = count($conflicts) ?? 0;
@@ -214,7 +214,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $progressBar = '<div class="progressBar" style="width:100%">';
         $progressBar .= '<div class="complete" style="width:'.$progressPercent.'%;" title="'.__('Successful').' '.$progressPercent.'%"></div>';
-        $progressBar .= '<div class="highlight" style="width:'.$conflictPercent.'%;" title="'.__('Conflicts').' '.$conflictPercent.'%"></div>';
+        $progressBar .= '<div class="highlight" style="width:'.$conflictPercent.'%;" title="'.__('Issues').' '.$conflictPercent.'%"></div>';
         $progressBar .= '</div>';
 
         $row = $form->addRow();
@@ -225,7 +225,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addTextField('')->readonly()->setValue(strval($stats['totalResults']));
 
         $row = $form->addRow();
-            $row->addLabel('', __('Timetabling Conflicts'));
+            $row->addLabel('', __('Timetabling Issues'));
             $row->addTextField('')->readonly()->setValue(strval($conflictCount));
 
         $row = $form->addRow();
@@ -265,7 +265,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
 
         if ($conflictCount > 0 || $stats['incompleteResults'] > 0) {
-            $alert = sprintf(__('There are %1$s timetables with conflics and %2$s failed timetables, these students will not recieve complete timetables when the timetabling goes live.'), $conflictCount, $stats['incompleteResults']);
+            $alert = sprintf(__('There are %1$s timetables with issues and %2$s failed timetables, these students will not recieve complete timetables when the timetabling goes live.'), $conflictCount, $stats['incompleteResults']);
             $alertStatus = 'warning';
         } else {
             $alert = sprintf(__('Congrats! All %1$s timetables have been created successfully. You\'re ready to take this timetable live.'), $stats['totalResults']);

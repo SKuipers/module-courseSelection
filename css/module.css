@@ -68,6 +68,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background-color: #F6CECB;
 }
 
+.courseChoiceContainer span {
+    display: inline-block;
+}
+
 .courseProgressByOffering {
     display: inline-block;
     width: 400px;

@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
-            $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'order' => __('Report Order'), 'count' => __('Students')))->selected($sort);
+            $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'order' => __('Report Order'), 'students' => __('Students'),'issues' => __('Issues')))->selected($sort);
 
         $row = $form->addRow();
             $row->addSubmit('Go');
@@ -76,12 +76,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo __('Class');
             echo '</th>';
             echo '<th>';
+                echo __('Balance');
+            echo '</th>';
+            echo '<th>';
                 echo __('Students');
             echo '</th>';
             echo '<th>';
-                echo __('Balance');
+                echo __('Issues');
             echo '</th>';
-            echo '<th style="width: 80px;">';
+            echo '<th style="weight: 60px;">';
                 echo __('Actions');
             echo '</th>';
         echo '</tr>';
@@ -93,7 +96,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>'.$class['courseName'].'</td>';
                 echo '<td>'.$class['className'].'</td>';
-                echo '<td>'.$class['students'].'</td>';
                 echo '<td style="width:25%">';
                     if ($class['students'] > 0) {
                     $femaleBalance = (($class['studentsFemale'] / $classEnrolmentMaximum) * 100.0);
@@ -105,8 +107,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     }
                     echo '</div>';
                 echo '</td>';
+                echo '<td>'.$class['students'].'</td>';
+                echo '<td>'.$class['issues'].'</td>';
                 echo '<td>';
-
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseID=".$class['gibbonCourseID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
         }
