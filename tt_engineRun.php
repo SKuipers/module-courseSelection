@@ -21,7 +21,7 @@ include '../../config.php';
 
 // Setup default settings
 ini_set('memory_limit', '1024M');
-ini_set('max_execution_time', 45);
+ini_set('max_execution_time', 150);
 getSystemSettings($guid, $connection2);
 setCurrentSchoolYear($guid, $connection2);
 

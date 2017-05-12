@@ -261,7 +261,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $row = $form->addRow();
             $row->addLabel('', __('Average Combinations per Student'));
-            $row->addTextField('')->readonly()->setValue(number_format($stats['treeEvaluations'] / intval($stats['totalResults']), 0));
+            $row->addTextField('')->readonly()->setValue(number_format($stats['nodeEvaluations'] / intval($stats['totalResults']), 0));
 
 
         if ($conflictCount > 0 || $stats['incompleteResults'] > 0) {
