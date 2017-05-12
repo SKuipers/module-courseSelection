@@ -100,13 +100,11 @@ class Engine
             $results = $this->solver->makeDecisions($data);
             $bestResult = $this->evaluator->getBestNodeInSet($results);
 
-            $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
-
+            // Post-process the results
             $this->environment->updateEnrolmentCountsFromResult($bestResult);
+            $this->validator->resolveConflicts($bestResult);
 
-            if ($this->settings->autoResolveConflicts) {
-                $this->validator->resolveConflicts($bestResult);
-            }
+            $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
         }
 
         $this->stopEngine();
