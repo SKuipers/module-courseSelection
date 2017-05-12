@@ -103,6 +103,10 @@ class Engine
             $this->resultSet[$gibbonPersonIDStudent] = $bestResult;
 
             $this->environment->updateEnrolmentCountsFromResult($bestResult);
+
+            if ($this->settings->autoResolveConflicts) {
+                $this->validator->resolveConflicts($bestResult);
+            }
         }
 
         $this->stopEngine();

@@ -27,6 +27,7 @@ class EngineSettings
         'targetEnrolmentPriority'     => 1.0,
         'coreCoursePriority'          => 1.0,
         'avoidConflictPriority'       => 2.0,
+        'autoResolveConflicts'        => true,
         'minimumStudents'             => 8,
         'targetStudents'              => 14,
         'maximumStudents'             => 24,

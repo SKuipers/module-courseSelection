@@ -38,14 +38,11 @@ class WeightedEvaluator extends Evaluator
         $weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
 
 
-        // MISSING VALUES?
-        // if (count($node->values) < $treeDepth) {
-        //     $weight += count($node->values) - $treeDepth;
-        // }
-
-
         // Get the weighted weight :P
         $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
+
+        // Sub-weighting: Incomplete Timetable
+        $weight -= $treeDepth - count($node->values);
 
         // Possibly use this to short-cut out of result sets that already have a number of optimal results?
         if ($weight >= $this->settings->optimalWeight) {
