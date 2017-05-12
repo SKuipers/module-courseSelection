@@ -150,4 +150,5 @@ INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`val
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'targetEnrolmentPriority', 'Target Enrolment Priority', '', '1.0');end
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'coreCoursePriority', 'Core Course Priority', '', '1.0');end
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'avoidConflictPriority', 'Avoid Conflict Priority', '', '2.0');end
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'autoResolveConflicts', 'Auto-Resolve Conflicts?', 'If enabled conflicts will be resolved by keeping the course with the highest priority.', 'Y');end
 ";

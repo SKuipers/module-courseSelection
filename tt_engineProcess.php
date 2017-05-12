@@ -46,6 +46,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $timetableConflictTollerance = $_POST['timetableConflictTollerance'] ?? '0';
         $settingsGateway->update('Course Selection', 'timetableConflictTollerance', $timetableConflictTollerance);
 
+        $autoResolveConflicts = $_POST['autoResolveConflicts'] ?? 'Y';
+        $settingsGateway->update('Course Selection', 'autoResolveConflicts', $autoResolveConflicts);
+
         $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
         $process->startProcess('engine', __DIR__.'/tt_engineRun.php', array($gibbonSchoolYearID));
 

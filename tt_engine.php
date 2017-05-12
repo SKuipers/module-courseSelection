@@ -175,6 +175,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addNumber($setting['name'])->isRequired()->minimum(0)->maximum(5)->setValue($setting['value']);
 
+        $setting = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts', true);
+        $row = $form->addRow();
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addYesNo($setting['name'])->isRequired()->setValue($setting['value']);
+
         $row = $form->addRow();
             $row->addAlert(__("Click run when you're ready to begin timetabling. Once complete you'll see the results here, as well as be able to view them by Course and Student. The timetabling engine will take a moment to process: <b>it's okay to leave or close this page while waiting.</b>"), 'message');
 
