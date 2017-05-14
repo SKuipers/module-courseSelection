@@ -24,6 +24,7 @@ class MetaDataGateway
         $this->pdo = $pdo;
     }
 
+    // TRANSACTIONS
     public function insert(array $data)
     {
         $sql = "INSERT INTO courseSelectionMetaData SET gibbonCourseID=:gibbonCourseID, enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags ON DUPLICATE KEY UPDATE enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags";
@@ -40,12 +41,34 @@ class MetaDataGateway
         return $this->pdo->getQuerySuccess();
     }
 
-    public function delete($courseSelectionAccessID)
+    public function delete($courseSelectionMetaDataID)
     {
         $data = array('courseSelectionMetaDataID' => $courseSelectionMetaDataID);
         $sql = "DELETE FROM courseSelectionMetaData WHERE courseSelectionMetaDataID=:courseSelectionMetaDataID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
+    }
+
+    // QUERIES
+    public function selectOne($courseSelectionMetaDataID)
+    {
+        $data = array('courseSelectionMetaDataID' => $courseSelectionMetaDataID);
+        $sql = "SELECT * FROM courseSelectionMetaData WHERE courseSelectionMetaDataID=:courseSelectionMetaDataID ";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
+    }
+
+    public function selectAllBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT *
+                FROM courseSelectionMetaData
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionMetaData.gibbonCourseID)
+                WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $result;
     }
 }

@@ -1,0 +1,87 @@
+<?php
+/*
+Gibbon: Course Selection & Timetabling Engine
+Copyright (C) 2017, Sandra Kuipers
+*/
+
+use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
+use CourseSelection\Domain\MetaDataGateway;
+use CourseSelection\Domain\ToolsGateway;
+
+// Autoloader & Module includes
+$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+
+if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_manage_addEdit.php') == false) {
+    //Acess denied
+    echo "<div class='error'>" ;
+        echo __('You do not have access to this action.');
+    echo "</div>" ;
+} else {
+    $metaDataGateway = new MetaDataGateway($pdo);
+    $toolsGateway = new ToolsGateway($pdo);
+
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+
+    $values = array(
+        'courseSelectionMetaDataID' => '',
+        'gibbonCourseID'            => '',
+        'enrolmentGroup'            => '',
+        'timetablePriority'         => '',
+        'tags'                      => ''
+    );
+
+    if (isset($_GET['courseSelectionMetaDataID'])) {
+        $result = $metaDataGateway->selectOne($_GET['courseSelectionMetaDataID']);
+        if ($result && $result->rowCount() == 1) {
+            $values = $result->fetch();
+        }
+
+        $actionName = __('Edit Meta Data');
+        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/meta_manage_editProcess.php';
+    } else {
+        $actionName = __('Add Meta Data');
+        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/meta_manage_addProcess.php';
+    }
+
+    echo "<div class='trail'>" ;
+    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__('Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/meta_manage.php'>".__('Manage Meta Data')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
+    echo "</div>" ;
+
+    if (isset($_GET['return'])) {
+        $editLink = (isset($_GET['editID']))? $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/meta_manage_addEdit.php&courseSelectionMetaDataID='.$_GET['editID'] : '';
+        returnProcess($guid, $_GET['return'], $editLink, null);
+    }
+
+    $form = Form::create('metaAddEdit', $actionURL);
+
+    $form->addHiddenValue('courseSelectionMetaDataID', $values['courseSelectionMetaDataID']);
+    $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+
+    $courseResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearID);
+
+    $row = $form->addRow()->addClass('courseEnrolment');
+        $row->addLabel('gibbonCourseID', __('Course'));
+        $row->addSelect('gibbonCourseID')->fromResults($courseResults)->isRequired()->selected($values['gibbonCourseID']);
+
+    $row = $form->addRow();
+        $row->addLabel('timetablePriority', __('Timetable Priority'))->description(__('Helps determine the priority of a course when auto-resolving timetabling conflicts. '));
+        $row->addTextField('timetablePriority')->setValue($values['timetablePriority']);
+
+    $row = $form->addRow();
+        $row->addLabel('enrolmentGroup', __('Enrolment Group'))->description(__('The timetabling engine will group student enrolment counts for classes together that share the same timetable period and enrolment group.'));
+        $row->addTextField('enrolmentGroup')->setValue($values['enrolmentGroup']);
+
+    $row = $form->addRow();
+        $row->addLabel('tags', __('Tags'))->description(__('Comma-separated values. Tagged courses are counted during the course selection approval process.'));
+        $row->addTextField('tags')->setValue($values['tags']);
+
+
+    $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+    echo $form->getOutput();
+}
