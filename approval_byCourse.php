@@ -10,9 +10,8 @@ use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 use CourseSelection\Domain\SelectionsGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_byCourse.php') == false) {
     //Acess denied

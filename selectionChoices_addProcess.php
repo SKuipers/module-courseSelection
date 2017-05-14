@@ -8,8 +8,8 @@ include '../../functions.php';
 
 use CourseSelection\Domain\SelectionsGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+// Module Bootstrap
+require 'module.php';
 
 $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
 $courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';

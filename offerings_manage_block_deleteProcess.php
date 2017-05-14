@@ -8,8 +8,8 @@ include '../../functions.php';
 
 use CourseSelection\Domain\OfferingsGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+// Module Bootstrap
+require 'module.php';
 
 $courseSelectionOfferingID = $_GET['courseSelectionOfferingID'] ?? '';
 

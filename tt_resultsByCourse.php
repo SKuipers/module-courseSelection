@@ -8,9 +8,8 @@ use Gibbon\Forms\Form;
 use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\SchoolYearNavigation;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_resultsByCourse.php') == false) {
     //Acess denied

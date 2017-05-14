@@ -8,9 +8,8 @@ use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 use CourseSelection\Domain\BlocksGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_manage_addEdit.php') == false) {
     //Acess denied

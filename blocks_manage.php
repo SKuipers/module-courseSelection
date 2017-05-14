@@ -7,9 +7,8 @@ Copyright (C) 2017, Sandra Kuipers
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\BlocksGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_manage.php') == false) {
     //Acess denied

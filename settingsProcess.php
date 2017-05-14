@@ -8,8 +8,8 @@ include '../../functions.php';
 
 use CourseSelection\Domain\SettingsGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+// Module Bootstrap
+require 'module.php';
 
 $URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/settings.php';
 

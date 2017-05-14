@@ -25,8 +25,8 @@ ini_set('max_execution_time', 150);
 getSystemSettings($guid, $connection2);
 setCurrentSchoolYear($guid, $connection2);
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+// Module Bootstrap
+require 'module.php';
 $loader->addNameSpace('Illuminate\\', 'modules/Course Selection/src/Illuminate/');
 require_once $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/Illuminate/Support/helpers.php';
 

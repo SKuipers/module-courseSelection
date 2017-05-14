@@ -8,8 +8,8 @@ include '../../functions.php';
 
 use CourseSelection\Domain\AccessGateway;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+// Module Bootstrap
+require 'module.php';
 
 $courseSelectionAccessID = $_POST['courseSelectionAccessID'] ?? '';
 

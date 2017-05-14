@@ -11,18 +11,8 @@ use CourseSelection\SchoolYearNavigation;
 use CourseSelection\BackgroundProcess;
 use Illuminate\Support\Collection;
 
-// include the Composer autoloader
-require 'vendor/autoload.php';
-
-
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
-//$loader->addNameSpace('Illuminate\\', 'modules/Course Selection/src/Illuminate/');
-
-
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
-//require_once $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/Illuminate/Support/helpers.php';
-
+// Module Bootstrap
+require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine.php') == false) {
     //Acess denied

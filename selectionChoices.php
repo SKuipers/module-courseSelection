@@ -14,9 +14,8 @@ use CourseSelection\Domain\GradesGateway;
 use CourseSelection\Domain\ToolsGateway;
 use CourseSelection\Form\CourseSelectionFormFactory;
 
-// Autoloader & Module includes
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
-include "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selectionChoices.php') == false) {
     //Acess denied
