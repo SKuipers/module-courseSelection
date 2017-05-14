@@ -67,15 +67,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             return;
         }
 
-        $students = $studentCollection->reduce(function($students, $item){
-            $students[$item['gibbonPersonIDStudent']] = 1;
-            return $students;
-        }, array());
-
-        $courses = $studentCollection->reduce(function($courses, $item){
-            $courses[$item['gibbonCourseID']] = $item['gibbonCourseClassID'];
-            return $courses;
-        }, array());
+        $students = $studentCollection->groupBy('gibbonPersonIDStudent');
+        $courses = $studentCollection->groupBy('gibbonCourseID');
 
         $incompleteResults = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID);
         $incompleteCollection = collect($incompleteResults->fetchAll());
@@ -86,8 +79,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         }, 0);
 
         $classlessCount = collect($courses)->reduce(function($count, $item){
-            $count += (count($item) == 0)? 1 : 0;
-            return $count;
+            return $count + (collect($item)->sum('gibbonCourseClassID') == 0);
+        }, 0);
+
+        $untimetabledCount = collect($courses)->reduce(function($count, $item){
+            $untimetabled = collect($item)->filter(function($item) {
+                return empty($item['ttDays']) && !empty($item['gibbonCourseClassID']);
+            })->count();
+
+            return $count + ($untimetabled > 0);
         }, 0);
 
         // RUN
@@ -105,7 +105,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         }
 
         if ($classlessCount > 0) {
-            $column->addAlert(sprintf(__('There are %1$s requested courses  that do not have any classes. If you continue with the timetabling process, those courses will not be included.'), $classlessCount), 'warning');
+            $column->addAlert(sprintf(__('There are %1$s requested courses that do not have any classes. If you continue with the timetabling process, those courses will not be included.'), $classlessCount), 'warning');
+        }
+
+        if ($untimetabledCount > 0) {
+            $column->addAlert(sprintf(__('There are %1$s requested courses that have not been timetabled. If you continue with the timetabling process, those courses will not be included.'), $untimetabledCount), 'warning');
         }
 
         $row = $form->addRow();
@@ -168,7 +172,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $setting = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
-            $row->addNumber($setting['name'])->isRequired()->minimum(0)->maximum(5)->setValue($setting['value']);
+            $row->addNumber($setting['name'])->isRequired()->minimum(0)->maximum(8)->setValue($setting['value']);
 
         $setting = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts', true);
         $row = $form->addRow();
