@@ -38,7 +38,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         exit;
     } else {
 
-        $gateway = new BlocksGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
 
         $updated = $gateway->update($data);
 

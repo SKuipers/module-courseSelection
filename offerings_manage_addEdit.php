@@ -17,7 +17,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $gateway = new OfferingsGateway($pdo);
+    $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
 
     $values = array(
         'courseSelectionOfferingID' => '',

@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         exit;
     }
 
-    $accessGateway = new AccessGateway($pdo);
+    $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
 
     if ($highestGroupedAction == 'Course Selection_all') {
         $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
@@ -59,7 +59,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             exit;
         } else {
             $partialFail = false;
-            $gateway = new SelectionsGateway($pdo);
+            $gateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
             $courseSelectionsList = array();
             $courseSelections = $_POST['courseSelection'] ?? array();

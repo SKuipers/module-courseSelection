@@ -28,7 +28,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         header("Location: {$URL}");
         exit;
     } else {
-        $settingsGateway = new SettingsGateway($pdo);
+        $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
 
         // Save any changes made to timetabling settings
         $genderBalancePriority = $_POST['genderBalancePriority'] ?? '0.5';

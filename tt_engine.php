@@ -51,8 +51,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
-    $timetableGateway = new TimetableGateway($pdo);
-    $selectionsGateway = new selectionsGateway($pdo);
+    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+    $selectionsGateway = $container->get('CourseSelection\Domain\selectionsGateway');
 
     $engineResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID);
 

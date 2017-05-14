@@ -27,8 +27,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
 
-    $selectionsGateway = new SelectionsGateway($pdo);
-    $gradesGateway = new GradesGateway($pdo);
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $gradesGateway = $container->get('CourseSelection\Domain\GradesGateway');
 
     $studentResults = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
     $studentEnrolmentResults = $gradesGateway->selectStudentEnrolmentByStudent($gibbonPersonIDStudent);

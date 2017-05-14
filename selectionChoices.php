@@ -52,11 +52,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $accessGateway = new AccessGateway($pdo);
-    $offeringsGateway = new OfferingsGateway($pdo);
-    $blocksGateway = new BlocksGateway($pdo);
-    $selectionsGateway = new SelectionsGateway($pdo);
-    $gradesGateway = new GradesGateway($pdo);
+    $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
+    $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
+    $blocksGateway = $container->get('CourseSelection\Domain\BlocksGateway');
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $gradesGateway = $container->get('CourseSelection\Domain\GradesGateway');
 
     if ($highestGroupedAction == 'Course Selection_all') {
         $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
@@ -207,7 +207,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         }
 
         if ($highestGroupedAction == 'Course Selection_all') {
-            $toolsGateway = new ToolsGateway($pdo);
+            $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
             echo '<h3>';
             echo __('Add a Course Selection');

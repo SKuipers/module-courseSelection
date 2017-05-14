@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         exit;
     } else {
 
-        $gateway = new AccessGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\AccessGateway');
 
         $updated = $gateway->update($data);
 

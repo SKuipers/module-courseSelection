@@ -35,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         exit;
     } else {
 
-        $gateway = new MetaDataGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
 
         $updated = $gateway->update($data);
 

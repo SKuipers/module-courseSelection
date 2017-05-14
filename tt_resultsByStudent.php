@@ -33,7 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
-    $timetableGateway = new TimetableGateway($pdo);
+    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
     $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort, $gibbonCourseID);
 
     if (!$studentResults || $studentResults->rowCount() == 0) {

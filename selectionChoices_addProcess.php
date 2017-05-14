@@ -24,7 +24,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 } else {
     //Proceed!
     $partialFail = false;
-    $selectionsGateway = new SelectionsGateway($pdo);
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
     if ($highestGroupedAction != 'Course Selection_all') {

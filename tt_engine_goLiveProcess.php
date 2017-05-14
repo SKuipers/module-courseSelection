@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         exit;
     } else {
 
-        $timetableGateway = new TimetableGateway($pdo);
+        $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
 
         $copied = $timetableGateway->transformResultsIntoClassEnrolments($gibbonSchoolYearID);
 

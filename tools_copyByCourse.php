@@ -26,7 +26,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $toolsGateway = new ToolsGateway($pdo);
+    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
     $gibbonSchoolYearIDCopyTo = $_GET['gibbonSchoolYearIDCopyTo'] ?? null;

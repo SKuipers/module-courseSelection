@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         header("Location: {$URL}");
         exit;
     } else {
-        $gateway = new OfferingsGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
 
         $partialFail = false;
         foreach ($courseSelectionBlockIDList as $courseSelectionBlockID) {

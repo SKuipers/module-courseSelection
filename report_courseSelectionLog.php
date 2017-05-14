@@ -30,7 +30,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
-    $selectionsGateway = new SelectionsGateway($pdo);
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $logs = $selectionsGateway->selectAllLogsBySchoolYear($gibbonSchoolYearID, 1, 100);
 

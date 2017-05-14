@@ -23,7 +23,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     if (empty($data['courseSelectionOfferingID']) || empty($courseSelectionBlockIDList)) {
         exit;
     } else {
-        $gateway = new OfferingsGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
 
         $count = 1;
         foreach ($courseSelectionBlockIDList as $courseSelectionBlockID) {

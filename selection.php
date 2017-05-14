@@ -53,9 +53,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     // Cancel out early if there's no valid student selected
     if (empty($gibbonPersonIDStudent)) return;
 
-    $accessGateway = new AccessGateway($pdo);
-    $offeringsGateway = new OfferingsGateway($pdo);
-    $selectionsGateway = new SelectionsGateway($pdo);
+    $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
+    $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
 

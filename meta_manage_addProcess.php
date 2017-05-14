@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         header("Location: {$URL}");
         exit;
     } else {
-        $gateway = new MetaDataGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
 
         $insertID = $gateway->insert($data);
 

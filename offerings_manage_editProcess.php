@@ -41,7 +41,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         exit;
     } else {
 
-        $gateway = new OfferingsGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
 
         $updated = $gateway->update($data);
 

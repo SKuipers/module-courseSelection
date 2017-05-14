@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
     echo __('Report Data');
     echo '</h2>';
 
-    $selectionsGateway = new SelectionsGateway($pdo);
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
     $courses = $selectionsGateway->selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $sort);
 
     if ($courses->rowCount() == 0) {

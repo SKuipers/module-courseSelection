@@ -33,7 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/blocks_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__($guid, 'Add')."<img style='margin-left: 5px' title='".__($guid, 'Add')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
     echo '</div>';
 
-    $gateway = new BlocksGateway($pdo);
+    $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
     $blocks = $gateway->selectAllBySchoolYear($gibbonSchoolYearID);
 
     if ($blocks->rowCount() == 0) {

@@ -34,8 +34,8 @@ require_once $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/Ill
 $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;
 
 $processor = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
-$timetableGateway = new TimetableGateway($pdo);
-$settingsGateway = new SettingsGateway($pdo);
+$timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+$settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
 
 // Build a set of class information for the school year
 $classResults = $timetableGateway->selectTimetabledClassesBySchoolYear($gibbonSchoolYearID);

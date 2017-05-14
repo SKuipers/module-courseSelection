@@ -24,7 +24,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 } else {
     //Proceed!
     $partialFail = false;
-    $selectionsGateway = new SelectionsGateway($pdo);
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $gibbonSchoolYearIDCopyTo = $_POST['gibbonSchoolYearIDCopyTo'] ?? '';
     $gibbonCourseIDCopyTo = $_POST['gibbonCourseIDCopyTo'] ?? '';

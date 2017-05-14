@@ -23,7 +23,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     if (empty($courseSelectionOfferingID) || empty($gibbonPersonIDStudent) || empty($courseSelectionChoiceID)) {
         die(false);
     } else {
-        $gateway = new SelectionsGateway($pdo);
+        $gateway = $container->get('CourseSelection\Domain\SelectionsGateway');
         if ($status === 'true') {
             $data = array();
             $data['courseSelectionChoiceID'] = $courseSelectionChoiceID;

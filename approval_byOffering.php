@@ -28,9 +28,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    $toolsGateway = new ToolsGateway($pdo);
-    $offeringsGateway = new OfferingsGateway($pdo);
-    $selectionsGateway = new SelectionsGateway($pdo);
+    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
+    $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $courseSelectionOfferingID = $_REQUEST['courseSelectionOfferingID'] ?? '';
     $showRemoved = $_GET['showRemoved'] ?? 'N';

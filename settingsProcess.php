@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
 } else {
     //Proceed!
     $partialFail = false;
-    $settingsGateway = new SettingsGateway($pdo);
+    $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
 
     $activeSchoolYear = $_POST['activeSchoolYear'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
     $partialFail &= !$settingsGateway->update('Course Selection', 'activeSchoolYear', $activeSchoolYear);

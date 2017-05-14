@@ -18,8 +18,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $metaDataGateway = new MetaDataGateway($pdo);
-    $toolsGateway = new ToolsGateway($pdo);
+    $metaDataGateway = $container->get('CourseSelection\Domain\MetaDataGateway');
+    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 
