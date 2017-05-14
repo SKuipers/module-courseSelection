@@ -154,3 +154,11 @@ INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`val
 ALTER TABLE `courseSelectionTTResult` ADD `status` ENUM('Complete','Flagged','Failed') NULL DEFAULT 'Complete' AFTER `weight`, ADD `flag` VARCHAR(30) NULL AFTER `status`, ADD `reason` VARCHAR(255) NULL AFTER `flag`;end
 DROP TABLE IF EXISTS `courseSelectionTTFlag`;end
 ";
+
+
+//v0.1.03
+$count++;
+$sql[$count][0]="0.1.03" ;
+$sql[$count][1]="INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'Manage Meta Data', 0, 'Administration', '', 'meta_manage.php,meta_manage_addEdit.php,meta_manage_delete.php', 'meta_manage.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Course Selection' AND gibbonAction.name='Manage Meta Data'));end
+";

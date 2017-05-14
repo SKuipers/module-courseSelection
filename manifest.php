@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.1.02" ;
+$version="0.1.03" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -226,6 +226,26 @@ $actionRows[] = array(
     'description'               => '',
     'URLList'                   => 'blocks_manage.php,blocks_manage_addEdit.php,blocks_manage_delete.php',
     'entryURL'                  => 'blocks_manage.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Manage Meta Data',
+    'precedence'                => '0',
+    'category'                  => 'Administration',
+    'description'               => '',
+    'URLList'                   => 'meta_manage.php,meta_manage_addEdit.php,meta_manage_delete.php',
+    'entryURL'                  => 'meta_manage.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',

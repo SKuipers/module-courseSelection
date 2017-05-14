@@ -7,4 +7,4 @@ Copyright (C) 2017, Sandra Kuipers
 /**
  * Sets version information
  */
-$moduleVersion="0.1.02" ;
+$moduleVersion="0.1.03" ;
