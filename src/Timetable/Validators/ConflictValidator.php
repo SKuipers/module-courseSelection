@@ -32,16 +32,24 @@ class ConflictValidator extends Validator
             }
         }
 
+        if (empty($node->tt)) $node->tt = array();
+
         // Look for duplicates by counting the class period occurances
         $periodCounts = array_count_values(array_column($node->values, 'period'));
 
         // Put together a set of conflicting classes
-        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use ($periodCounts) {
+        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use ($periodCounts, &$node) {
             if (!empty($item['flag'])) return $conflicts; // Don't conflict with courses already ruled out
 
-            if (isset($item['period']) && $periodCounts[$item['period']] > 1) {
+            if (in_array($item['ttDays'], $node->tt)) {
                 $conflicts[] = $item;
             }
+
+            $node->tt = array_unique(array_merge($item['ttDays'], $node->tt));
+
+            // if (isset($item['period']) && $periodCounts[$item['period']] > 1) {
+            //     $conflicts[] = $item;
+            // }
             return $conflicts;
         }, array());
 

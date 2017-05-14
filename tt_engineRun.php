@@ -54,7 +54,8 @@ $courseSelectionData = collect($selectionsData)->transform(function($courses, $g
     return collect($courses)->filter(function($item) {
         return !empty($item['gibbonCourseClassID']);
     })->mapToGroups(function($item) {
-         return [$item['gibbonCourseID'] => $item];
+        $item['ttDays'] = (!empty($item['ttDays']))? explode(',', $item['ttDays']) : array();
+        return [$item['gibbonCourseID'] => $item];
     })->toArray();
 });
 

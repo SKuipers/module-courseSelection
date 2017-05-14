@@ -32,13 +32,13 @@ class ClassSizeHeuristic extends Heuristic
             return $currentEnrolment;
         }
 
-        $periods = array_column($node->values, 'period');
+        //$periods = array_column($node->values, 'period');
 
         // Sorts by timetable conflicts first, then number of students in the class
-        usort($options, function($a, $b) use ($environment, $periods) {
+        usort($options, function($a, $b) use ($environment) { //, $periods
 
-            if (in_array($a['period'], $periods)) return -2;
-            if (in_array($b['period'], $periods)) return 2;
+            //if (in_array($a['period'], $periods)) return -2;
+            //if (in_array($b['period'], $periods)) return 2;
 
             $aCount = $environment->getEnrolmentCount($a['gibbonCourseClassID']);
             $bCount = $environment->getEnrolmentCount($b['gibbonCourseClassID']);
