@@ -75,7 +75,7 @@ $settings->genderBalancePriority = getSettingByScope($connection2, 'Course Selec
 $settings->targetEnrolmentPriority = getSettingByScope($connection2, 'Course Selection', 'targetEnrolmentPriority');
 $settings->coreCoursePriority = getSettingByScope($connection2, 'Course Selection', 'coreCoursePriority');
 $settings->avoidConflictPriority = getSettingByScope($connection2, 'Course Selection', 'avoidConflictPriority');
-$settings->autoResolveConflicts = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts') == 'Y';
+$settings->autoResolveConflicts = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts');
 
 $settings->heuristic = 'Class Size';
 $settings->validator = 'Conflict';
