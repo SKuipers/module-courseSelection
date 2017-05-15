@@ -52,7 +52,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\selectionsGateway');
+    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $engineResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID);
 
