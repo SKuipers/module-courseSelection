@@ -189,4 +189,12 @@ class TimetableGateway
 
         return $this->pdo->getConnection()->lastInsertID();
     }
+
+    public function insertClassEnrolment(array $data)
+    {
+        $sql = "INSERT IGNORE INTO gibbonCourseClassPerson SET gibbonCourseClassID=:gibbonCourseClassID, gibbonPersonID=:gibbonPersonID, role=:role";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
 }

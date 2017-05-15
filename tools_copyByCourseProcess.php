@@ -24,6 +24,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 } else {
     //Proceed!
     $partialFail = false;
+    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $gibbonSchoolYearIDCopyTo = $_POST['gibbonSchoolYearIDCopyTo'] ?? '';
@@ -31,45 +32,67 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $studentList = $_POST['studentList'] ?? '';
     $status = $_POST['status'] ?? '';
     $overwrite = $_POST['overwrite'] ?? 'Y';
+    $actionCopyTo = $_POST['actionCopyTo'] ?? 'Y';
 
-    if (empty($gibbonSchoolYearID) || empty($gibbonSchoolYearIDCopyTo) || empty($gibbonCourseID) || empty($gibbonCourseIDCopyTo) || empty($studentList) || empty($status)) {
+    if (empty($gibbonSchoolYearID) || empty($gibbonSchoolYearIDCopyTo) || empty($gibbonCourseID) || empty($gibbonCourseIDCopyTo) || empty($studentList)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
     } else {
-        $data = array();
-        $data['gibbonSchoolYearID'] = $gibbonSchoolYearIDCopyTo;
-        $data['gibbonCourseID'] = $gibbonCourseIDCopyTo;
-        $data['courseSelectionBlockID'] = null;
-        $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
-        $data['timestampSelected'] = date('Y-m-d H:i:s');
-        $data['status'] = ($status != 'Approved')? $status : 'Requested';
-        $data['notes'] = '';
 
-        $dataApproval = array();
-        $dataApproval['gibbonPersonIDApproved'] = $_SESSION[$guid]['gibbonPersonID'];
-        $dataApproval['timestampApproved'] = date('Y-m-d H:i:s');
+        if ($actionCopyTo == 'Requests') {
+            $data = array();
+            $data['gibbonSchoolYearID'] = $gibbonSchoolYearIDCopyTo;
+            $data['gibbonCourseID'] = $gibbonCourseIDCopyTo;
+            $data['courseSelectionBlockID'] = null;
+            $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
+            $data['timestampSelected'] = date('Y-m-d H:i:s');
+            $data['status'] = ($status != 'Approved')? $status : 'Requested';
+            $data['notes'] = '';
 
-        foreach ($studentList as $gibbonPersonIDStudent) {
-            $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-            $courseSelectionChoiceID = null;
+            $dataApproval = array();
+            $dataApproval['gibbonPersonIDApproved'] = $_SESSION[$guid]['gibbonPersonID'];
+            $dataApproval['timestampApproved'] = date('Y-m-d H:i:s');
 
-            $choiceRequest = $selectionsGateway->selectChoiceByCourseAndPerson($gibbonCourseIDCopyTo, $gibbonPersonIDStudent);
-            if ($choiceRequest && $choiceRequest->rowCount() > 0) {
-                $choice = $choiceRequest->fetch();
-                $courseSelectionChoiceID = $choice['courseSelectionChoiceID'];
+            foreach ($studentList as $gibbonPersonIDStudent) {
+                $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
+                $courseSelectionChoiceID = null;
 
-                if ($overwrite == 'Y') {
-                    $partialFail &= !$selectionsGateway->updateChoice($data);
+                $choiceRequest = $selectionsGateway->selectChoiceByCourseAndPerson($gibbonCourseIDCopyTo, $gibbonPersonIDStudent);
+                if ($choiceRequest && $choiceRequest->rowCount() > 0) {
+                    $choice = $choiceRequest->fetch();
+                    $courseSelectionChoiceID = $choice['courseSelectionChoiceID'];
+
+                    if ($overwrite == 'Y') {
+                        $partialFail &= !$selectionsGateway->updateChoice($data);
+                    }
+                } else {
+                    $courseSelectionChoiceID = $selectionsGateway->insertChoice($data);
+                    $partialFail &= !$courseSelectionChoiceID;
                 }
-            } else {
-                $courseSelectionChoiceID = $selectionsGateway->insertChoice($data);
-                $partialFail &= !$courseSelectionChoiceID;
-            }
 
-            if ($status == 'Approved' && !empty($courseSelectionChoiceID)) {
-                $dataApproval['courseSelectionChoiceID'] = $courseSelectionChoiceID;
-                $partialFail &= !$selectionsGateway->insertApproval($dataApproval);
+                if ($status == 'Approved' && !empty($courseSelectionChoiceID)) {
+                    $dataApproval['courseSelectionChoiceID'] = $courseSelectionChoiceID;
+                    $partialFail &= !$selectionsGateway->insertApproval($dataApproval);
+                }
+            }
+        } else if ($actionCopyTo == 'Enrolments') {
+            $gibbonCourseClassIDCopyTo = $_POST['gibbonCourseClassIDCopyTo'] ?? '';
+
+            if (empty($gibbonCourseClassIDCopyTo)) {
+                $URL .= '&return=error1';
+                header("Location: {$URL}");
+                exit;
+            } else {
+                $data = array();
+                $data['gibbonCourseClassID'] = $gibbonCourseClassIDCopyTo;
+                $data['role'] = 'Student';
+
+                foreach ($studentList as $gibbonPersonIDStudent) {
+                    $data['gibbonPersonID'] = $gibbonPersonIDStudent;
+
+                    $partialFail &= !$timetableGateway->insertClassEnrolment($data);
+                }
             }
         }
 

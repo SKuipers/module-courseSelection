@@ -28,15 +28,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $gibbonSchoolYearIDCopyTo = $_GET['gibbonSchoolYearIDCopyTo'] ?? null;
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
-    $action = $_GET['action'] ?? '';
+    $actionCopyFrom = $_GET['actionCopyFrom'] ?? '';
+    $actionCopyTo = $_GET['actionCopyTo'] ?? '';
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
-    if ($action == 'Requests') {
+    if ($actionCopyFrom == 'Requests') {
         $gibbonSchoolYearIDCopyTo = $gibbonSchoolYearID;
     } else if (empty($gibbonSchoolYearIDCopyTo)) {
         $nextSchoolYear = $navigation->selectNextSchoolYearByID($gibbonSchoolYearID);
@@ -61,17 +62,21 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $form->addRow()->addContent(__("This tool lets you copy student enrolments or course requests and convert them into requests for a different course. After selecting the year and course below you'll have the option to select students and the destination course to copy to."))->wrap('<br/><p>', '</p>');
 
     $courseCopyFromResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearID);
-    $courseCopyOptions = ($courseCopyFromResults->rowCount() > 0)? array('Enrolments', 'Requests') : array('Enrolments');
+    $courseCopyOptions = ($courseCopyFromResults->rowCount() > 0)? array('Requests', 'Enrolments') : array('Enrolments');
 
     $row = $form->addRow();
-        $row->addLabel('action', __('Copy'));
-        $row->addSelect('action')->fromArray($courseCopyOptions)->isRequired()->placeholder()->selected($action);
+        $row->addLabel('actionCopyFrom', __('Copy From'));
+        $row->addSelect('actionCopyFrom')->fromArray($courseCopyOptions)->isRequired()->placeholder()->selected($actionCopyFrom);
 
-    $form->toggleVisibilityByClass('courseEnrolment')->onSelect('action')->when('Enrolments');
-    $form->toggleVisibilityByClass('courseRequests')->onSelect('action')->when('Requests');
+    $row = $form->addRow();
+        $row->addLabel('actionCopyTo', __('Copy To'));
+        $row->addSelect('actionCopyTo')->fromArray(array('Requests', 'Enrolments'))->isRequired()->placeholder()->selected($actionCopyTo);
+
+    $form->toggleVisibilityByClass('courseEnrolment')->onSelect('actionCopyFrom')->when('Enrolments');
+    $form->toggleVisibilityByClass('courseRequests')->onSelect('actionCopyFrom')->when('Requests');
 
     $row = $form->addRow()->addClass('courseEnrolment');
-        $row->addLabel('gibbonCourseID', __('Courses from ').$navigation->getSchoolYearName());
+        $row->addLabel('gibbonCourseID', __('Course'));
         $row->addSelect('gibbonCourseID')->fromArray($courses)->isRequired()->selected($gibbonCourseID);
 
     $row = $form->addRow()->addClass('courseEnrolment');
@@ -83,17 +88,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         $row->addSelect('gibbonCourseID')->fromResults($courseCopyFromResults)->isRequired()->selected($gibbonCourseID);
 
     $row = $form->addRow();
-        $row->addSubmit();
+        $row->addSubmit('Next');
 
     echo $form->getOutput();
 
     // SELECT STUDENTS
     if (!empty($gibbonCourseID) && !empty($gibbonSchoolYearIDCopyTo)) {
         echo '<h2>';
-        echo __($guid, (($action == 'Requests')? 'Current Requests' : 'Current Enrolments') );
+        echo __($guid, (($actionCopyFrom == 'Requests')? 'Current Requests' : 'Current Enrolments') );
         echo '</h2>';
 
-        if ($action == 'Requests') {
+        if ($actionCopyFrom == 'Requests') {
             $studentsResults = $toolsGateway->selectStudentsByCourseSelection($gibbonCourseID);
         } else {
             $studentsResults = $toolsGateway->selectStudentsByCourse($gibbonCourseID);
@@ -111,12 +116,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonSchoolYearIDCopyTo', $gibbonSchoolYearIDCopyTo);
         $form->addHiddenValue('gibbonCourseID', $gibbonCourseID);
-        $form->addHiddenValue('action', $action);
+        $form->addHiddenValue('actionCopyTo', $actionCopyTo);
 
         $row = $form->addRow()->setClass('break');
-            $row->addContent(__('Student Name'));
-            $row->addContent(__('Grade'));
-            $row->addContent(__('Current'));
+            $row->addContent(__('Student Name'))->setClass('mediumWidth');
+            $row->addContent(__('Grade'))->setClass('mediumWidth');
+            $row->addContent(__('Current'))->setClass('mediumWidth');
             $row->addContent('<input type="checkbox" class="checkall" checked>')->setClass('right');
 
         while ($student = $studentsResults->fetch()) {
@@ -130,7 +135,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         $row = $form->addRow();
             $row->addContent('<span><input type="text" class="countall" readonly style="text-align: right;"></span>')->setClass('right');
 
-        $form->addRow()->addHeading(__('Copy to Course'))->append(__('Course selections will be created for each of the students selected here in the following course:'));
+        $form->addRow()->addHeading(__('Copy to Course'));
 
         $schoolYearCopyToResults = $toolsGateway->selectSchoolYear($gibbonSchoolYearIDCopyTo);
         $schoolYearCopyToName = ($schoolYearCopyToResults->rowCount() > 0)? $schoolYearCopyToResults->fetchColumn(1) : '';
@@ -139,19 +144,42 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
             $row->addLabel('gibbonSchoolYearCopyToName', __('Destination School Year'));
             $row->addTextField('gibbonSchoolYearCopyToName')->readonly()->setValue($schoolYearCopyToName);
 
-        $courseCopyToResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearIDCopyTo);
+        if ($actionCopyTo == 'Requests') {
+            $courseCopyToOffered = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearIDCopyTo);
+            $row = $form->addRow()->addClass('actionCopyToRequest');
+                $row->addLabel('gibbonCourseIDCopyTo', __('Course Selection'));
+                $row->addSelect('gibbonCourseIDCopyTo')->fromResults($courseCopyToOffered)->isRequired();
 
-        $row = $form->addRow();
-            $row->addLabel('gibbonCourseIDCopyTo', __('Course Selection'));
-            $row->addSelect('gibbonCourseIDCopyTo')->fromResults($courseCopyToResults)->isRequired();
+            $row = $form->addRow()->addClass('actionCopyToRequest');
+                $row->addLabel('status', __('Selection Status'));
+                $row->addSelect('status')->fromArray(array('Required', 'Approved', 'Requested', 'Selected', 'Recommended', 'Removed'))->isRequired();
 
-        $row = $form->addRow();
-            $row->addLabel('status', __('Selection Status'));
-            $row->addSelect('status')->fromArray(array('Required', 'Approved', 'Requested', 'Selected', 'Recommended', 'Removed'))->isRequired();
+            $row = $form->addRow()->addClass('actionCopyToRequest');
+                $row->addLabel('overwrite', __('Overwrite?'))->description(__('Replace the course selection status if one already exists for that student and course.'));
+                $row->addYesNo('overwrite')->isRequired()->selected('Y');
 
-        $row = $form->addRow();
-            $row->addLabel('overwrite', __('Overwrite?'))->description(__('Replace the course selection status if one already exists for that student and course.'));
-            $row->addYesNo('overwrite')->isRequired()->selected('Y');
+        } else if ($actionCopyTo == 'Enrolments') {
+            $courseCopyToAll = $toolsGateway->selectAllCoursesBySchoolYear($gibbonSchoolYearIDCopyTo);
+            $row = $form->addRow()->addClass('actionCopyToEnrolment');
+                $row->addLabel('gibbonCourseIDCopyTo', __('Course'));
+                $row->addSelect('gibbonCourseIDCopyTo')->fromResults($courseCopyToAll)->isRequired();
+
+            $classCopyToRequest = $toolsGateway->selectAllCourseClassesBySchoolYear($gibbonSchoolYearIDCopyTo);
+            $classCopyTo = ($classCopyToRequest->rowCount() > 0)? $classCopyToRequest->fetchAll() : array();
+            $classCopyToChained = array_combine(array_column($classCopyTo, 'value'), array_column($classCopyTo, 'gibbonCourseID'));
+            $classCopyToOptions = array_combine(array_column($classCopyTo, 'value'), array_column($classCopyTo, 'name'));
+
+            $row = $form->addRow()->addClass('actionCopyToEnrolment');
+                $row->addLabel('gibbonCourseClassIDCopyTo', __('Class'));
+                $row->addSelect('gibbonCourseClassIDCopyTo')
+                    ->fromArray($classCopyToOptions)
+                    ->isRequired()
+                    ->placeholder()
+                    ->chainedTo('gibbonCourseIDCopyTo', $classCopyToChained);
+
+            $row = $form->addRow()->addClass('actionCopyToEnrolment');
+                $row->addAlert(__('This will copy course requests directly to class enrolments, bypassing the timetabling engine. Use with caution!'), 'warning');
+        }
 
         $row = $form->addRow();
             $row->addFooter();
