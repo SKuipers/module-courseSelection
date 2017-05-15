@@ -1,3 +1,2 @@
-/vendor
-!/vendor/autoload.php
-!/vendor/composer
+/vendor/**/.git
+/vendor/**/tests
