@@ -34,24 +34,27 @@ class ConflictValidator extends Validator
 
         if (empty($node->tt)) $node->tt = array();
 
-        // Look for duplicates by counting the class period occurances
-        $periodCounts = array_count_values(array_column($node->values, 'period'));
-
         // Put together a set of conflicting classes
-        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use ($periodCounts, &$node) {
+        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use (&$node) {
             if (!empty($item['flag'])) return $conflicts; // Don't conflict with courses already ruled out
 
-            if (in_array($item['ttDays'], $node->tt)) {
-                $conflicts[] = $item;
+            // Look for other classes that have conflicting TT days as this one
+            if (is_array($item['ttDays'])) {
+                foreach ($node->values as $other) {
+                    if ($item['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue;
+
+                    if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
+                        $conflicts[] = $item;
+                        break;
+                    }
+                }
             }
 
-            $node->tt = array_unique(array_merge($item['ttDays'], $node->tt));
-
-            // if (isset($item['period']) && $periodCounts[$item['period']] > 1) {
-            //     $conflicts[] = $item;
-            // }
             return $conflicts;
         }, array());
+
+        $periodCounts = array_count_values(array_column($node->values, 'period'));
+        //$validCount = count($node->values) - count($node->conflicts);
 
         return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
     }
@@ -63,7 +66,7 @@ class ConflictValidator extends Validator
         $environment = &$this->environment;
         $conflictIDs = array_column($node->conflicts, 'gibbonCourseClassID');
 
-        if ($this->settings->autoResolveConflicts == false) {
+        if ($this->settings->autoResolveConflicts == 'N') {
             // Simply flag conflicts if we're not auto-resolving
             foreach ($node->values as &$value) {
                 if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
@@ -107,5 +110,15 @@ class ConflictValidator extends Validator
     {
         $value['flag'] = $flag;
         $value['reason'] = $reason;
+    }
+
+    protected function inArrayWithArray(array $needle, array $haystack) {
+        if (empty($needle) || empty($haystack)) return false;
+
+        foreach ($needle as $value) {
+            if (in_array($value, $haystack, true)) return true;
+        }
+
+        return false;
     }
 }

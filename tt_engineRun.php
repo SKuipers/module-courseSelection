@@ -52,9 +52,9 @@ $selectionsData = ($selectionsResults && $selectionsResults->rowCount() > 0)? $s
 // Condense the result set down group by Student > Course > Classes
 $courseSelectionData = collect($selectionsData)->transform(function($courses, $gibbonPersonIDStudent) {
     return collect($courses)->filter(function($item) {
-        return !empty($item['gibbonCourseClassID']);
+        return !empty($item['gibbonCourseClassID'] && !empty($item['ttDays']));
     })->mapToGroups(function($item) {
-        $item['ttDays'] = (!empty($item['ttDays']))? explode(',', $item['ttDays']) : array();
+        $item['ttDays'] = explode(',', $item['ttDays']);
         return [$item['gibbonCourseID'] => $item];
     })->toArray();
 });
