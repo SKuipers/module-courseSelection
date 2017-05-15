@@ -35,7 +35,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             echo '<tbody><tr>';
             echo '<td style="text-align:center;padding: 0px 40px 15px 40px !important;">';
                 echo "<img style='margin:15px;' src='./themes/".$_SESSION[$guid]["gibbonThemeName"]."/img/loading.gif'/><br/>";
-                echo '<span>'.__('Processing! Please wait a moment ...').'</span><br/>';
+                echo '<span>'.__('Processing! Please wait a moment ...').'</span> ';
+                echo '<span class="small emphasis">';
+                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engineCancel.php">Cancel</a>';
+                echo '</span><br/>';
             echo '</td>';
             echo '</tr></tbody>';
         echo '</table>';

@@ -92,7 +92,7 @@ class BackgroundProcess
     public function cancelProcess($processName) : bool
     {
         exec('kill -9 '.$this->getPID($processName));
-        return $this->stopProcessing($processName);
+        return $this->stopProcess($processName);
     }
 
     /**
