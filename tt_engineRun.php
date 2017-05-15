@@ -20,8 +20,8 @@ include '../../functions.php';
 include '../../config.php';
 
 // Setup default settings
-ini_set('memory_limit', '1024M');
-ini_set('max_execution_time', 150);
+ini_set('memory_limit', '2048M');
+ini_set('max_execution_time', 900);
 getSystemSettings($guid, $connection2);
 setCurrentSchoolYear($guid, $connection2);
 
@@ -120,6 +120,9 @@ foreach ($results as $gibbonPersonIDStudent => $result) {
         $data['gibbonCourseID'] = null;
         $data['gibbonCourseClassID'] = null;
         $data['status'] = 'Failed';
+        $data['flag'] = null;
+        $data['reason'] = null;
+        $data['weight'] = -10.0;
 
         $timetableGateway->insertResult($data);
     }
