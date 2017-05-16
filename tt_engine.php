@@ -131,7 +131,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel('enrolmentInfo', __('Enrolment Targets'))->description(__('Edit in Settings'))->wrap('<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/settings.php">', '</a>');
             $row->addTextField('enrolment')->readonly()->setValue(sprintf(__('Min: %1$s  Target: %2$s  Max: %3$s'), $classEnrolmentMinimum, $classEnrolmentTarget, $classEnrolmentMaximum));
 
-        $enrolmentGoals = array('fill' => __('Fill to maximum (less classes)'), 'balance' => __('Balance each class (more classes)'));
+        $enrolmentGoals = array('balance' => __('Balance each class (more classes)'), 'fill' => __('Fill to maximum (less classes)'));
 
         $row = $form->addRow();
             $row->addLabel('classEnrolmentGoal', __('Class Enrolment Goal'));

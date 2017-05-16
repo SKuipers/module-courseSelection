@@ -91,14 +91,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         $classEnrolmentMaximum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
 
         while ($class = $classResults->fetch()) {
-            $rowClass = ($class['students'] < 8)? 'dull' : '';
+            $rowClass = ($class['students'] < 8)? 'dull' : (($class['students'] > $classEnrolmentMaximum)? 'warning' : '');
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>'.$class['courseName'].'</td>';
                 echo '<td>'.$class['className'].'</td>';
                 echo '<td style="width:25%">';
                     if ($class['students'] > 0) {
-                    $femaleBalance = (($class['studentsFemale'] / $classEnrolmentMaximum) * 100.0);
-                    $maleBalance = (($class['studentsMale'] / $classEnrolmentMaximum) * 100.0);
+                        $progressMaximum = max($classEnrolmentMaximum, $class['students']);
+                        $femaleBalance = (($class['studentsFemale'] / $progressMaximum) * 100.0);
+                        $maleBalance = (($class['studentsMale'] / $progressMaximum) * 100.0);
 
                         echo '<div class="progressBar fill" style="width:100%">';
                             echo '<div class="complete" style="width:'.$femaleBalance.'%;" title="'.__('Female').' '.$class['studentsFemale'].'"></div>';
