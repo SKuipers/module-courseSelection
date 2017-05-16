@@ -32,6 +32,11 @@ class ClassSizeHeuristic extends Heuristic
             return $currentEnrolment;
         }
 
+        // Exclude options
+        // $options = array_filter($options, function($item) use ($environment) {
+        //     return empty($environment->getClassValue($item['gibbonCourseClassID'], 'excluded'));
+        // });
+
         //$periods = array_column($node->values, 'period');
 
         // Sorts by timetable conflicts first, then number of students in the class

@@ -32,8 +32,6 @@ class ConflictValidator extends Validator
             }
         }
 
-        if (empty($node->tt)) $node->tt = array();
-
         // Put together a set of conflicting classes
         $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use (&$node) {
             if (!empty($item['flag'])) return $conflicts; // Don't conflict with courses already ruled out

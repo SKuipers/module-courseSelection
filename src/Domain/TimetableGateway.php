@@ -27,12 +27,12 @@ class TimetableGateway
     public function selectTimetabledClassesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonCourseClass.gibbonCourseClassID as groupBy, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' THEN 1 ELSE 0 END) as studentsFemale, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period, gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.enrolmentGroup, courseSelectionMetaData.timetablePriority as priority
+        $sql = "SELECT gibbonCourseClass.gibbonCourseClassID as groupBy, COUNT(DISTINCT gibbonCourseClassPerson.gibbonPersonID) as students, COUNT(DISTINCT CASE WHEN gibbonPerson.gender = 'M' THEN gibbonCourseClassPerson.gibbonPersonID END) as studentsMale, COUNT(DISTINCT CASE WHEN gibbonPerson.gender = 'F' THEN gibbonCourseClassPerson.gibbonPersonID END) as studentsFemale, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) as className, gibbonCourseClass.nameShort as period, gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.enrolmentGroup, courseSelectionMetaData.timetablePriority as priority, FIND_IN_SET(gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.excludeClasses) as excluded
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
                 JOIN courseSelectionOfferingRestriction ON (courseSelectionOfferingRestriction.courseSelectionOfferingID=courseSelectionOffering.courseSelectionOfferingID AND FIND_IN_SET(courseSelectionOfferingRestriction.gibbonYearGroupID, gibbonCourse.gibbonYearGroupIDList))
-                LEFT JOIN courseSelectionMetaData ON (courseSelectionMetaData.gibbonCourseID=gibbonCourse.gibbonCourseID AND NOT FIND_IN_SET(gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.excludeClasses))
+                LEFT JOIN courseSelectionMetaData ON (courseSelectionMetaData.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
                 LEFT JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonCourseClassPerson.gibbonPersonID)
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
@@ -81,11 +81,13 @@ class TimetableGateway
     public function selectCourseResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT GROUP_CONCAT(DISTINCT gibbonCourse.name ORDER BY gibbonCourse.name SEPARATOR '<br>') as courseName, gibbonCourse.gibbonCourseID, GROUP_CONCAT(DISTINCT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort SEPARATOR '<br>') as className, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' AND courseSelectionTTResult.status = 'Complete' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' AND courseSelectionTTResult.status = 'Complete' THEN 1 ELSE 0 END) as studentsFemale, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Flagged' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as issues, (CASE WHEN courseSelectionMetaData.enrolmentGroup IS NOT NULL THEN CONCAT(courseSelectionMetaData.enrolmentGroup,'.',gibbonCourseClass.nameShort) ELSE CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) END) as enrolmentGroupName
+        $sql = "SELECT GROUP_CONCAT(DISTINCT gibbonCourse.name ORDER BY gibbonCourse.name SEPARATOR '<br>') as courseName, gibbonCourse.gibbonCourseID, GROUP_CONCAT(DISTINCT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort SEPARATOR '<br>') as className, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent WHEN gibbonCourseClassPerson.gibbonCourseClassPersonID IS NOT NULL THEN gibbonCourseClassPerson.gibbonPersonID END) as students, COUNT(DISTINCT CASE WHEN gibbonPerson1.gender = 'M' THEN gibbonPerson1.gibbonPersonID WHEN gibbonPerson2.gender = 'M' THEN gibbonPerson2.gibbonPersonID END) as studentsMale, COUNT(DISTINCT CASE WHEN gibbonPerson1.gender = 'F' THEN gibbonPerson1.gibbonPersonID WHEN gibbonPerson2.gender = 'F' THEN gibbonPerson2.gibbonPersonID END) as studentsFemale, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Flagged' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as issues, (CASE WHEN courseSelectionMetaData.enrolmentGroup IS NOT NULL THEN CONCAT(courseSelectionMetaData.enrolmentGroup,'.',gibbonCourseClass.nameShort) ELSE CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) END) as enrolmentGroupName
                 FROM courseSelectionTTResult
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
-                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+                LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
+                LEFT JOIN gibbonPerson AS gibbonPerson1 ON (gibbonPerson1.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+                LEFT JOIN gibbonPerson AS gibbonPerson2 ON (gibbonPerson2.gibbonPersonID=gibbonCourseClassPerson.gibbonPersonID)
                 LEFT JOIN courseSelectionMetaData ON (courseSelectionMetaData.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY enrolmentGroupName";
@@ -103,6 +105,11 @@ class TimetableGateway
         }
 
         return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectEnrolmentCountByEnrolmentGroup()
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
     }
 
     public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname', $gibbonCourseID = null)
