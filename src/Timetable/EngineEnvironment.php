@@ -33,7 +33,7 @@ class EngineEnvironment
         foreach ($this->classData as &$course) {
             // Class enrolments can be grouped for purposes of combining student numbers across courses (from course meta data)
             $period = $course['period'] ?? 0;
-            $enrolmentGroup = $course['enrolmentGroup'] ?? $course['gibbonCourseClassID'];
+            $enrolmentGroup = (!empty($course['enrolmentGroup']))? $course['enrolmentGroup'] : $course['gibbonCourseClassID'];
             $this->setClassValue($course['gibbonCourseClassID'], 'enrolmentGroup', $enrolmentGroup);
 
             // Build the initial class enrolment counts

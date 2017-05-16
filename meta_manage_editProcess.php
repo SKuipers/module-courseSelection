@@ -25,9 +25,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     $data = array();
     $data['courseSelectionMetaDataID'] = $courseSelectionMetaDataID;
     $data['gibbonCourseID'] = $_POST['gibbonCourseID'] ?? '';
-    $data['enrolmentGroup'] = $_POST['enrolmentGroup'] ?? '';
-    $data['timetablePriority'] = $_POST['timetablePriority'] ?? '';
-    $data['tags'] = $_POST['tags'] ?? '';
+    $data['enrolmentGroup'] = $_POST['enrolmentGroup'] ?? null;
+    $data['timetablePriority'] = $_POST['timetablePriority'] ?? null;
+    $data['tags'] = $_POST['tags'] ?? null;
     $data['excludeClasses'] = $_POST['excludeClasses'] ?? '';
 
     if (is_array($data['excludeClasses'])) $data['excludeClasses'] = implode(',', $data['excludeClasses']);
