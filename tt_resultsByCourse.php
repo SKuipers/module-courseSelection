@@ -93,7 +93,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         while ($class = $classResults->fetch()) {
             $rowClass = ($class['students'] < 8)? 'dull' : (($class['students'] > $classEnrolmentMaximum)? 'warning' : '');
             echo '<tr class="'.$rowClass.'">';
-                echo '<td>'.$class['courseName'].'</td>';
+                echo '<td>'.$class['courseName'];
+                if (!empty($class['excluded'])) {
+                    echo " <img class='pullRight' title='".__('Excluded from timetabling via Meta Data settings.')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/key.png'/ style='width:20px;height:20px;margin: -4px 0 -4px 4px;opacity: 0.6;'>";
+                }
+                echo '</td>';
                 echo '<td>'.$class['className'].'</td>';
                 echo '<td style="width:25%">';
                     if ($class['students'] > 0) {

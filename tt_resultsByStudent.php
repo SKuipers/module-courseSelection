@@ -97,7 +97,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>';
-                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
+                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selection.php&gibbonPersonIDStudent='.$student['gibbonPersonID'].'" target="_blank">';
                     echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                     echo '</a>';
                 echo '</td>';
@@ -120,6 +120,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
                         if ($status != '') {
                             echo '<span class="pullRight courseTag small emphasis" title="'.$class['reason'].'">'.__($class['flag']).'</span>';
+                        } else if ($class['currentEnrolment'] == 1) {
+                            echo '<span class="pullRight courseTag small emphasis" title="'.__('Already enroled in class.').'">'.__('Enroled').'</span>';
                         }
                         echo '</div>';
 
