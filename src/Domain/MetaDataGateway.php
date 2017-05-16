@@ -27,7 +27,7 @@ class MetaDataGateway
     // TRANSACTIONS
     public function insert(array $data)
     {
-        $sql = "INSERT INTO courseSelectionMetaData SET gibbonCourseID=:gibbonCourseID, enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags ON DUPLICATE KEY UPDATE enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags";
+        $sql = "INSERT INTO courseSelectionMetaData SET gibbonCourseID=:gibbonCourseID, enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags ON DUPLICATE KEY UPDATE enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags, excludeClasses=:excludeClasses";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -35,7 +35,7 @@ class MetaDataGateway
 
     public function update(array $data)
     {
-        $sql = "UPDATE courseSelectionMetaData SET gibbonCourseID=:gibbonCourseID, enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags WHERE courseSelectionMetaDataID=:courseSelectionMetaDataID";
+        $sql = "UPDATE courseSelectionMetaData SET gibbonCourseID=:gibbonCourseID, enrolmentGroup=:enrolmentGroup, timetablePriority=:timetablePriority, tags=:tags, excludeClasses=:excludeClasses WHERE courseSelectionMetaDataID=:courseSelectionMetaDataID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();

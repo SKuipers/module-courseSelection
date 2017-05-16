@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.1.03" ;
+$version="0.1.04" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -143,6 +143,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionMetaData` (
   `enrolmentGroup` VARCHAR(30) NULL ,
   `timetablePriority` DECIMAL(6,2) NULL ,
   `tags` VARCHAR(255) NULL ,
+  `excludeClasses` VARCHAR(255) NULL ,
   PRIMARY KEY (`courseSelectionMetaDataID`),
   UNIQUE KEY (`gibbonCourseID`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";

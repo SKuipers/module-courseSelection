@@ -28,8 +28,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     $data['enrolmentGroup'] = $_POST['enrolmentGroup'] ?? '';
     $data['timetablePriority'] = $_POST['timetablePriority'] ?? '';
     $data['tags'] = $_POST['tags'] ?? '';
+    $data['excludeClasses'] = $_POST['excludeClasses'] ?? '';
 
-    if (empty($data['courseSelectionMetaDataID']) || empty($data['gibbonCourseID']) || empty($data['enrolmentGroup']) || empty($data['timetablePriority']) || empty($data['tags'])) {
+    if (is_array($data['excludeClasses'])) $data['excludeClasses'] = implode(',', $data['excludeClasses']);
+
+    if (empty($data['courseSelectionMetaDataID']) || empty($data['gibbonCourseID'])) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;

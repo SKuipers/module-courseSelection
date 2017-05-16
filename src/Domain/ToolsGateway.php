@@ -60,7 +60,7 @@ class ToolsGateway
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE gibbonSchoolYearID=:gibbonSchoolYearID
-                ORDER BY gibbonCourse.nameShort, gibbonCourse.name, gibbonCourseClass.nameShort";
+                ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }
@@ -75,7 +75,19 @@ class ToolsGateway
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionBlockCourse.gibbonCourseID)
                 WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
                 GROUP BY gibbonCourse.gibbonCourseID
-                ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
+                ORDER BY gibbonCourse.nameShort";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectClassesByCourse($gibbonCourseID)
+    {
+        $data = array('gibbonCourseID' => $gibbonCourseID);
+        $sql = "SELECT gibbonCourseClass.gibbonCourseClassID as value, CONCAT(gibbonCourse.nameShort, '.', gibbonCourseClass.nameShort) as name
+                FROM gibbonCourseClass
+                JOIN gibbonCourse ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                WHERE gibbonCourseClass.gibbonCourseID=:gibbonCourseID
+                ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }

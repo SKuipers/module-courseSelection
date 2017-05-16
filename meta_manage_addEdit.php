@@ -28,7 +28,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         'gibbonCourseID'            => '',
         'enrolmentGroup'            => '',
         'timetablePriority'         => '',
-        'tags'                      => ''
+        'tags'                      => '',
+        'excludeClasses'            => '',
     );
 
     if (isset($_GET['courseSelectionMetaDataID'])) {
@@ -61,9 +62,21 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
 
     $courseResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearID);
 
-    $row = $form->addRow()->addClass('courseEnrolment');
-        $row->addLabel('gibbonCourseID', __('Course'));
-        $row->addSelect('gibbonCourseID')->fromResults($courseResults)->isRequired()->selected($values['gibbonCourseID']);
+    if (!empty($values['gibbonCourseID'])) {
+        $form->addHiddenValue('gibbonCourseID', $values['gibbonCourseID']);
+
+        $courses = $courseResults->fetchAll(\PDO::FETCH_KEY_PAIR);
+        $courseName = $courses[$values['gibbonCourseID']];
+
+        $row = $form->addRow()->addClass('courseEnrolment');
+            $row->addLabel('gibbonCourseName', __('Course'));
+            $row->addTextField('gibbonCourseName')->readonly()->setValue($courseName);
+    } else {
+        $row = $form->addRow()->addClass('courseEnrolment');
+            $row->addLabel('gibbonCourseID', __('Course'));
+            $row->addSelect('gibbonCourseID')->fromResults($courseResults)->isRequired();
+    }
+
 
     $row = $form->addRow();
         $row->addLabel('timetablePriority', __('Timetable Priority'))->description(__('Helps determine the priority of a course when auto-resolving timetabling conflicts. '));
@@ -77,6 +90,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         $row->addLabel('tags', __('Tags'))->description(__('Comma-separated values. Tagged courses are counted during the course selection approval process.'));
         $row->addTextField('tags')->setValue($values['tags']);
 
+    if (!empty($values['gibbonCourseID'])) {
+        $classResults = $toolsGateway->selectClassesByCourse($values['gibbonCourseID']);
+        $excludeClassesSelected = explode(',', $values['excludeClasses']);
+
+        $row = $form->addRow();
+            $row->addLabel('excludeClasses', __('Exclude Classes'))->description(__('Any classes selected here will be omitted from the timetabling engine.'));
+            $row->addSelect('excludeClasses')->fromResults($classResults)->selectMultiple()->selected($excludeClassesSelected);
+    }
 
     $row = $form->addRow();
         $row->addFooter();
