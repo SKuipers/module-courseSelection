@@ -33,9 +33,9 @@ class ClassSizeHeuristic extends Heuristic
         }
 
         // Exclude options
-        // $options = array_filter($options, function($item) use ($environment) {
-        //     return empty($environment->getClassValue($item['gibbonCourseClassID'], 'excluded'));
-        // });
+        $options = array_filter($options, function($item) use ($environment) {
+            return empty($environment->getClassValue($item['gibbonCourseClassID'], 'excluded'));
+        });
 
         //$periods = array_column($node->values, 'period');
 

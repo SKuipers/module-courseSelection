@@ -30,16 +30,20 @@ class EngineEnvironment
     {
         $this->classData = $classData;
 
-        foreach ($this->classData as &$course) {
+        foreach ($this->classData as $course) {
             // Class enrolments can be grouped for purposes of combining student numbers across courses (from course meta data)
-            $period = $course['period'] ?? 0;
+            $period = strval($course['period']);
             $enrolmentGroup = (!empty($course['enrolmentGroup']))? $course['enrolmentGroup'] : $course['gibbonCourseClassID'];
             $this->setClassValue($course['gibbonCourseClassID'], 'enrolmentGroup', $enrolmentGroup);
 
             // Build the initial class enrolment counts
-            $this->enrolmentData[$enrolmentGroup][$period]['total'] = $course['students'] ?? 0;
-            $this->enrolmentData[$enrolmentGroup][$period]['M'] = $course['studentsMale'] ?? 0;
-            $this->enrolmentData[$enrolmentGroup][$period]['F'] = $course['studentsFemale'] ?? 0;
+            //$this->enrolmentData[$enrolmentGroup][$period]['total'] = $course['students'] ?? 0;
+            //$this->enrolmentData[$enrolmentGroup][$period]['M'] = $course['studentsMale'] ?? 0;
+            //$this->enrolmentData[$enrolmentGroup][$period]['F'] = $course['studentsFemale'] ?? 0;
+
+            $this->enrolmentData[$enrolmentGroup][$period]['total'] = 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['M'] = 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['F'] = 0;
         }
     }
 
