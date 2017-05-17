@@ -32,9 +32,17 @@ class ConflictValidator extends Validator
             }
         }
 
+        $gibbonPersonID = current($node->values)['gibbonPersonID'];
+        $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
+
         // Put together a set of conflicting classes
-        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use (&$node) {
+        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use (&$node, &$enrolmentTTDays) {
             if (!empty($item['flag'])) return $conflicts; // Don't conflict with courses already ruled out
+
+            // Look for conflicts with pre-enrolled classes
+            if ($this->inArrayWithArray($item['ttDays'], $enrolmentTTDays)) {
+                $conflicts[$item['gibbonCourseClassID']] = $item;
+            }
 
             // Look for other classes that have conflicting TT days as this one
             if (is_array($item['ttDays'])) {
@@ -42,8 +50,8 @@ class ConflictValidator extends Validator
                     if ($item['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue;
 
                     if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
-                        $conflicts[] = $item;
-                        break;
+                        $conflicts[$item['gibbonCourseClassID']] = $item;
+                        //break;
                     }
                 }
             }
@@ -51,10 +59,7 @@ class ConflictValidator extends Validator
             return $conflicts;
         }, array());
 
-        $periodCounts = array_count_values(array_column($node->values, 'period'));
-        //$validCount = count($node->values) - count($node->conflicts);
-
-        return (count($periodCounts) >= max(0, $treeDepth - $this->settings->timetableConflictTollerance) );
+        return (count($node->conflicts) <= $this->settings->timetableConflictTollerance);
     }
 
     public function resolveConflicts(&$node)

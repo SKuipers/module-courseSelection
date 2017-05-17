@@ -37,13 +37,9 @@ class EngineEnvironment
             $this->setClassValue($course['gibbonCourseClassID'], 'enrolmentGroup', $enrolmentGroup);
 
             // Build the initial class enrolment counts
-            //$this->enrolmentData[$enrolmentGroup][$period]['total'] = $course['students'] ?? 0;
-            //$this->enrolmentData[$enrolmentGroup][$period]['M'] = $course['studentsMale'] ?? 0;
-            //$this->enrolmentData[$enrolmentGroup][$period]['F'] = $course['studentsFemale'] ?? 0;
-
-            $this->enrolmentData[$enrolmentGroup][$period]['total'] = 0;
-            $this->enrolmentData[$enrolmentGroup][$period]['M'] = 0;
-            $this->enrolmentData[$enrolmentGroup][$period]['F'] = 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['total'] = $course['students'] ?? 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['M'] = $course['studentsMale'] ?? 0;
+            $this->enrolmentData[$enrolmentGroup][$period]['F'] = $course['studentsFemale'] ?? 0;
         }
     }
 
@@ -82,7 +78,7 @@ class EngineEnvironment
         $enrolmentGroup = $this->getClassValue($classID, 'enrolmentGroup');
         $period = $this->getClassValue($classID, 'period');
 
-        return $this->enrolmentData[$enrolmentGroup][$period][$group];
+        return $this->enrolmentData[$enrolmentGroup][$period][$group] ?? 0;
     }
 
     public function incrementEnrolmentCount($classID, $studentID, $increment = 1)
@@ -102,6 +98,7 @@ class EngineEnvironment
         foreach ($result->values as $value) {
             if (empty($value)) continue;
             if (!empty($value['flag'])) continue;
+            if (!empty($value['currentEnrolment'])) continue;
 
             $this->incrementEnrolmentCount($value['gibbonCourseClassID'], $value['gibbonPersonID']);
         }

@@ -41,9 +41,11 @@ class WeightedEvaluator extends Evaluator
         // Get the weighted weight :P
         $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
 
-        // Sub-weighting: Incomplete Timetable?
-        //$weight -= $treeDepth - count($node->values);
-        $weight += $this->getIncompleteWeight($node);
+        // Post-weighting: Incomplete Timetable?
+        $weight -= $treeDepth - count($node->values);
+
+        // Post-weighting: Flagged Classes
+        $weight += $this->getFlaggedWeight($node);
 
         // Possibly use this to short-cut out of result sets that already have a number of optimal results?
         if ($weight >= $this->settings->optimalWeight) {
@@ -97,12 +99,20 @@ class WeightedEvaluator extends Evaluator
 
         foreach ($node->values as $values) {
             $students = $this->environment->getEnrolmentCount($values['gibbonCourseClassID']);
+            $priority = $this->environment->getClassValue($values['gibbonCourseClassID'], 'priority');
 
-            if (empty($students)) continue;
+            if ($priority < 1) {
+                $priority = 1;
+            }
 
-            $percent = 1.0 - ($students / $this->settings->maximumStudents);
+            if ($students < $this->settings->minimumStudents) {
+                $percent = 1.0;
+            } else {
+                $percent = 1.0 - ($students / $this->settings->maximumStudents);
+            }
 
-            $weight += $percent;
+            // Adjust by priority? to ensure small less-important classes arent out-weighting larger important ones
+            $weight += ($percent / $priority);
         }
 
         return $weight / count($node->values);
@@ -116,16 +126,14 @@ class WeightedEvaluator extends Evaluator
      */
     protected function getConflictWeight(&$node)
     {
-        $weight = 0.0;
-
         if (!empty($node->conflicts) && count($node->conflicts) > 0) {
-            $weight += count($node->conflicts) * -1.0;
+            return count($node->conflicts) * -1.0;
         }
 
-        return $weight;
+        return 0.0;
     }
 
-    protected function getIncompleteWeight(&$node)
+    protected function getFlaggedWeight(&$node)
     {
         return array_reduce($node->values, function($total, $item) {
             $total += (!empty($item['flag']))? -1 : 0;
