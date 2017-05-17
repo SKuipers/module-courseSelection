@@ -114,7 +114,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo '<td>'.$class['students'].'</td>';
                 echo '<td>'.$class['issues'].'</td>';
                 echo '<td>';
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseID=".$class['gibbonCourseID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    $enrolmentGroup = (!empty($class['enrolmentGroup']))? $class['enrolmentGroup'] : $class['gibbonCourseID'];
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseID=".$enrolmentGroup."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
         }
