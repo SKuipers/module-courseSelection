@@ -27,12 +27,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $sort = $_GET['sort'] ?? 'surname';
+    $allCourses = $_GET['allCourses'] ?? false;
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-    $classResults = $timetableGateway->selectCourseResultsBySchoolYear($gibbonSchoolYearID, $sort);
+    $classResults = $timetableGateway->selectCourseResultsBySchoolYear($gibbonSchoolYearID, $sort, $allCourses);
 
     if (!$classResults || $classResults->rowCount() == 0) {
         echo '<div class="error">';
@@ -50,7 +51,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
-            $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'order' => __('Report Order'), 'students' => __('Students'),'issues' => __('Issues')))->selected($sort);
+            $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'period' => __('Period'), 'students' => __('Students'),'issues' => __('Issues')))->selected($sort);
+
+        $row = $form->addRow();
+            $row->addLabel('allCourses', __('All Courses'));
+            $row->addCheckbox('allCourses')->setValue('Y')->checked($allCourses);
 
         $row = $form->addRow();
             $row->addSubmit('Go');
@@ -114,8 +119,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo '<td>'.$class['students'].'</td>';
                 echo '<td>'.$class['issues'].'</td>';
                 echo '<td>';
-                    $enrolmentGroup = (!empty($class['enrolmentGroup']))? $class['enrolmentGroup'] : $class['gibbonCourseID'];
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseID=".$enrolmentGroup."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    $enrolmentGroup = (!empty($class['enrolmentGroup']))? $class['enrolmentGroup'] : $class['gibbonCourseClassID'];
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseClassID=".$enrolmentGroup."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
         }

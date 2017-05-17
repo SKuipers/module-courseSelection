@@ -26,7 +26,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     }
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
-    $gibbonCourseID = $_REQUEST['gibbonCourseID'] ?? null;
+    $gibbonCourseClassID = $_REQUEST['gibbonCourseClassID'] ?? null;
 
     $sort = $_GET['sort'] ?? 'surname';
 
@@ -34,7 +34,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-    $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort, $gibbonCourseID);
+    $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort, $gibbonCourseClassID);
 
     if (!$studentResults || $studentResults->rowCount() == 0) {
         echo '<div class="error">';
@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $form->setClass('noIntBorder fullWidth');
         $form->addHiddenValue('q', '/modules/Course Selection/tt_resultsByStudent.php');
-        $form->addHiddenValue('gibbonCourseID', $gibbonCourseID);
+        $form->addHiddenValue('gibbonCourseClassID', $gibbonCourseClassID);
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
@@ -129,17 +129,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     }
                 }
 
-                $incompleteResults = $timetableGateway->selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $student['gibbonPersonID'], $gibbonCourseID);
-                if ($incompleteResults && $incompleteResults->rowCount() > 0) {
-                    while ($class = $incompleteResults->fetch()) {
-                        echo '<div class="courseChoiceContainer" data-status="Failed" title="'.$class['courseNameShort'].'">';
-                        echo '<span style="width:35px; display:inline-block;"></span>';
-                        echo $class['courseName'];
+                if (empty($gibbonCourseClassID)) {
+                    $incompleteResults = $timetableGateway->selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $student['gibbonPersonID']);
+                    if ($incompleteResults && $incompleteResults->rowCount() > 0) {
+                        while ($class = $incompleteResults->fetch()) {
+                            echo '<div class="courseChoiceContainer" data-status="Failed" title="'.$class['courseNameShort'].'">';
+                            echo '<span style="width:35px; display:inline-block;"></span>';
+                            echo $class['courseName'];
 
-                        echo '<span class="pullRight courseTag small emphasis">'.__('Failed!').'</span>';
-                        echo '</div>';
+                            echo '<span class="pullRight courseTag small emphasis">'.__('Failed!').'</span>';
+                            echo '</div>';
+                        }
                     }
-                }
+            }
 
                 echo '</td>';
                 echo '<td>'.$student['weight'].'</td>';
