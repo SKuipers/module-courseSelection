@@ -97,7 +97,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>';
-                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selection.php&gibbonPersonIDStudent='.$student['gibbonPersonID'].'" target="_blank">';
+                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/approval_byOffering.php&sidebar=false&courseSelectionOfferingID='.$student['courseSelectionOfferingID'].'&gibbonSchoolYearID='.$gibbonSchoolYearID.'#'.$student['gibbonPersonID'].'" target="_blank">';
                     echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                     echo '</a>';
                 echo '</td>';
