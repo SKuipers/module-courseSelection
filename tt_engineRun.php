@@ -42,22 +42,61 @@ $classResults = $timetableGateway->selectTimetabledClassesBySchoolYear($gibbonSc
 $classData = ($classResults && $classResults->rowCount() > 0)? $classResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
 // Build a set of students information
-$studentResults = $timetableGateway->selectTimetabledStudentsBySchoolYear($gibbonSchoolYearID);
+$studentResults = $timetableGateway->selectApprovedStudentsBySchoolYear($gibbonSchoolYearID);
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
-// Get the course selections grouped by student
+$enrolmentsResults = $timetableGateway->selectCourseEnrolmentsBySchoolYear($gibbonSchoolYearID);
+$enrolmentsData = ($enrolmentsResults && $enrolmentsResults->rowCount() > 0)? $enrolmentsResults->fetchAll(\PDO::FETCH_GROUP) : array();
+
 $selectionsResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
 $selectionsData = ($selectionsResults && $selectionsResults->rowCount() > 0)? $selectionsResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
-// Condense the result set down group by Student > Course > Classes
-$courseSelectionData = collect($selectionsData)->transform(function($courses, $gibbonPersonIDStudent) {
-    return collect($courses)->filter(function($item) {
-        return !empty($item['gibbonCourseClassID']) && !empty($item['ttDays']);
-    })->mapToGroups(function($item) {
+// Build the course selections grouped by student
+foreach ($studentData as $gibbonPersonIDStudent => &$student) {
+    $enrolments = (!empty($enrolmentsData[$gibbonPersonIDStudent]))? $enrolmentsData[$gibbonPersonIDStudent] : array();
+    $enrolments = collect($enrolments)->keyBy('gibbonCourseClassID');
+
+    // Create pseudo-results for existing enrolments (hack-ish?)
+    foreach ($enrolments as $gibbonCourseClassID => $enrolment) {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID,
+                      'gibbonPersonIDStudent' => $gibbonPersonIDStudent,
+                      'weight' => 0.0,
+                      'gibbonCourseID' => $enrolment['gibbonCourseID'],
+                      'gibbonCourseClassID' => $gibbonCourseClassID,
+                      'status' => 'Complete',
+                      'flag' => '',
+                      'reason' => '',
+        );
+
+        $timetableGateway->insertResult($data);
+    }
+
+    // Grab existing timetable information, for finding conflicts
+    $enrolmentTTDays = $enrolments->reduce(function($ttDays, &$item) {
+        $ttDays = array_merge($ttDays, explode(',', $item['ttDays']));
+        return $ttDays;
+    }, array());
+
+    $studentData[$gibbonPersonIDStudent]['ttDays'] = array_unique($enrolmentTTDays);
+
+    $selections = (!empty($selectionsData[$gibbonPersonIDStudent]))? $selectionsData[$gibbonPersonIDStudent] : array();
+
+    // Condense the result set down group by Student > Course > Classes
+    $selectionsData[$gibbonPersonIDStudent] = collect($selections)->filter(function(&$item) use ($enrolments) {
+        $noExistingEnrolments = empty($enrolments[$item['gibbonCourseClassID']]);
+        $hasTTDays = !empty($item['ttDays']);
+        return $noExistingEnrolments && $hasTTDays;
+    })->map(function(&$item) {
         $item['ttDays'] = explode(',', $item['ttDays']);
-        return [$item['gibbonCourseID'] => $item];
+        return $item;
+    })->groupBy('gibbonCourseID')->filter(function($items) {
+        return count($items) > 0;
     })->toArray();
-});
+
+}
+
+$courseSelectionData = collect($selectionsData);
+
 
 $factory = new EngineFactory();
 

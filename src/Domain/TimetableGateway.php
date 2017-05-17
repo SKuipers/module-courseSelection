@@ -41,15 +41,46 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+    public function selectApprovedStudentsBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonPerson.gibbonPersonID as groupBy, gibbonPerson.gibbonPersonID, gibbonPerson.gender
+                FROM gibbonPerson
+                JOIN courseSelectionChoice ON (courseSelectionChoice.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID)
+                JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
+                JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
+                WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
+                GROUP BY gibbonPerson.gibbonPersonID
+                ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(gibbonPerson.gibbonPersonID)";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectCourseEnrolmentsBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonCourseClassPerson.gibbonPersonID as groupBy, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as period, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,gibbonTTDay.nameShort) SEPARATOR ',') as ttDays
+                FROM gibbonCourseClassPerson
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=gibbonCourseClassPerson.gibbonCourseClassID)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
+                JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
+                JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
+                JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
+                WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                GROUP BY gibbonCourseClassPerson.gibbonPersonID, gibbonCourseClass.gibbonCourseClassID";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionChoice.gibbonPersonIDStudent, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as period, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
+        $sql = "SELECT courseSelectionChoice.gibbonPersonIDStudent as groupBy, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as period, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
                 FROM courseSelectionChoice
                 JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
-                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
-                JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
                 LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
                 LEFT JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
@@ -58,81 +89,35 @@ class TimetableGateway
                 WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND courseSelectionChoice.status <> 'Removed'
                 AND courseSelectionChoice.status <> 'Recommended'
-                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
                 GROUP BY courseSelectionChoice.courseSelectionChoiceID, gibbonCourseClass.gibbonCourseClassID
-                ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(courseSelectionChoice.gibbonPersonIDStudent), gibbonCourse.orderBy, gibbonCourse.nameShort";
-
-                // $sql = "(
-                //     SELECT gibbonCourseClassPerson.gibbonPersonID as gibbonPersonIDStudent, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as period, 1 as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, gibbonCourseClassPerson.gibbonPersonID as gibbonPersonID
-                //     FROM gibbonCourseClassPerson
-                //     JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=gibbonCourseClassPerson.gibbonCourseClassID)
-                //     JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
-                //     JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonCourseClassPerson.gibbonPersonID)
-                //     JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
-                //     JOIN courseSelectionBlockCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
-                //     LEFT JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
-                //     LEFT JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
-                //     LEFT JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
-                //     WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
-                //     AND gibbonCourseClassPerson.role = 'Student'
-                //     AND gibbonCourseClass.nameShort <> ''
-                //     AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
-                //     AND courseSelectionBlockID IS NOT NULL
-                //     GROUP BY gibbonCourseClass.gibbonCourseClassID
-                //     ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(gibbonStudentEnrolment.gibbonPersonID), gibbonCourse.orderBy, gibbonCourse.nameShort
-                // ) UNION (
-                //     SELECT courseSelectionChoice.gibbonPersonIDStudent, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as period, 0 as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
-                //     FROM courseSelectionChoice
-                //     JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
-                //     JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
-                //     JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
-                //     JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
-                //     LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
-                //     LEFT JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
-                //     LEFT JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
-                //     LEFT JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
-                //     WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
-                //     AND courseSelectionChoice.status <> 'Removed'
-                //     AND courseSelectionChoice.status <> 'Recommended'
-                //     AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
-                //     GROUP BY courseSelectionChoice.courseSelectionChoiceID, gibbonCourseClass.gibbonCourseClassID
-                //     ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(gibbonStudentEnrolment.gibbonPersonID), gibbonCourse.orderBy, gibbonCourse.nameShort
-                // )";
+                ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort";
 
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectTimetabledStudentsBySchoolYear($gibbonSchoolYearID)
+    public function selectCourseResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort', $allCourses = null)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.gender
-                FROM gibbonPerson
-                JOIN courseSelectionChoice ON (courseSelectionChoice.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID)
-                JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
-                WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
-                GROUP BY gibbonPerson.gibbonPersonID";
-
-        return $this->pdo->executeQuery($data, $sql);
-    }
-
-    public function selectCourseResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
-    {
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT GROUP_CONCAT(DISTINCT gibbonCourse.name ORDER BY gibbonCourse.name SEPARATOR '<br>') as courseName, gibbonCourse.gibbonCourseID, GROUP_CONCAT(DISTINCT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort SEPARATOR '<br>') as className, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as students, SUM(CASE WHEN gibbonPerson.gender = 'M' AND courseSelectionTTResult.status = 'Complete' THEN 1 ELSE 0 END) as studentsMale, SUM(CASE WHEN gibbonPerson.gender = 'F' AND courseSelectionTTResult.status = 'Complete' THEN 1 ELSE 0 END) as studentsFemale, SUM(CASE WHEN courseSelectionTTResult.status = 'Flagged' THEN 1 ELSE 0 END) as issues, courseSelectionMetaData.enrolmentGroup, (CASE WHEN courseSelectionMetaData.enrolmentGroup IS NOT NULL AND courseSelectionMetaData.enrolmentGroup <> '' THEN CONCAT(courseSelectionMetaData.enrolmentGroup,'.',gibbonCourseClass.nameShort) ELSE CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) END) as enrolmentGroupName, FIND_IN_SET(gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.excludeClasses) as excluded
-                FROM courseSelectionTTResult
-                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
-                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
-                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+        $sql = "SELECT GROUP_CONCAT(DISTINCT gibbonCourse.name ORDER BY gibbonCourse.name SEPARATOR '<br>') as courseName, gibbonCourseClass.gibbonCourseClassID, GROUP_CONCAT(DISTINCT CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort SEPARATOR '<br>') as className, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as students, COUNT(DISTINCT CASE WHEN gibbonPerson.gender = 'M' AND courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as studentsMale, COUNT(DISTINCT CASE WHEN gibbonPerson.gender = 'F' AND courseSelectionTTResult.status = 'Complete' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as studentsFemale, COUNT(DISTINCT CASE WHEN courseSelectionTTResult.status = 'Flagged' THEN courseSelectionTTResult.gibbonPersonIDStudent END) as issues, courseSelectionMetaData.enrolmentGroup, (CASE WHEN courseSelectionMetaData.enrolmentGroup IS NOT NULL AND courseSelectionMetaData.enrolmentGroup <> '' THEN CONCAT(courseSelectionMetaData.enrolmentGroup,'.',gibbonCourseClass.nameShort) ELSE CONCAT(gibbonCourse.nameShort,'.',gibbonCourseClass.nameShort) END) as enrolmentGroupName, FIND_IN_SET(gibbonCourseClass.gibbonCourseClassID, courseSelectionMetaData.excludeClasses) as excluded
+                FROM gibbonCourse
+                LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 LEFT JOIN courseSelectionMetaData ON (courseSelectionMetaData.gibbonCourseID=gibbonCourse.gibbonCourseID)
-                WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
+                LEFT JOIN courseSelectionTTResult ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
+                LEFT JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+                WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND (SELECT COUNT(courseSelectionChoiceID) FROM courseSelectionChoice WHERE courseSelectionChoice.gibbonCourseID=gibbonCourse.gibbonCourseID AND courseSelectionChoice.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
                 GROUP BY enrolmentGroupName";
+
+        if ($allCourses != 'Y') {
+            $sql .= " HAVING students > 0";
+        }
 
         if ($orderBy == 'students') {
             $sql .= " ORDER BY students DESC, gibbonCourse.nameShort, gibbonCourse.name";
         } else if ($orderBy == 'issues') {
             $sql .= " ORDER BY issues DESC, gibbonCourse.nameShort, gibbonCourse.name";
-        } else if ($orderBy == 'order') {
-            $sql .= " ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort, gibbonCourse.name";
+        } else if ($orderBy == 'period') {
+            $sql .= " ORDER BY gibbonCourseClass.nameShort, gibbonCourse.nameShort";
         } else if ($orderBy == 'name') {
             $sql .= " ORDER BY gibbonCourse.name, gibbonCourse.nameShort";
         } else {
@@ -142,7 +127,7 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname', $gibbonCourseID = null)
+    public function selectStudentResultsBySchoolYear($gibbonSchoolYearID, $orderBy = 'surname', $gibbonCourseClassID = null)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT courseSelectionTTResult.gibbonPersonIDStudent, gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, gibbonRollGroup.nameShort as rollGroupName, courseSelectionTTResult.weight, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as classNameShort, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, courseSelectionTTResult.status, courseSelectionTTResult.flag, courseSelectionTTResult.reason, GROUP_CONCAT(gibbonTTDay.nameShort SEPARATOR ',') as ttDays, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, courseSelectionChoiceOffering.courseSelectionOfferingID
@@ -162,9 +147,9 @@ class TimetableGateway
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
         ";
 
-        if (!empty($gibbonCourseID)) {
-            $data['gibbonCourseID'] = $gibbonCourseID;
-            $sql .= " AND (courseSelectionTTResult.gibbonCourseID=:gibbonCourseID OR courseSelectionMetaData.enrolmentGroup=:gibbonCourseID)";
+        if (!empty($gibbonCourseClassID)) {
+            $data['gibbonCourseClassID'] = $gibbonCourseClassID;
+            $sql .= " AND (courseSelectionTTResult.gibbonCourseClassID=:gibbonCourseClassID OR courseSelectionMetaData.enrolmentGroup=:gibbonCourseClassID)";
         }
 
         $sql .= " GROUP BY gibbonPerson.gibbonPersonID, courseSelectionTTResult.courseSelectionTTResultID";
