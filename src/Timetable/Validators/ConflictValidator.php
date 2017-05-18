@@ -106,7 +106,7 @@ class ConflictValidator extends Validator
                     if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
                         // FLAGGED: Conflict
                         $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                        $this->createFlag($value, 'Conflict', 'Class : '.$className);
+                        $this->createFlag($value, 'Conflict', 'Conflicts with existing enrolment');
                     }
                 }
             } else {

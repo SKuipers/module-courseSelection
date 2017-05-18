@@ -37,12 +37,8 @@ class WeightedEvaluator extends Evaluator
         $weightTotal += $this->settings->avoidConflictPriority;
         $weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
 
-
         // Get the weighted weight :P
         $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
-
-        // Post-weighting: Incomplete Timetable?
-        $weight -= $treeDepth - count($node->values);
 
         // Post-weighting: Flagged Classes
         $weight += $this->getFlaggedWeight($node);
@@ -133,6 +129,12 @@ class WeightedEvaluator extends Evaluator
         return 0.0;
     }
 
+    /**
+     * Not normalized? -n to 0
+     *
+     * @param    object  &$node
+     * @return   float
+     */
     protected function getFlaggedWeight(&$node)
     {
         return array_reduce($node->values, function($total, $item) {
