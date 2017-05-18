@@ -70,7 +70,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             return;
         }
 
-        $students = $studentCollection->groupBy('gibbonPersonIDStudent');
+        $students = $studentCollection->groupBy('gibbonPersonID');
         $courses = $studentCollection->groupBy('gibbonCourseID');
 
         $incompleteResults = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID);
@@ -81,17 +81,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             return $count;
         }, 0);
 
-        $classlessCount = collect($courses)->reduce(function($count, $item){
-            return $count + (collect($item)->sum('gibbonCourseClassID') == 0);
-        }, 0);
+        $classlessCount = collect($courses)->sum(function($item){
+            return (collect($item)->sum('gibbonCourseClassID') == 0);
+        });
 
-        $untimetabledCount = collect($courses)->reduce(function($count, $item){
+        $untimetabledCount = collect($courses)->sum(function($item){
             $untimetabled = collect($item)->filter(function($item) {
                 return empty($item['ttDays']) && !empty($item['gibbonCourseClassID']);
             })->count();
 
-            return $count + ($untimetabled > 0);
-        }, 0);
+            return ($untimetabled > 0);
+        });
 
         // RUN
         $form = Form::create('engineRun', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engineProcess.php');
