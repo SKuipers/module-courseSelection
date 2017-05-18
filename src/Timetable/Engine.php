@@ -64,7 +64,7 @@ class Engine
 
     public function addData($gibbonPersonIDStudent, $data)
     {
-        if (empty($data) || !is_array($data) || !is_array(next($data))) {
+        if (empty($data) || !is_array($data)) {
             throw new \Exception('Invalid data fed into engine: not a valid two-dimensional array.');
         }
 

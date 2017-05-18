@@ -54,15 +54,15 @@ $selectionsData = ($selectionsResults && $selectionsResults->rowCount() > 0)? $s
 // Build the course selections grouped by student
 foreach ($studentData as $gibbonPersonIDStudent => &$student) {
     $enrolments = (!empty($enrolmentsData[$gibbonPersonIDStudent]))? $enrolmentsData[$gibbonPersonIDStudent] : array();
-    $enrolments = collect($enrolments)->keyBy('gibbonCourseClassID');
+    $enrolments = collect($enrolments)->keyBy('gibbonCourseID');
 
     // Create pseudo-results for existing enrolments (hack-ish?)
-    foreach ($enrolments as $gibbonCourseClassID => $enrolment) {
+    foreach ($enrolments as $gibbonCourseID => $enrolment) {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID,
                       'gibbonPersonIDStudent' => $gibbonPersonIDStudent,
                       'weight' => 0.0,
-                      'gibbonCourseID' => $enrolment['gibbonCourseID'],
-                      'gibbonCourseClassID' => $gibbonCourseClassID,
+                      'gibbonCourseID' => $gibbonCourseID,
+                      'gibbonCourseClassID' => $enrolment['gibbonCourseClassID'],
                       'status' => 'Complete',
                       'flag' => '',
                       'reason' => '',
@@ -83,7 +83,7 @@ foreach ($studentData as $gibbonPersonIDStudent => &$student) {
 
     // Condense the result set down group by Student > Course > Classes
     $selectionsData[$gibbonPersonIDStudent] = collect($selections)->filter(function(&$item) use ($enrolments) {
-        $noExistingEnrolments = empty($enrolments[$item['gibbonCourseClassID']]);
+        $noExistingEnrolments = empty($enrolments[$item['gibbonCourseID']]);
         $hasTTDays = !empty($item['ttDays']);
         return $noExistingEnrolments && $hasTTDays;
     })->map(function(&$item) {
@@ -92,11 +92,10 @@ foreach ($studentData as $gibbonPersonIDStudent => &$student) {
     })->groupBy('gibbonCourseID')->filter(function($items) {
         return count($items) > 0;
     })->toArray();
-
 }
 
-$courseSelectionData = collect($selectionsData);
 
+$courseSelectionData = collect($selectionsData);
 
 $factory = new EngineFactory();
 

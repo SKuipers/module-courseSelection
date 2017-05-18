@@ -51,7 +51,6 @@ class ConflictValidator extends Validator
 
                     if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
                         $conflicts[$item['gibbonCourseClassID']] = $item;
-                        //break;
                     }
                 }
             }
@@ -88,6 +87,9 @@ class ConflictValidator extends Validator
             return $grouped;
         }, array());
 
+        $gibbonPersonID = current($node->values)['gibbonPersonID'];
+        $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
+
         // Sort by priority and flag every conflict that isn't top priority
         foreach ($groupedConflicts as &$values) {
             usort($values, function($a, $b) {
@@ -97,13 +99,25 @@ class ConflictValidator extends Validator
             $keep = $values[0];
             $keepClassName = $this->environment->getClassValue($keep['gibbonCourseClassID'], 'className');
 
-            $remove = array_column(array_slice($values, 1), 'gibbonCourseClassID');
+            // Look for conflicts with pre-enrolled classes
+            if ($this->inArrayWithArray($keep['ttDays'], $enrolmentTTDays)) {
+                // Simply flag all conflicts
+                foreach ($node->values as &$value) {
+                    if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
+                        // FLAGGED: Conflict
+                        $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
+                        $this->createFlag($value, 'Conflict', 'Class : '.$className);
+                    }
+                }
+            } else {
+                $remove = array_column(array_slice($values, 1), 'gibbonCourseClassID');
 
-            foreach ($node->values as &$value) {
-                if (in_array($value['gibbonCourseClassID'], $remove)) {
-                    // FLAGGED: Conflict Resolved
-                    $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                    $this->createFlag($value, 'Conflict', 'Resolved with '.$keepClassName.' instead of '.$className);
+                foreach ($node->values as &$value) {
+                    if (in_array($value['gibbonCourseClassID'], $remove)) {
+                        // FLAGGED: Conflict Resolved
+                        $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
+                        $this->createFlag($value, 'Conflict', 'Resolved with '.$keepClassName.' instead of '.$className);
+                    }
                 }
             }
         }
