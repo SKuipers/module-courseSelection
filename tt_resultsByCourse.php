@@ -54,7 +54,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             $row->addSelect('sort')->fromArray(array('nameShort' => __('Course Code'), 'name' => __('Course Name'), 'period' => __('Period'), 'students' => __('Students'),'issues' => __('Issues')))->selected($sort);
 
         $row = $form->addRow();
-            $row->addLabel('allCourses', __('All Courses'));
+            $row->addLabel('allCourses', __('All Courses'))->description(__('Include courses with no classes or not timetabled.'));
             $row->addCheckbox('allCourses')->setValue('Y')->checked($allCourses);
 
         $row = $form->addRow();

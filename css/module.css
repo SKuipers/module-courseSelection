@@ -68,6 +68,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background-color: #F6CECB;
 }
 
+.courseChoiceContainer[data-status='Unknown'] {
+    background-color: #dfdfdf;
+}
+
 .courseChoiceContainer span {
     display: inline-block;
 }

@@ -29,6 +29,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     $gibbonCourseClassID = $_REQUEST['gibbonCourseClassID'] ?? null;
 
     $sort = $_GET['sort'] ?? 'surname';
+    $allCourses = $_GET['allCourses'] ?? false;
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
@@ -54,6 +55,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
             $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'count' => __('Issues'), 'weight' => __('Weight')))->selected($sort);
+
+        $row = $form->addRow();
+            $row->addLabel('allCourses', __('All Courses'))->description(__('Include courses with no classes or not timetabled.'));
+            $row->addCheckbox('allCourses')->setValue('Y')->checked($allCourses);
 
         $row = $form->addRow();
             $row->addSubmit('Go');
@@ -110,7 +115,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     usort($studentClasses, function($a, $b) { return strnatcmp($a['classNameShort'], $b['classNameShort']); } );
 
                     foreach ($studentClasses as $class) {
-                        $status = ($class['status'] != 'Complete')? 'Conflict' : '';
+                        $status = ($class['status'] != 'Complete')? ($class['flag'] == 'Full'? 'Failed' : 'Conflict') : '';
 
                         echo '<div class="courseChoiceContainer" data-status="'.$status.'">';
                         echo '<span style="width:35px;">'.$class['classNameShort'].'</span>';
@@ -129,15 +134,27 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     }
                 }
 
-                if (empty($gibbonCourseClassID)) {
+                if ($allCourses && empty($gibbonCourseClassID)) {
                     $incompleteResults = $timetableGateway->selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $student['gibbonPersonID']);
                     if ($incompleteResults && $incompleteResults->rowCount() > 0) {
-                        while ($class = $incompleteResults->fetch()) {
-                            echo '<div class="courseChoiceContainer" data-status="Failed" title="'.$class['courseNameShort'].'">';
+                        while ($course = $incompleteResults->fetch()) {
+                            echo '<div class="courseChoiceContainer" data-status="Unknown" title="'.$course['courseNameShort'].'">';
                             echo '<span style="width:35px; display:inline-block;"></span>';
-                            echo $class['courseName'];
+                            echo $course['courseName'];
 
-                            echo '<span class="pullRight courseTag small emphasis">'.__('Failed!').'</span>';
+                            $reasons = array();
+                            if (empty($course['classCount'])) {
+                                $reasons[] = __('No classes');
+                            }
+                            if (empty($course['ttCount'])) {
+                                $reasons[] = __('Not timetabled');
+                            }
+                            if (!empty($course['excludeClasses'])) {
+                                $reasons[] = __('Classes excluded');
+                            }
+
+
+                            echo '<span class="pullRight courseTag small emphasis" title="'.implode(', ', $reasons).'">'.__('Omitted').'</span>';
                             echo '</div>';
                         }
                     }

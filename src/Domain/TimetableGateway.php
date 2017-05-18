@@ -170,10 +170,13 @@ class TimetableGateway
     public function selectIncompleteResultsBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent, $gibbonCourseID = null)
     {
         $data = array('gibbonPersonIDStudent' => $gibbonPersonIDStudent, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourse.gibbonCourseID
+        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourse.gibbonCourseID, COUNT(DISTINCT gibbonCourseClass.gibbonCourseClassID) as classCount, COUNT(DISTINCT gibbonTTDayRowClass.gibbonTTDayRowClassID) as ttCount, courseSelectionMetaData.excludeClasses
                 FROM courseSelectionChoice
                 JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
+                LEFT JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                LEFT JOIN courseSelectionMetaData ON (courseSelectionMetaData.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                LEFT JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
                 LEFT JOIN courseSelectionTTResult ON (courseSelectionTTResult.gibbonCourseID=courseSelectionChoice.gibbonCourseID AND courseSelectionTTResult.gibbonPersonIDStudent=courseSelectionChoice.gibbonPersonIDStudent)
                 WHERE courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                 AND courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
@@ -185,7 +188,7 @@ class TimetableGateway
             $sql .= " AND courseSelectionChoice.gibbonCourseID=:gibbonCourseID";
         }
 
-        $sql .= " GROUP BY courseSelectionChoice.courseSelectionChoiceID";
+        $sql .= " GROUP BY gibbonCourse.gibbonCourseID";
 
         return $this->pdo->executeQuery($data, $sql);
     }
