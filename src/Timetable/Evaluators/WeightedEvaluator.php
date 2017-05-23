@@ -38,8 +38,8 @@ class WeightedEvaluator extends Evaluator
         $weightCumulative += ($this->settings->coreCoursePriority * $this->getCorePriorityWeight($node));
 
         // Sub-weighting: Timetable Conflicts
-        $weightTotal += $this->settings->avoidConflictPriority;
-        $weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
+        //$weightTotal += $this->settings->avoidConflictPriority;
+        //$weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
 
         // Get the weighted weight :P
         $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
@@ -47,7 +47,7 @@ class WeightedEvaluator extends Evaluator
         // Post-weighting: Flagged Classes
         $weight += $this->getFlaggedWeight($node) * 2;
 
-        //$weight += $this->getConflictWeight($node);
+        $weight += $this->getConflictWeight($node);
 
         // Possibly use this to short-cut out of result sets that already have a number of optimal results?
         if ($weight >= $this->settings->optimalWeight) {
@@ -114,7 +114,7 @@ class WeightedEvaluator extends Evaluator
             }
 
             // Adjust by priority? to ensure small less-important classes arent out-weighting larger important ones
-            $weight += ($percent / $priority);
+            $weight += $percent ; // / $priority
         }
 
         return $weight / count($node->values);
@@ -149,22 +149,19 @@ class WeightedEvaluator extends Evaluator
      */
     protected function getConflictWeight(&$node)
     {
-        $weight = 0.0;
+        if (empty($node->conflicts) || count($node->conflicts) == 0) {
+            return 0.0;
+        }
 
         $min = $this->environment->getMinPriority();
         $max = $this->environment->getMaxPriority();
 
-        if (!empty($node->conflicts) && count($node->conflicts) > 0) {
+        $weight = array_reduce($node->conflicts, function($total, $item) use (&$min, &$max) {
+            $priority = $this->environment->getClassValue($item['gibbonCourseClassID'], 'priority');
+            return $total + (1.0 - (($priority - $min) / max($max - $min, 1))) + 0.5;
+        }, 0.0);
 
-            foreach ($node->conflicts as $conflict) {
-                $priority = $this->environment->getClassValue($conflict['gibbonCourseClassID'], 'priority');
-                $weight += (1.0 - (($priority - $min) / max($max - $min, 1))) + 1.0;
-            }
-
-            return $weight * -1.0;
-        }
-
-        return 0.0;
+        return $weight * -1.0;
     }
 
     /**
