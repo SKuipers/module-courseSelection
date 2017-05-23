@@ -11,24 +11,22 @@ use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
 
-// Cancel out now if we're not running via CLI
-if (php_sapi_name() != 'cli') {
-    die( __('This script cannot be run from a browser, only via CLI.') );
-}
-
 include '../../functions.php';
 include '../../config.php';
+
+// Module Bootstrap
+require 'module.php';
+
+// Cancel out now if we're not running via CLI
+if (!isCommandLine()) {
+    die( __('This script cannot be run from a browser, only via CLI.') );
+}
 
 // Setup default settings
 ini_set('memory_limit', '2048M');
 ini_set('max_execution_time', 900);
 getSystemSettings($guid, $connection2);
 setCurrentSchoolYear($guid, $connection2);
-
-// Module Bootstrap
-require 'module.php';
-$loader->addNameSpace('Illuminate\\', 'modules/Course Selection/src/Illuminate/');
-require_once $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/Illuminate/Support/helpers.php';
 
 // Incoming variables from command line
 $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;

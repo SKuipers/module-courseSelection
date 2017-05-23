@@ -7,6 +7,9 @@ Copyright (C) 2017, Sandra Kuipers
 // Include the Composer autoloader
 require 'vendor/autoload.php';
 
+// Module Functions
+require 'moduleFunctions.php';
+
 // Add module namespace to Gibbon autoloader
 $loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
 
