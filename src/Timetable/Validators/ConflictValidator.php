@@ -83,7 +83,7 @@ class ConflictValidator extends Validator
         // Group conflicts by period to handle them in sets
         $groupedConflicts = array_reduce($node->conflicts, function($grouped, &$item) use ($environment) {
             $item['priority'] = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
-            $grouped[$item['className']][] = $item;
+            $grouped[$item['classNameShort']][] = $item;
             return $grouped;
         }, array());
 
@@ -99,11 +99,13 @@ class ConflictValidator extends Validator
             $keep = $values[0];
             $keepClassName = $this->environment->getClassValue($keep['gibbonCourseClassID'], 'className');
 
+            $groupedConflictIDs = array_column($values, 'gibbonCourseClassID');
+
             // Look for conflicts with pre-enrolled classes
             if ($this->inArrayWithArray($keep['ttDays'], $enrolmentTTDays)) {
                 // Simply flag all conflicts
                 foreach ($node->values as &$value) {
-                    if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
+                    if (in_array($value['gibbonCourseClassID'], $groupedConflictIDs)) {
                         // FLAGGED: Conflict
                         $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
                         $this->createFlag($value, 'Conflict', 'Conflicts with existing enrolment');
