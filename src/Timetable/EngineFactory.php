@@ -14,6 +14,7 @@ use CourseSelection\Timetable\Validators\SimpleValidator;
 use CourseSelection\Timetable\Validators\ConflictValidator;
 use CourseSelection\Timetable\Evaluators\SimpleEvaluator;
 use CourseSelection\Timetable\Evaluators\WeightedEvaluator;
+use CourseSelection\Timetable\Heuristics\SimpleHeuristic;
 use CourseSelection\Timetable\Heuristics\ClassSizeHeuristic;
 use CourseSelection\Timetable\Heuristics\RandomizeHeuristic;
 
@@ -49,8 +50,10 @@ class EngineFactory
         switch ($settings->heuristic) {
             case 'Class Size':  $heuristic = new ClassSizeHeuristic($environment, $settings); break;
 
+            case 'Randomize':   $heuristic = new RandomizeHeuristic(); break;
+
             default:
-            case 'Randomize':   $heuristic = new RandomizeHeuristic($environment, $settings); break;
+            case 'Simple':  $heuristic = new SimpleHeuristic(); break;
         }
 
         return $heuristic;
@@ -62,7 +65,7 @@ class EngineFactory
             case 'Conflict':    $validator = new ConflictValidator($environment, $settings); break;
 
             default:
-            case 'Simple':      $validator = new SimpleValidator($environment, $settings); break;
+            case 'Simple':      $validator = new SimpleValidator(); break;
         }
 
         return $validator;
@@ -74,7 +77,7 @@ class EngineFactory
             case 'Weighted':    $evaluator = new WeightedEvaluator($environment, $settings); break;
 
             default:
-            case 'Simple':      $evaluator = new SimpleEvaluator($environment, $settings); break;
+            case 'Simple':      $evaluator = new SimpleEvaluator(); break;
         }
 
         return $evaluator;
