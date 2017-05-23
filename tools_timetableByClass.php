@@ -128,18 +128,23 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
         $columnRowsChained = array_combine(array_column($columnRows, 'value'), array_column($columnRows, 'gibbonTTDayID'));
         $columnRowsOptions = array_combine(array_column($columnRows, 'value'), array_column($columnRows, 'name'));
 
+        $gibbonTTDayID = $_GET['gibbonTTDayID'] ?? '';
+        $gibbonTTColumnRowID = $_GET['gibbonTTColumnRowID'] ?? '';
+
         $row = $form->addRow();
             $row->addLabel('gibbonTTDayID', __('Timetable Day'));
             $row->addSelect('gibbonTTDayID')
                 ->fromResults($dayResults)
-                ->isRequired();
+                ->isRequired()
+                ->selected($gibbonTTDayID);
 
         $row = $form->addRow();
             $row->addLabel('gibbonTTColumnRowID', __('Timetable Column Row'));
             $row->addSelect('gibbonTTColumnRowID')
                 ->fromArray($columnRowsOptions)
                 ->isRequired()
-                ->chainedTo('gibbonTTDayID', $columnRowsChained);
+                ->chainedTo('gibbonTTDayID', $columnRowsChained)
+                ->selected($gibbonTTColumnRowID);
 
         $row = $form->addRow();
             $row->addSubmit(__('Add'));

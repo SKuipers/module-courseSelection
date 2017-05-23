@@ -14,8 +14,10 @@ require 'module.php';
 $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 $gibbonCourseClassID = $_REQUEST['gibbonCourseClassID'] ?? '';
 $gibbonTTID = $_REQUEST['gibbonTTID'] ?? '';
+$gibbonTTDayID = $_POST['gibbonTTDayID'] ?? '';
+$gibbonTTColumnRowID = $_POST['gibbonTTColumnRowID'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_timetableByClass.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}";
+$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_timetableByClass.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}&gibbonTTDayID={$gibbonTTDayID}&gibbonTTColumnRowID={$gibbonTTColumnRowID}";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_timetableByClass.php') == false) {
     $URL .= '&return=error0';
@@ -23,8 +25,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     exit;
 } else {
     //Proceed!
-    $gibbonTTDayID = $_POST['gibbonTTDayID'] ?? '';
-    $gibbonTTColumnRowID = $_POST['gibbonTTColumnRowID'] ?? '';
 
     $gibbonTTColumnRowID = strstr($gibbonTTColumnRowID, '-', true);
 
