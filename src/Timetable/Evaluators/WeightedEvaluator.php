@@ -135,10 +135,10 @@ class WeightedEvaluator extends Evaluator
 
         $priority = array_reduce($node->values, function($total, $item) use (&$environment, &$min, &$max) {
             $priority = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
-            return $total + (($priority - $min) / max($max - $min, 1));
+            return $total + (1.0 - (($priority - $min) / max($max - $min, 1)));
         }, 0);
 
-        return 1.0 - ($priority / count($node->values));
+        return  ($priority / count($node->values));
     }
 
     /**
@@ -149,8 +149,19 @@ class WeightedEvaluator extends Evaluator
      */
     protected function getConflictWeight(&$node)
     {
+        $weight = 0.0;
+
+        $min = $this->environment->getMinPriority();
+        $max = $this->environment->getMaxPriority();
+
         if (!empty($node->conflicts) && count($node->conflicts) > 0) {
-            return count($node->conflicts) * -1.0;
+
+            foreach ($node->conflicts as $conflict) {
+                $priority = $this->environment->getClassValue($conflict['gibbonCourseClassID'], 'priority');
+                $weight += (1.0 - (($priority - $min) / max($max - $min, 1))) + 1.0;
+            }
+
+            return $weight * -1.0;
         }
 
         return 0.0;
