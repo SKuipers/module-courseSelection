@@ -166,7 +166,7 @@ class ToolsGateway
                 JOIN gibbonTT ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID)
                 WHERE gibbonTT.gibbonTTID=:gibbonTTID
                 AND gibbonCourseClass.gibbonCourseClassID=:gibbonCourseClassID
-                ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort";
+                ORDER BY gibbonTTDay.name, gibbonTTColumnRow.name";
 
         return $this->pdo->executeQuery($data, $sql);
     }
