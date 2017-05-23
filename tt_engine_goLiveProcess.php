@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $copied = $timetableGateway->transformResultsIntoClassEnrolments($gibbonSchoolYearID);
 
-        if ($copied == false || $deleted == false) {
+        if ($copied == false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit;
