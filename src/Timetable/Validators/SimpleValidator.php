@@ -14,6 +14,10 @@ namespace CourseSelection\Timetable\Validators;
  */
 class SimpleValidator extends Validator
 {
+    public function __construct()
+    {
+    }
+
     /**
      * @param   object  &$node
      * @param   int     &$treeDepth
@@ -24,5 +28,10 @@ class SimpleValidator extends Validator
         $this->performance['nodeValidations']++;
 
         return (count($node->values) >= $treeDepth);
+    }
+
+    public function resolveConflicts(&$node)
+    {
+
     }
 }

@@ -14,6 +14,10 @@ namespace CourseSelection\Timetable\Heuristics;
  */
 class RandomizeHeuristic extends Heuristic
 {
+    public function __construct()
+    {
+    }
+
     /**
      * @param   object &$node
      * @param   int    $depth

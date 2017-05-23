@@ -91,10 +91,4 @@ abstract class Evaluator implements NodeEvaluator
     {
         return $this->performance;
     }
-
-    protected function sortByNodeValue($key) {
-        return function ($a, $b) use ($key) {
-            return strnatcmp($a[$key], $b[$key]);
-        };
-    }
 }

@@ -14,6 +14,10 @@ namespace CourseSelection\Timetable\Evaluators;
  */
 class SimpleEvaluator extends Evaluator
 {
+    public function __construct()
+    {
+    }
+
     /**
      * @param   object  &$node
      * @return  float
@@ -22,6 +26,11 @@ class SimpleEvaluator extends Evaluator
     {
         $this->performance['nodeEvaluations']++;
 
-        return 1.0;
+        return 0.0;
+    }
+
+    public function evaluateTreeCompletion(&$tree, &$leaves) : bool
+    {
+        return false;
     }
 }
