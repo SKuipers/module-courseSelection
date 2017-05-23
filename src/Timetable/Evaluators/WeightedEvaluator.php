@@ -33,8 +33,12 @@ class WeightedEvaluator extends Evaluator
         $weightTotal += $this->settings->targetEnrolmentPriority;
         $weightCumulative += ($this->settings->targetEnrolmentPriority * $this->getEnrolmentWeight($node));
 
+        // Sub-weighting: Course Priority
+        $weightTotal += $this->settings->coreCoursePriority;
+        $weightCumulative += ($this->settings->coreCoursePriority * $this->getCorePriorityWeight($node));
+
         // Sub-weighting: Timetable Conflicts
-        $weightTotal += $this->settings->avoidConflictPriority;
+        //$weightTotal += $this->settings->avoidConflictPriority;
         //$weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
 
         // Get the weighted weight :P
@@ -86,7 +90,7 @@ class WeightedEvaluator extends Evaluator
     }
 
     /**
-     * Normalized from -0.5 to 1
+     * Normalized from -1 to 1
      *
      * @param    object  &$node
      * @return   float
@@ -106,7 +110,7 @@ class WeightedEvaluator extends Evaluator
             if ($students < $this->settings->minimumStudents) {
                 $percent = 1.0;
             } else {
-                $percent = 1.0 - (($students / $this->settings->maximumStudents) * 1.5);
+                $percent = 1.0 - (($students / $this->settings->maximumStudents) * 2.0);
             }
 
             // Adjust by priority? to ensure small less-important classes arent out-weighting larger important ones
@@ -114,6 +118,27 @@ class WeightedEvaluator extends Evaluator
         }
 
         return $weight / count($node->values);
+    }
+
+    /**
+     * Normalized from 0 to 1
+     *
+     * @param    object  &$node
+     * @return   float
+     */
+    protected function getCorePriorityWeight(&$node)
+    {
+        $environment = $this->environment;
+
+        $min = $this->environment->getMinPriority();
+        $max = $this->environment->getMaxPriority();
+
+        $priority = array_reduce($node->values, function($total, $item) use (&$environment, &$min, &$max) {
+            $priority = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
+            return $total + (($priority - $min) / max($max - $min, 1));
+        }, 0);
+
+        return 1.0 - ($priority / count($node->values));
     }
 
     /**
@@ -139,7 +164,7 @@ class WeightedEvaluator extends Evaluator
      */
     protected function getFlaggedWeight(&$node)
     {
-        return array_reduce($node->values, function($total, $item) {
+        return array_reduce($node->values, function($total, &$item) {
             $total += (!empty($item['flag']))? -1 : 0;
             return $total;
         }, 0);

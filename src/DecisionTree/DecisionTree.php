@@ -67,7 +67,7 @@ class DecisionTree
             // Decisions in the tree become branches
             $branches = $decisions[$nodeDepth];
 
-            // Shake the tree a bit: sort branches by least to most optimal
+            // Shake the tree a bit: sort branches by a heuristic
             $branches = $this->heuristic->sortDecisions($branches, $node);
 
             foreach ($branches as $branch) {
