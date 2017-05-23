@@ -169,3 +169,10 @@ $count++;
 $sql[$count][0]="0.1.04" ;
 $sql[$count][1]="ALTER TABLE `courseSelectionMetaData` ADD `excludeClasses` VARCHAR(255) NULL  AFTER `tags`;end
 ";
+
+//v0.1.05
+$count++;
+$sql[$count][0]="0.1.05" ;
+$sql[$count][1]="INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'Edit Timetable by Class', 0, 'Tools', '', 'tools_timetableByClass.php', 'tools_timetableByClass.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Course Selection' AND gibbonAction.name='Edit Timetable by Class'));end
+";

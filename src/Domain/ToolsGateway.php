@@ -41,6 +41,17 @@ class ToolsGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+    public function selectTimetablesBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonTTID as value, name
+                FROM gibbonTT
+                WHERE gibbonSchoolYearID=:gibbonSchoolYearID
+                ORDER BY name";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function selectAllCoursesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
@@ -56,7 +67,7 @@ class ToolsGateway
     public function selectAllCourseClassesBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonCourse.gibbonCourseID as gibbonCourseID, gibbonCourseClass.gibbonCourseClassID as value, CONCAT(gibbonCourse.nameShort, '.', gibbonCourseClass.nameShort) as name
+        $sql = "SELECT gibbonCourse.gibbonCourseID as gibbonCourseID, gibbonCourseClass.gibbonCourseClassID as value, CONCAT(gibbonCourse.nameShort, '.', gibbonCourseClass.nameShort) as name, (SELECT gibbonTTDay.gibbonTTID FROM gibbonTTDayRowClass JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID) WHERE gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID GROUP BY gibbonTTDayRowClass.gibbonCourseClassID LIMIT 1) as gibbonTTID
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE gibbonSchoolYearID=:gibbonSchoolYearID
@@ -130,5 +141,85 @@ class ToolsGateway
                 ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
 
         return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectCourseClass($gibbonCourseClassID)
+    {
+        $data = array('gibbonCourseClassID' => $gibbonCourseClassID);
+        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.name as className, gibbonCourseClass.nameShort as classNameShort, gibbonCourseClass.*
+                FROM gibbonCourseClass
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
+                WHERE gibbonCourseClass.gibbonCourseClassID=:gibbonCourseClassID";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectTimetableDaysByClass($gibbonCourseClassID, $gibbonTTID)
+    {
+        $data = array('gibbonCourseClassID' => $gibbonCourseClassID, 'gibbonTTID' => $gibbonTTID);
+        $sql = "SELECT gibbonTTDayRowClass.gibbonTTDayRowClassID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.name as className, gibbonTTColumnRow.name as columnName, gibbonTTDay.name as dayName, gibbonTT.name as ttName, gibbonTTDayRowClass.gibbonSpaceID
+                FROM gibbonCourseClass
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
+                JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
+                JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
+                JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
+                JOIN gibbonTT ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID)
+                WHERE gibbonTT.gibbonTTID=:gibbonTTID
+                AND gibbonCourseClass.gibbonCourseClassID=:gibbonCourseClassID
+                ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+
+    public function selectTimetableDaysByTimetable($gibbonTTID)
+    {
+        $data = array('gibbonTTID' => $gibbonTTID);
+        $sql = "SELECT gibbonTTDayID as value, name
+                FROM gibbonTTDay
+                WHERE gibbonTTDay.gibbonTTID=:gibbonTTID
+                ORDER BY gibbonTTDay.name
+        ";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function selectTimetableColumnsByTimetable($gibbonTTID)
+    {
+        $data = array('gibbonTTID' => $gibbonTTID);
+        $sql = "SELECT CONCAT(gibbonTTColumnRow.gibbonTTColumnRowID, '-', gibbonTTDay.gibbonTTDayID) as value, gibbonTTColumnRow.name, gibbonTTDay.gibbonTTDayID
+                FROM gibbonTTDay
+                JOIN gibbonTTColumnRow ON (gibbonTTDay.gibbonTTColumnID=gibbonTTColumnRow.gibbonTTColumnID)
+                WHERE gibbonTTDay.gibbonTTID=:gibbonTTID
+                GROUP BY value
+                ORDER BY gibbonTTColumnRow.timeStart
+        ";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
+    public function insertTTDayRowClass(array $data)
+    {
+        $sql = "INSERT INTO gibbonTTDayRowClass SET gibbonTTColumnRowID=:gibbonTTColumnRowID, gibbonTTDayID=:gibbonTTDayID, gibbonCourseClassID=:gibbonCourseClassID, gibbonSpaceID=:gibbonSpaceID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getConnection()->lastInsertID();
+    }
+
+    public function deleteTTDayRowClass($gibbonTTDayRowClassID)
+    {
+        $data = array('gibbonTTDayRowClassID' => $gibbonTTDayRowClassID);
+        $sql = "DELETE FROM gibbonTTDayRowClass WHERE gibbonTTDayRowClassID=:gibbonTTDayRowClassID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
+    public function renameCourseClass(array $data)
+    {
+        $sql = "UPDATE gibbonCourseClass SET name=:name, nameShort=:nameShort WHERE gibbonCourseClassID=:gibbonCourseClassID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
     }
 }
