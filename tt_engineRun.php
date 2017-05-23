@@ -112,7 +112,7 @@ $settings->coreCoursePriority = getSettingByScope($connection2, 'Course Selectio
 $settings->avoidConflictPriority = getSettingByScope($connection2, 'Course Selection', 'avoidConflictPriority');
 $settings->autoResolveConflicts = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts');
 
-$settings->heuristic = 'Simple';
+$settings->heuristic = 'Class Size';
 $settings->validator = 'Conflict';
 $settings->evaluator = 'Weighted';
 

@@ -83,7 +83,7 @@ class ConflictValidator extends Validator
         // Group conflicts by period to handle them in sets
         $groupedConflicts = array_reduce($node->conflicts, function($grouped, &$item) use ($environment) {
             $item['priority'] = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
-            $grouped[$item['period']][] = $item;
+            $grouped[$item['className']][] = $item;
             return $grouped;
         }, array());
 

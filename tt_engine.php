@@ -199,9 +199,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $conflicts = $resultsCollection->filter(function($item) {
             return (!empty($item['flag']));
-        })->groupBy('gibbonPersonIDStudent');
+        });
 
-        $conflictCount = count($conflicts) ?? 0;
+        $conflictCountTotal = count($conflicts) ?? 0;
+        $conflictCount = count($conflicts->groupBy('gibbonPersonIDStudent')) ?? 0;
 
         // GO LIVE
         $form = Form::create('engineGoLive', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tt_engine_goLive.php');
@@ -228,7 +229,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $row = $form->addRow();
             $row->addLabel('', __('Timetabling Issues'));
-            $row->addTextField('')->readonly()->setValue(strval($conflictCount));
+            $row->addTextField('')->readonly()->setValue(strval($conflictCount).' students ('.$conflictCountTotal.' total)');
 
         $row = $form->addRow();
             $row->addLabel('', __('Timetabling Failures'));

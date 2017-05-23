@@ -38,8 +38,8 @@ class WeightedEvaluator extends Evaluator
         $weightCumulative += ($this->settings->coreCoursePriority * $this->getCorePriorityWeight($node));
 
         // Sub-weighting: Timetable Conflicts
-        //$weightTotal += $this->settings->avoidConflictPriority;
-        //$weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
+        $weightTotal += $this->settings->avoidConflictPriority;
+        $weightCumulative += ($this->settings->avoidConflictPriority * $this->getConflictWeight($node));
 
         // Get the weighted weight :P
         $weight = ($weightTotal > 0)? ($weightCumulative / $weightTotal) : 0;
@@ -47,7 +47,7 @@ class WeightedEvaluator extends Evaluator
         // Post-weighting: Flagged Classes
         $weight += $this->getFlaggedWeight($node) * 2;
 
-        $weight += $this->getConflictWeight($node);
+        //$weight += $this->getConflictWeight($node);
 
         // Possibly use this to short-cut out of result sets that already have a number of optimal results?
         if ($weight >= $this->settings->optimalWeight) {

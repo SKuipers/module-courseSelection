@@ -37,23 +37,25 @@ class ClassSizeHeuristic extends Heuristic
             return empty($environment->getClassValue($item['gibbonCourseClassID'], 'excluded'));
         });
 
+
+
         // Sorts by timetable conflicts first, then number of students in the class
-        usort($options, function($a, $b) use ($environment) { //, $periods
+        // usort($options, function($a, $b) use ($environment) {
 
-            $aCount = $environment->getEnrolmentCount($a['gibbonCourseClassID']);
-            $bCount = $environment->getEnrolmentCount($b['gibbonCourseClassID']);
+        //     $aCount = $environment->getEnrolmentCount($a['gibbonCourseClassID']);
+        //     $bCount = $environment->getEnrolmentCount($b['gibbonCourseClassID']);
 
-            // Avoid filling empty classes first
-            if ($aCount == 0) return -1;
+        //     // Avoid filling empty classes first
+        //     if ($aCount == 0) return -1;
 
-            // De-prioritize those that are over the minimum
-            if ($aCount >= $this->settings->minimumStudents) {
-                return $bCount - $aCount;
-            }
-            if ($bCount >= $this->settings->minimumStudents) return 1;
+        //     // De-prioritize those that are over the minimum
+        //     if ($aCount >= $this->settings->minimumStudents) {
+        //         return $bCount - $aCount;
+        //     }
+        //     if ($bCount >= $this->settings->minimumStudents) return 1;
 
-            return $aCount - $bCount;
-        });
+        //     return $aCount - $bCount;
+        // });
 
         return $options;
     }
