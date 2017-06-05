@@ -212,7 +212,14 @@ class TimetableGateway
     public function transformResultsIntoClassEnrolments($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "INSERT IGNORE INTO gibbonCourseClassPerson (gibbonCourseClassID, gibbonPersonID, role) SELECT gibbonCourseClassID, gibbonPersonIDStudent, 'Student' FROM courseSelectionTTResult WHERE gibbonSchoolYearID=:gibbonSchoolYearID AND status='Complete'";
+        $sql = "INSERT IGNORE INTO gibbonCourseClassPerson (gibbonCourseClassID, gibbonPersonID, role)
+                SELECT courseSelectionTTResult.gibbonCourseClassID, courseSelectionTTResult.gibbonPersonIDStudent, 'Student'
+                FROM courseSelectionTTResult
+                LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID
+                    AND gibbonCourseClassPerson.gibbonPersonID=courseSelectionTTResult.gibbonPersonIDStudent)
+                WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND courseSelectionTTResult.status='Complete'
+                AND gibbonCourseClassPerson.gibbonCourseClassPersonID IS NULL";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
