@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.1.05" ;
+$version="0.1.06" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -322,9 +322,49 @@ $actionRows[] = array(
 );
 
 $actionRows[] = array(
-    'name'                      => 'Course Approval by Class',
+    'name'                      => 'Upcoming Timetable_all',
     'precedence'                => '0',
     'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'upcomingTimetable.php',
+    'entryURL'                  => 'upcomingTimetable.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'Y',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'Y',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Upcoming Timetable_my',
+    'precedence'                => '0',
+    'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'upcomingTimetable.php',
+    'entryURL'                  => 'upcomingTimetable.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'N',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'Y',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'N',
+    'categoryPermissionStudent' => 'Y',
+    'categoryPermissionParent'  => 'N',
+    'categoryPermissionOther'   => 'N',
+);
+
+$actionRows[] = array(
+    'name'                      => 'Approve Requests by Course',
+    'precedence'                => '0',
+    'category'                  => 'Approval',
     'description'               => '',
     'URLList'                   => 'approval_byClass.php',
     'entryURL'                  => 'approval_byClass.php',
@@ -342,9 +382,9 @@ $actionRows[] = array(
 );
 
 $actionRows[] = array(
-    'name'                      => 'Course Approval by Offering',
+    'name'                      => 'Approve Requests by Offering',
     'precedence'                => '0',
-    'category'                  => 'Courses',
+    'category'                  => 'Approval',
     'description'               => '',
     'URLList'                   => 'approval_byOffering.php',
     'entryURL'                  => 'approval_byOffering.php',
