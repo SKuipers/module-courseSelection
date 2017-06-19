@@ -192,6 +192,26 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+    public function selectEnroledCoursesBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)
+    {
+        $data = array('gibbonPersonIDStudent' => $gibbonPersonIDStudent, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as className, gibbonTTColumnRow.nameShort as period
+                FROM gibbonCourseClassPerson
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=gibbonCourseClassPerson.gibbonCourseClassID)
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
+                JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
+                LEFT JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
+                LEFT JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
+                WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
+                AND gibbonCourseClassPerson.role = 'Student'
+                GROUP BY gibbonCourseClass.gibbonCourseClassID
+                ORDER BY gibbonCourseClass.nameShort
+        ";
+
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function insertResult(array $data)
     {
         $sql = "INSERT INTO courseSelectionTTResult SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, gibbonCourseClassID=:gibbonCourseClassID, weight=:weight, status=:status, flag=:flag, reason=:reason";
