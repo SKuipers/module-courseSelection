@@ -205,6 +205,12 @@ class TimetableGateway
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
                 AND gibbonCourseClassPerson.role = 'Student'
+                AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
+                AND gibbonCourse.nameShort NOT LIKE '%ECA%'
+                AND (FIND_IN_SET('014', gibbonCourse.gibbonYearGroupIDList)
+                    OR FIND_IN_SET('015', gibbonCourse.gibbonYearGroupIDList)
+                    OR FIND_IN_SET('016', gibbonCourse.gibbonYearGroupIDList) )
                 GROUP BY gibbonCourseClass.gibbonCourseClassID
                 ORDER BY gibbonCourseClass.nameShort
         ";
