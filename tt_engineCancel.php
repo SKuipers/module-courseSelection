@@ -22,7 +22,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 } else {
     //Proceed!
     $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
-    $process->cancelProcess('engine');
+    $process->stopProcess('engine');
 
     header("Location: {$URL}");
     exit;

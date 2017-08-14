@@ -1,8 +1,4 @@
 <?php
-/*
-Gibbon: Course Selection & Timetabling Engine
-Copyright (C) 2017, Sandra Kuipers
-*/
 
 namespace CourseSelection;
 
@@ -14,7 +10,7 @@ namespace CourseSelection;
  */
 class BackgroundProcess
 {
-    protected $filePath;
+    protected $directoryPath;
 
     protected $processFilename = 'Processing.txt';
     protected $outputFilename = 'Output.txt';
@@ -22,14 +18,14 @@ class BackgroundProcess
     /**
      * Create a background processor, outputting to a specific folder
      *
-     * @param  string  $filePath
+     * @param  string  $directoryPath
      */
-    public function __construct($filePath)
+    public function __construct($directoryPath)
     {
-        $this->filePath = rtrim($filePath, '/');
+        $this->directoryPath = rtrim($directoryPath, '/');
 
-        if (!is_dir($this->filePath)) {
-            mkdir($this->filePath, 0755);
+        if (!is_dir($this->directoryPath)) {
+            mkdir($this->directoryPath, 0755);
         }
     }
 
@@ -48,11 +44,11 @@ class BackgroundProcess
         }
 
         if (!file_exists($phpFile)) {
-            throw new \BadMethodCallException('File not found: '.$phpFile);
+            throw new \InvalidArgumentException('File not found: '.$phpFile);
         }
 
         if ($this->isProcessRunning($processName)) {
-            throw new \RuntimeException('Process is already running.');
+            $this->stopProcess($processName);
         }
 
         try {
@@ -73,26 +69,15 @@ class BackgroundProcess
     }
 
     /**
-     * Called from inside the process, to clear the current processor files.
+     * Kills the process by name and clear the files.
      *
      * @param   string  $processName
      * @return  bool
      */
     public function stopProcess($processName) : bool
     {
-        return unlink($this->getProcessFile($processName));
-    }
-
-    /**
-     * Kills the process by name and clear the files.
-     *
-     * @param   string  $processName
-     * @return  bool
-     */
-    public function cancelProcess($processName) : bool
-    {
         exec('kill -9 '.$this->getPID($processName));
-        return $this->stopProcess($processName);
+        return $this->deleteProcessFile($processName);
     }
 
     /**
@@ -107,15 +92,13 @@ class BackgroundProcess
 
         if (empty($pID)) return false;
 
-        if (!empty($pID)) {
-            $checkProcess = shell_exec('ps '.$pID);
-            if (stripos($checkProcess, $pID) !== false) {
-                return true;
-            }
+        $checkProcess = exec('ps '.$pID);
+        if (stripos($checkProcess, $pID) !== false) {
+            return true;
+        } else {
+            $this->deleteProcessFile($processName);
+            return false;
         }
-
-        unlink($this->getProcessFile($processName));
-        return false;
     }
 
     /**
@@ -144,7 +127,7 @@ class BackgroundProcess
     {
         $processName = $this->sanitizeProcessName($processName);
 
-        return $this->filePath.'/'.$processName.$this->outputFilename;
+        return $this->directoryPath.'/'.$processName.$this->outputFilename;
     }
 
     /**
@@ -157,7 +140,18 @@ class BackgroundProcess
     {
         $processName = $this->sanitizeProcessName($processName);
 
-        return $this->filePath.'/'.$processName.$this->processFilename;
+        return $this->directoryPath.'/'.$processName.$this->processFilename;
+    }
+
+    /**
+     * Delete the process file (when complete or cancelled)
+     *
+     * @param   string  $processName
+     * @return  bool
+     */
+    public function deleteProcessFile($processName) : bool
+    {
+        return unlink($this->getProcessFile($processName));
     }
 
     /**
