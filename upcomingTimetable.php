@@ -37,7 +37,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
 
         $row = $form->addRow();
             $row->addLabel('gibbonPersonIDStudent', __('Student'));
-            $row->addSelectStudent('gibbonPersonIDStudent')->selected($gibbonPersonIDStudent);
+            $row->addSelectStudent('gibbonPersonIDStudent', $_SESSION[$guid]['gibbonSchoolYearID'])->selected($gibbonPersonIDStudent);
 
         $row = $form->addRow();
             $row->addFooter();
