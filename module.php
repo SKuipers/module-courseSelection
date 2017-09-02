@@ -5,10 +5,10 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 // Include the Composer autoloader
-require 'vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 // Module Functions
-require 'moduleFunctions.php';
+require __DIR__ . '/moduleFunctions.php';
 
 // Add module namespace to Gibbon autoloader
 $loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
