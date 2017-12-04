@@ -30,6 +30,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     echo "<div class='linkTop'>";
+    if (!empty($navigation->getNextYear())) {
+        $nextYear = $navigation->getNextYear();
+        echo "<a href='" . $_SESSION[$guid]['absoluteURL'] . '/modules/'.$_SESSION[$guid]['module']."/meta_manage_copyProcess.php?gibbonSchoolYearID=$gibbonSchoolYearID&gibbonSchoolYearIDNext=".$nextYear['gibbonSchoolYearID']."' onclick='return confirm(\"Are you sure you want to do this? All meta data from this year will be copied.\")'>" . __('Copy All To Next Year') . "<img style='margin-left: 5px' title='" . __('Copy All To Next Year') . "' src='./themes/" . $_SESSION[$guid]['gibbonThemeName'] . "/img/copy.png'/></a> | ";
+    }
     echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/meta_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
     echo '</div>';
 

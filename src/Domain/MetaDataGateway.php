@@ -50,6 +50,21 @@ class MetaDataGateway
         return $this->pdo->getQuerySuccess();
     }
 
+    public function copyAllBySchoolYear($gibbonSchoolYearID, $gibbonSchoolYearIDNext)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
+        $sql = "INSERT INTO courseSelectionMetaData (gibbonCourseID, enrolmentGroup, timetablePriority, tags, excludeClasses) 
+                SELECT nextCourse.gibbonCourseID, courseSelectionMetaData.enrolmentGroup, courseSelectionMetaData.timetablePriority, courseSelectionMetaData.tags, courseSelectionMetaData.excludeClasses
+                FROM courseSelectionMetaData
+                JOIN gibbonCourse as prevCourse ON (prevCourse.gibbonCourseID=courseSelectionMetaData.gibbonCourseID)
+                JOIN gibbonCourse as nextCourse ON (nextCourse.nameShort=prevCourse.nameShort)
+                WHERE prevCourse.gibbonSchoolYearID=:gibbonSchoolYearID 
+                AND nextCourse.gibbonSchoolYearID=:gibbonSchoolYearIDNext";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        return $this->pdo->getQuerySuccess();
+    }
+
     // QUERIES
     public function selectOne($courseSelectionMetaDataID)
     {
