@@ -18,6 +18,8 @@ class SchoolYearNavigation
     protected $session;
 
     protected $schoolYear;
+    protected $previousYear;
+    protected $nextYear;
 
     public function __construct(\Gibbon\sqlConnection $pdo, \Gibbon\session $session)
     {
@@ -40,16 +42,16 @@ class SchoolYearNavigation
 
         $output .= '<div class="linkTop">';
             //Print year picker
-            $previousYear = $this->selectPreviousSchoolYearByID($gibbonSchoolYearID);
-            $nextYear = $this->selectNextSchoolYearByID($gibbonSchoolYearID);
-            if (!empty($previousYear)) {
-                $output .= '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$previousYear['gibbonSchoolYearID'].'">'.__('Previous Year').'</a> ';
+            $this->previousYear = $this->selectPreviousSchoolYearByID($gibbonSchoolYearID);
+            $this->nextYear = $this->selectNextSchoolYearByID($gibbonSchoolYearID);
+            if (!empty($this->previousYear)) {
+                $output .= '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$this->previousYear['gibbonSchoolYearID'].'">'.__('Previous Year').'</a> ';
             } else {
                 $output .= __('Previous Year').' ';
             }
             $output .=  ' | ';
-            if (!empty($nextYear)) {
-                $output .=  '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$nextYear['gibbonSchoolYearID'].'">'.__('Next Year').'</a> ';
+            if (!empty($this->nextYear)) {
+                $output .=  '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$this->nextYear['gibbonSchoolYearID'].'">'.__('Next Year').'</a> ';
             } else {
                 $output .=  __('Next Year').' ';
             }
@@ -61,6 +63,16 @@ class SchoolYearNavigation
     public function getSchoolYearName()
     {
         return (isset($this->schoolYear['name']))? $this->schoolYear['name'] : '';
+    }
+
+    public function getPreviousYear()
+    {
+        return $this->previousYear;
+    }
+
+    public function getNextYear()
+    {
+        return $this->nextYear;
     }
 
     public function selectSchoolYearByID($gibbonSchoolYearID)
