@@ -26,7 +26,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         'name'                   => '',
         'description'            => '',
         'minSelect'              => '0',
-        'maxSelect'              => '1'
+        'maxSelect'              => '1',
+        'countable'              => 'Y',
     );
 
     $gibbonDepartmentIDList = '';
@@ -85,6 +86,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     $row = $form->addRow();
         $row->addLabel('description', __('Description'));
         $row->addTextField('description')->maxLength(255)->setValue($values['description']);
+
+    $row = $form->addRow();
+        $row->addLabel('countable', __('Countable?'))->description(__('Should courses from this block be counted against the min and max selections for a course offering?'));
+        $row->addYesNo('countable')->selected($values['countable']);
 
     $row = $form->addRow();
         $row->addFooter();

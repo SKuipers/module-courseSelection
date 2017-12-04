@@ -24,6 +24,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     $data['gibbonDepartmentIDList'] = $_POST['gibbonDepartmentIDList'] ?? '';
     $data['name'] = $_POST['name'] ?? '';
     $data['description'] = $_POST['description'] ?? '';
+    $data['countable'] = $_POST['countable'] ?? '';
 
     if (!empty($data['gibbonDepartmentIDList'])) {
         $data['gibbonDepartmentIDList'] = implode(',', $data['gibbonDepartmentIDList']);

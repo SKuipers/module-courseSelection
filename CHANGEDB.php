@@ -186,3 +186,11 @@ INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`
 INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'Upcoming Timetable_my', 0, 'Courses', '', 'upcomingTimetable.php', 'upcomingTimetable.php', 'N', 'N', 'Y', 'N', 'N', 'N', 'Y', 'N', 'N') ;end
 INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '3', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Course Selection' AND gibbonAction.name='Upcoming Timetable_my'));end
 ";
+
+//v0.1.07
+$count++;
+$sql[$count][0]="0.1.07" ;
+$sql[$count][1]="
+ALTER TABLE `courseSelectionBlock` DROP `minSelect`, DROP `maxSelect`;end
+ALTER TABLE `courseSelectionBlock` ADD `countable` ENUM('Y','N') NOT NULL DEFAULT 'Y' AFTER `description`;end
+";

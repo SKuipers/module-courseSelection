@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.1.06" ;
+$version="0.1.07" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -33,8 +33,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   `gibbonDepartmentIDList` varchar(255) DEFAULT NULL,
   `name` varchar(90) NOT NULL,
   `description` varchar(255) NOT NULL,
-  `minSelect` smallint(3) DEFAULT NULL,
-  `maxSelect` smallint(3) DEFAULT NULL,
+  `countable` ENUM('Y','N') NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`courseSelectionBlockID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
 

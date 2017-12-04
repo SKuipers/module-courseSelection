@@ -60,7 +60,7 @@ class BlocksGateway
 
     public function insert(array $data)
     {
-        $sql = "INSERT INTO courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentIDList=:gibbonDepartmentIDList, name=:name, description=:description";
+        $sql = "INSERT INTO courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentIDList=:gibbonDepartmentIDList, name=:name, description=:description, countable=:countable";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getConnection()->lastInsertID();
@@ -68,7 +68,7 @@ class BlocksGateway
 
     public function update(array $data)
     {
-        $sql = "UPDATE courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentIDList=:gibbonDepartmentIDList, name=:name, description=:description WHERE courseSelectionBlockID=:courseSelectionBlockID";
+        $sql = "UPDATE courseSelectionBlock SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonDepartmentIDList=:gibbonDepartmentIDList, name=:name, description=:description, countable=:countable WHERE courseSelectionBlockID=:courseSelectionBlockID";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
@@ -87,8 +87,8 @@ class BlocksGateway
     public function copyAllBySchoolYear($gibbonSchoolYearID, $gibbonSchoolYearIDNext)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
-        $sql = "INSERT INTO courseSelectionBlock (gibbonSchoolYearID, gibbonDepartmentIDList, name, description) 
-                SELECT :gibbonSchoolYearIDNext, gibbonDepartmentIDList, name, description
+        $sql = "INSERT INTO courseSelectionBlock (gibbonSchoolYearID, gibbonDepartmentIDList, name, description, countable) 
+                SELECT :gibbonSchoolYearIDNext, gibbonDepartmentIDList, name, description, countable
                 FROM courseSelectionBlock WHERE courseSelectionBlock.gibbonSchoolYearID=:gibbonSchoolYearID";
         $result = $this->pdo->executeQuery($data, $sql);
 
