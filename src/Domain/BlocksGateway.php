@@ -84,6 +84,34 @@ class BlocksGateway
         return $this->pdo->getQuerySuccess();
     }
 
+    public function copyAllBySchoolYear($gibbonSchoolYearID, $gibbonSchoolYearIDNext)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
+        $sql = "INSERT INTO courseSelectionBlock (gibbonSchoolYearID, gibbonDepartmentIDList, name, description) 
+                SELECT :gibbonSchoolYearIDNext, gibbonDepartmentIDList, name, description
+                FROM courseSelectionBlock WHERE courseSelectionBlock.gibbonSchoolYearID=:gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        $partialSuccess = $this->pdo->getQuerySuccess();
+        if ($partialSuccess) {
+            $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
+            $sql = "INSERT INTO courseSelectionBlockCourse (courseSelectionBlockID, gibbonCourseID) 
+                    SELECT 
+                        (SELECT courseSelectionBlockID FROM courseSelectionBlock WHERE gibbonSchoolYearID=:gibbonSchoolYearIDNext AND gibbonDepartmentIDList=prevBlock.gibbonDepartmentIDList AND name=prevBlock.name AND description=prevBlock.description) as courseSelectionBlockID, 
+                        nextCourse.gibbonCourseID
+                    FROM courseSelectionBlockCourse 
+                    JOIN courseSelectionBlock as prevBlock ON (prevBlock.courseSelectionBlockID=courseSelectionBlockCourse.courseSelectionBlockID)
+                    JOIN gibbonCourse as prevCourse ON (prevCourse.gibbonCourseID=courseSelectionBlockCourse.gibbonCourseID)
+                    JOIN gibbonCourse as nextCourse ON (nextCourse.nameShort=prevCourse.nameShort)
+                    WHERE prevBlock.gibbonSchoolYearID=:gibbonSchoolYearID
+                    AND prevCourse.gibbonSchoolYearID=:gibbonSchoolYearID 
+                    AND nextCourse.gibbonSchoolYearID=:gibbonSchoolYearIDNext";
+            $result = $this->pdo->executeQuery($data, $sql);
+        }
+
+        return $partialSuccess;
+    }
+
     // BLOCK COURSES
 
     public function selectAllCoursesByBlock($courseSelectionBlockID)
