@@ -104,6 +104,46 @@ class OfferingsGateway
         return $this->pdo->getQuerySuccess();
     }
 
+    public function copyAllBySchoolYear($gibbonSchoolYearID, $gibbonSchoolYearIDNext)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
+        $sql = "INSERT INTO courseSelectionOffering (gibbonSchoolYearID, gibbonYearGroupIDList, name, description, minSelect, maxSelect, sequenceNumber) 
+                SELECT :gibbonSchoolYearIDNext, gibbonYearGroupIDList, name, description, minSelect, maxSelect, sequenceNumber
+                FROM courseSelectionOffering WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID";
+        $result = $this->pdo->executeQuery($data, $sql);
+
+        $partialSuccess = $this->pdo->getQuerySuccess();
+        if ($partialSuccess) {
+            $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
+            $sql = "INSERT INTO courseSelectionOfferingRestriction (courseSelectionOfferingID, gibbonSchoolYearID, gibbonYearGroupID) 
+                    SELECT 
+                        (SELECT courseSelectionOfferingID FROM courseSelectionOffering WHERE gibbonSchoolYearID=:gibbonSchoolYearIDNext AND gibbonYearGroupIDList=prevOffering.gibbonYearGroupIDList AND name=prevOffering.name) as courseSelectionOfferingID, 
+                        (SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE sequenceNumber > offeringYear.sequenceNumber ORDER BY sequenceNumber LIMIT 1) as gibbonSchoolYearID, 
+                        courseSelectionOfferingRestriction.gibbonYearGroupID
+                    FROM courseSelectionOfferingRestriction 
+                    JOIN gibbonSchoolYear as offeringYear ON (offeringYear.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID)
+                    JOIN courseSelectionOffering as prevOffering ON (prevOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                    WHERE prevOffering.gibbonSchoolYearID=:gibbonSchoolYearID";
+            $result = $this->pdo->executeQuery($data, $sql);
+
+            $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
+            $sql = "INSERT INTO courseSelectionOfferingBlock (courseSelectionOfferingID, courseSelectionBlockID, minSelect, maxSelect, sequenceNumber) 
+                SELECT 
+                    (SELECT courseSelectionOfferingID FROM courseSelectionOffering WHERE gibbonSchoolYearID=:gibbonSchoolYearIDNext AND gibbonYearGroupIDList=prevOffering.gibbonYearGroupIDList AND name=prevOffering.name) as courseSelectionOfferingID, 
+                    (SELECT courseSelectionBlockID FROM courseSelectionBlock WHERE gibbonSchoolYearID=:gibbonSchoolYearIDNext AND gibbonDepartmentIDList=prevBlock.gibbonDepartmentIDList AND name=prevBlock.name AND description=prevBlock.description) as courseSelectionBlockID, 
+                    courseSelectionOfferingBlock.minSelect, courseSelectionOfferingBlock.maxSelect, courseSelectionOfferingBlock.sequenceNumber
+                FROM courseSelectionOfferingBlock 
+                JOIN courseSelectionOffering as prevOffering ON (prevOffering.courseSelectionOfferingID=courseSelectionOfferingBlock.courseSelectionOfferingID)
+                JOIN courseSelectionBlock as prevBlock ON (prevBlock.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID)
+                WHERE prevOffering.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND prevBlock.gibbonSchoolYearID=:gibbonSchoolYearID";
+
+            $result = $this->pdo->executeQuery($data, $sql);
+        }
+
+        return $partialSuccess;
+    }
+
     public function getNextSequenceNumber()
     {
         $sql = "SELECT MAX(sequenceNumber) FROM courseSelectionOffering";
