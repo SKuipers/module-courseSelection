@@ -209,7 +209,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
                 $('#offeringBlocks tbody').sortable({
                     update: function() {
-                        offeringBlockOrderSave(<?php echo $values['courseSelectionOfferingID']; ?>, '<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/'; ?>');
+                        offeringBlockOrderSave('<?php echo $values['courseSelectionOfferingID']; ?>', '<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/'; ?>');
                     }
                 }).disableSelection();
             </script>
