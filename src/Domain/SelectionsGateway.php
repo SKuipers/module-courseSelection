@@ -118,10 +118,18 @@ class SelectionsGateway
     public function selectUnofferedChoicesByPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
-        $sql = "SELECT courseSelectionChoice.gibbonCourseID, courseSelectionChoice.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (SELECT COUNT(*) as count FROM courseSelectionBlockCourse JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlockCourse.courseSelectionBlockID) WHERE courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID AND courseSelectionOfferingBlock.courseSelectionOfferingID=:courseSelectionOfferingID) AS offeringBlockCount
+        $sql = "SELECT courseSelectionChoice.gibbonCourseID, courseSelectionChoice.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (
+                    SELECT COUNT(*) as count FROM courseSelectionBlockCourse 
+                    JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlockCourse.courseSelectionBlockID) 
+                    WHERE courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID 
+                    AND courseSelectionOfferingBlock.courseSelectionOfferingID=:courseSelectionOfferingID
+                ) AS offeringBlockCount
                 FROM courseSelectionChoice
+                JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=courseSelectionChoice.gibbonSchoolYearID) 
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
                 WHERE courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
+                AND courseSelectionOffering.courseSelectionOfferingID=:courseSelectionOfferingID
+                AND gibbonCourse.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID
                 AND courseSelectionChoice.status <> 'Removed'
                 GROUP BY courseSelectionChoice.gibbonCourseID
                 HAVING (offeringBlockCount = 0)
