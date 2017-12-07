@@ -114,7 +114,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 $form->addRow()->addSubHeading(__('Course Offerings'));
 
-                while ($offering = $offeringsRequest->fetch()) {
+                $offerings = $offeringsRequest->fetchAll();
+                if (empty($offeringChoice)) {
+                    $firstOffering = current($offerings);
+                    $offeringChoice = $firstOffering['courseSelectionOfferingID'] ?? 0;
+                }
+
+                foreach ($offerings as $offering) {
                     $row = $form->addRow();
                         $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
                         $row->addRadio('courseSelectionOfferingID')
