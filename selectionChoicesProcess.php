@@ -6,6 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 include '../../functions.php';
 
+use CourseSelection\Domain\Access;
 use CourseSelection\Domain\AccessGateway;
 use CourseSelection\Domain\SelectionsGateway;
 
@@ -33,18 +34,20 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
     $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
 
-    if ($highestGroupedAction == 'Course Selection_all') {
-        $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
-    } else {
-        $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
-    }
+    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
 
     if (!$accessRequest || $accessRequest->rowCount() == 0) {
         $URL .= '&return=error0';
         header("Location: {$URL}");
         exit;
     } else {
-        $access = $accessRequest->fetch();
+        $access = new Access($accessRequest->fetch());
+
+        if (($access->getAccessLevel() == Access::CLOSED || $access->getAccessLevel() == Access::VIEW_ONLY) && $highestGroupedAction != 'Course Selection_all') {
+            $URL .= '&return=error0';
+            header("Location: {$URL}");
+            exit;
+        }
 
         $data = array();
         $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';

@@ -6,6 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
+use CourseSelection\Domain\Access;
 use CourseSelection\Domain\AccessGateway;
 use CourseSelection\Domain\OfferingsGateway;
 use CourseSelection\Domain\BlocksGateway;
@@ -58,24 +59,26 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
     $gradesGateway = $container->get('CourseSelection\Domain\GradesGateway');
 
-    if ($highestGroupedAction == 'Course Selection_all') {
-        $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
-    } else {
-        $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
-    }
+    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
 
     $offeringRequest = $offeringsGateway->selectOne($courseSelectionOfferingID);
 
     if (!$accessRequest || $accessRequest->rowCount() == 0 || !$offeringRequest || $offeringRequest->rowCount() == 0) {
         echo "<div class='error'>" ;
-            echo __('You do not have access to course selection at this time.');
+            echo __('Course selection for this year is closed, or you do not have access at this time.');
         echo "</div>" ;
     } else {
-        $access = $accessRequest->fetch();
+        $access = new Access($accessRequest->fetch());
         $offering = $offeringRequest->fetch();
 
-        $accessTypes = explode(',', $access['accessTypes']);
-        $readOnly = (in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false && !($highestGroupedAction == 'Course Selection_all');
+        if ($access->getAccessLevel() == Access::CLOSED && $highestGroupedAction != 'Course Selection_all') {
+            echo "<div class='error'>";
+            echo __('Course selection for this year is closed, or you do not have access at this time.');
+            echo "</div>";
+            return;
+        }
+
+        $readOnly = $access->getAccessLevel() == Access::VIEW_ONLY && ! ($highestGroupedAction == 'Course Selection_all');
 
         echo '<h3>';
         echo __('Course Selection').' '.$access['schoolYearName'];

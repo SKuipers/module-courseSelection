@@ -98,16 +98,20 @@ class AccessGateway
         return $result;
     }
 
-    public function getAccessByPerson($gibbonPersonID)
+    public function getAccessByPerson($gibbonSchoolYearID, $gibbonPersonID)
     {
-        $data = array('gibbonPersonID' => $gibbonPersonID);
-        $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT accessType SEPARATOR ',') AS accessTypes
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonID' => $gibbonPersonID, 'date' => date('Y-m-d'));
+        $sql = "SELECT gibbonSchoolYear.gibbonSchoolYearID, gibbonSchoolYear.name as schoolYearName, courseSelectionAccess.*
                 FROM courseSelectionAccess
                 JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionAccess.gibbonSchoolYearID)
                 JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
                 JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonRoleIDAll))
                 WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID
-                GROUP BY courseSelectionAccess.gibbonSchoolYearID";
+                AND gibbonSchoolYear.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND courseSelectionAccess.dateEnd >= :date
+                ORDER BY courseSelectionAccess.dateEnd, (CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC"; 
+                
+                //(CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC,
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;
@@ -115,16 +119,17 @@ class AccessGateway
 
     public function getAccessByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonID)
     {
-        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonID' => $gibbonPersonID);
-        $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(DISTINCT accessType SEPARATOR ',') AS accessTypes
+        $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonID' => $gibbonPersonID, 'date' => date('Y-m-d'));
+        $sql = "SELECT gibbonSchoolYear.gibbonSchoolYearID, gibbonSchoolYear.name as schoolYearName, courseSelectionAccess.*
                 FROM courseSelectionOffering
                 JOIN courseSelectionAccess  ON (courseSelectionAccess.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID)
                 JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionAccess.gibbonSchoolYearID)
                 JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
-                JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonRoleIDAll))
+                JOIN gibbonPerson ON (gibbonRole.gibbonRoleID=gibbonPerson.gibbonRoleIDPrimary OR FIND_IN_SET(gibbonRole.gibbonRoleID, gibbonPerson.gibbonRoleIDAll))
                 WHERE courseSelectionOffering.courseSelectionOfferingID=:courseSelectionOfferingID
                 AND gibbonPerson.gibbonPersonID=:gibbonPersonID
-                GROUP BY courseSelectionOffering.courseSelectionOfferingID";
+                AND courseSelectionAccess.dateEnd >= :date
+                ORDER BY courseSelectionAccess.dateEnd, (CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC";
         $result = $this->pdo->executeQuery($data, $sql);
 
         return $result;

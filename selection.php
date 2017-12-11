@@ -6,6 +6,8 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
+use CourseSelection\SchoolYearNavigation;
+use CourseSelection\Domain\Access;
 use CourseSelection\Domain\AccessGateway;
 use CourseSelection\Domain\OfferingsGateway;
 use CourseSelection\Domain\SelectionsGateway;
@@ -27,6 +29,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         returnProcess($guid, $_GET['return'], null, null);
     }
 
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+
+    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
+    echo $navigation->getYearPicker($gibbonSchoolYearID);
+
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
 
     if ($highestGroupedAction == 'Course Selection_all') {
@@ -36,6 +43,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
         $row = $form->addRow();
             $row->addLabel('gibbonPersonIDStudent', __('Student'));
@@ -57,94 +65,95 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
-    $accessRequest = $accessGateway->getAccessByPerson($_SESSION[$guid]['gibbonPersonID']);
+    $accessRequest = $accessGateway->getAccessByPerson($gibbonSchoolYearID, $_SESSION[$guid]['gibbonPersonID']);
 
     if (!$accessRequest || $accessRequest->rowCount() == 0) {
         echo "<div class='error'>" ;
-            echo __('You do not have access to course selection at this time.');
+            echo __('Course selection for this year is closed, or you do not have access at this time.');
         echo "</div>" ;
     } else {
+        $today = date('Y-m-d');
+        $access = new Access($accessRequest->fetch());
 
-        while ($access = $accessRequest->fetch()) {
-            echo '<h3>';
-                echo __('Course Selection').' '.$access['schoolYearName'];
-            echo '</h3>';
+        if ($access->getAccessLevel() == Access::CLOSED) {
+            $accessMessageClass = 'warning';
+            $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Closed'));
+        }
+        else if ($access->getAccessLevel() == Access::OPEN) {
+            $accessMessageClass = 'success';
+            $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Open'));
+        } else if ($access->getAccessLevel() == Access::VIEW_ONLY) {
+            $accessMessageClass = 'message';
+            $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('View Only'));
+        } else {
+            $accessMessageClass = 'warning';
+            $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Closed'));
+        }
 
-            $accessTypes = explode(',', $access['accessTypes']);
-            $readOnly = (in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false && !($highestGroupedAction == 'Course Selection_all');
+        echo '<div class="'.$accessMessageClass.'">';
+            echo $accessMessageText.' '.sprintf(__('Access is available from %1$s to %2$s'),
+                date('M j', strtotime($access['dateStart'])),
+                date('M j, Y', strtotime($access['dateEnd']))
+            );
+        echo '</div>';
 
-            $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
+        if ($access->getAccessLevel() == Access::CLOSED && $highestGroupedAction != 'Course Selection_all') {
+            return;
+        }
 
-            if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
+        $infoText = getSettingByScope($connection2, 'Course Selection', 'infoTextOfferings');
+        if (!empty($infoText)) {
+            echo '<p>'.$infoText.'</p>';
+        }
 
-                $today = date('Y-m-d');
+        $readOnly = $access->getAccessLevel() == Access::VIEW_ONLY && !($highestGroupedAction == 'Course Selection_all');
 
-                if ((in_array('Request', $accessTypes) || in_array('Select', $accessTypes)) == false) {
-                    $accessMessageClass = 'message';
-                    $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('View Only'));
-                } else if ($today >= $access['dateStart'] && $today <= $access['dateEnd']) {
-                    $accessMessageClass = 'success';
-                    $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Open'));
-                } else {
-                    $accessMessageClass = 'warning';
-                    $accessMessageText = sprintf(__('Course selection is currently %1$s.'), __('Closed'));
-                }
+        $offeringsRequest = $offeringsGateway->selectOfferingsByStudentEnrolment($gibbonSchoolYearID, $gibbonPersonIDStudent);
 
-                echo '<div class="'.$accessMessageClass.'">';
-                    echo $accessMessageText.' '.sprintf(__('Access is available from %1$s to %2$s'),
-                        date('M j', strtotime($access['dateStart'])),
-                        date('M j, Y', strtotime($access['dateEnd']))
-                    );
-                echo '</div>';
+        if ($offeringsRequest && $offeringsRequest->rowCount() > 0) {
+            $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($gibbonSchoolYearID, $gibbonPersonIDStudent);
+            $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
 
-                $infoText = getSettingByScope($connection2, 'Course Selection', 'infoTextOfferings');
-                if (!empty($infoText)) {
-                    echo '<p>'.$infoText.'</p>';
-                }
+            $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
 
-                $offeringChoiceRequest = $selectionsGateway->selectChoiceOffering($access['gibbonSchoolYearID'], $gibbonPersonIDStudent);
-                $offeringChoice = ($offeringChoiceRequest->rowCount() > 0)? $offeringChoiceRequest->fetchColumn(0) : 0;
+            $form->setClass('fullWidth');
+            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
+            $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
 
-                $form = Form::create('selection', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
+            $form->addRow()->addSubHeading(__('Course Offerings'));
 
-                $form->setClass('fullWidth');
-                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
-                $form->addHiddenValue('gibbonSchoolYearID', $access['gibbonSchoolYearID']);
-                $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
-
-                $form->addRow()->addSubHeading(__('Course Offerings'));
-
-                $offerings = $offeringsRequest->fetchAll();
-                if (empty($offeringChoice)) {
-                    $firstOffering = current($offerings);
-                    $offeringChoice = $firstOffering['courseSelectionOfferingID'] ?? 0;
-                }
-
-                foreach ($offerings as $offering) {
-                    $row = $form->addRow();
-                        $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
-                        $row->addRadio('courseSelectionOfferingID')
-                            ->isRequired()
-                            ->setClass('')
-                            ->fromArray(array($offering['courseSelectionOfferingID'] => ''))
-                            ->checked($offeringChoice)
-                            ->setDisabled($readOnly);
-
-                        if ($readOnly) {
-                            $form->addHiddenValue('courseSelectionOfferingID', $offeringChoice);
-                        }
-                }
-
-                $row = $form->addRow();
-                    $row->addSubmit( ($readOnly)? __('View') : __('Select') );
-
-                echo $form->getOutput();
-            } else {
-                echo "<div class='error'>" ;
-                    echo __('There are no course offerings available at this time.');
-                echo "</div>" ;
+            $offerings = $offeringsRequest->fetchAll();
+            if (empty($offeringChoice)) {
+                $firstOffering = current($offerings);
+                $offeringChoice = $firstOffering['courseSelectionOfferingID'] ?? 0;
             }
 
+            foreach ($offerings as $offering) {
+                $row = $form->addRow();
+                    $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
+                    $row->addRadio('courseSelectionOfferingID')
+                        ->isRequired()
+                        ->setClass('')
+                        ->fromArray(array($offering['courseSelectionOfferingID'] => ''))
+                        ->checked($offeringChoice)
+                        ->setDisabled($readOnly);
+
+                    if ($readOnly) {
+                        $form->addHiddenValue('courseSelectionOfferingID', $offeringChoice);
+                    }
+            }
+
+            $row = $form->addRow();
+                $row->addSubmit( ($readOnly)? __('View') : __('Select') );
+
+            echo $form->getOutput();
+        } else {
+            echo "<div class='error'>" ;
+                echo __('There are no course offerings available at this time.');
+            echo "</div>" ;
         }
+
+    
     }
 }
