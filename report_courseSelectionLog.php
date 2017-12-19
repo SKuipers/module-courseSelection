@@ -63,7 +63,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
             echo '<tr>';
                 echo '<td>'.$log['offeringName'].'</td>';
                 echo '<td>';
-                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$log['gibbonPersonIDStudent'].'" target="_blank">';
+                    echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$log['gibbonPersonIDStudent'].'&allStudents=on" target="_blank">';
                     echo formatName('', $log['studentPreferredName'], $log['studentSurname'], 'Student', true);
                     echo '</a>';
                 echo '</td>';

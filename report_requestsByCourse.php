@@ -58,7 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
     echo $form->getOutput();
 
     echo '<h2>';
-    echo __('Report Data');
+    echo __('Course Requests');
     echo '</h2>';
 
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
@@ -112,6 +112,61 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
 
         echo '</table>';
 
+        echo '<h2>';
+        echo __('Alternate Course Requests');
+        echo '</h2>';
+
+        // Count alternate course choices separately
+        $alternates = $selectionsGateway->selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $sort, 'N');
+        
+        if ($alternates->rowCount() == 0) {
+            echo '<div class="error">';
+            echo __("There are no records to display.") ;
+            echo '</div>';
+        } else {
+    
+            echo '<div class="paginationTop">';
+            echo __('Records').': '.$alternates->rowCount();
+            echo '</div>';
+    
+            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+            echo '<tr class="head">';
+                echo '<th>';
+                    echo __('Course');
+                echo '</th>';
+                echo '<th>';
+                    echo __('Name');
+                echo '</th>';
+                echo '<th>';
+                    echo __('Requests');
+                echo '</th>';
+                echo '<th style="width: 80px;">';
+                    echo __('Actions');
+                echo '</th>';
+            echo '</tr>';
+    
+            $count = 0;
+            while ($course = $alternates->fetch()) {
+                $trClass = '';
+    
+                if (!empty($min) && $course['count'] < $min) $trClass = 'warning';
+                if (!empty($max) && $course['count'] > $max) $trClass = 'warning';
+    
+                echo '<tr class="'.$trClass.'">';
+                    echo '<td>'.$course['courseNameShort'].'</td>';
+                    echo '<td>'.$course['courseName'].'</td>';
+                    echo '<td>'.$course['count'].'</td>';
+    
+                    echo '<td>';
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    echo '</td>';
+                echo '</tr>';
+    
+                $count++;
+            }
+    
+            echo '</table>';
+        }
 
     }
 }

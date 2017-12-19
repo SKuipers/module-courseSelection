@@ -352,14 +352,16 @@ class SelectionsGateway
         return $result;
     }
 
-    public function selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort')
+    public function selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort', $countable = 'Y')
     {
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT COUNT(DISTINCT courseSelectionChoice.gibbonPersonIDStudent) as count, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'countable' => $countable);
+        $sql = "SELECT COUNT(DISTINCT CASE WHEN courseSelectionBlock.countable=:countable THEN courseSelectionChoice.gibbonPersonIDStudent END) as count, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
                 FROM courseSelectionChoice
+                JOIN courseSelectionBlock ON (courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
-                WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
+                WHERE courseSelectionBlock.countable=:countable
+                AND courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND (courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended')
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
                 GROUP BY gibbonCourse.gibbonCourseID
