@@ -57,7 +57,7 @@ class SelectionsGateway
     public function selectChoicesByCourse($gibbonCourseID, $excludeStatusList = array())
     {
         $data = array('gibbonCourseID' => $gibbonCourseID, 'exclude' => implode(',', $excludeStatusList));
-        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, selectedPerson.gibbonPersonID as selectedPersonID, selectedPerson.surname as selectedSurname, selectedPerson.preferredName as selectedPreferredName, courseSelectionChoiceOffering.courseSelectionOfferingID, gibbonRollGroup.nameShort as rollGroupName
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, selectedPerson.gibbonPersonID as selectedPersonID, selectedPerson.surname as selectedSurname, selectedPerson.preferredName as selectedPreferredName, courseSelectionChoiceOffering.courseSelectionOfferingID, gibbonRollGroup.nameShort as rollGroupName, courseSelectionBlock.courseSelectionBlockID, courseSelectionBlock.countable as blockIsCountable
                 FROM courseSelectionChoice
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
@@ -65,6 +65,7 @@ class SelectionsGateway
                     courseSelectionChoiceOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID
                     AND courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
                 )
+                LEFT JOIN courseSelectionBlock ON (courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 JOIN gibbonPerson AS selectedPerson ON (selectedPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDSelected)
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                 JOIN gibbonRollGroup ON (gibbonRollGroup.gibbonRollGroupID=gibbonStudentEnrolment.gibbonRollGroupID)
@@ -355,12 +356,12 @@ class SelectionsGateway
     public function selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort', $countable = 'Y')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'countable' => $countable);
-        $sql = "SELECT COUNT(DISTINCT CASE WHEN courseSelectionBlock.countable=:countable THEN courseSelectionChoice.gibbonPersonIDStudent END) as count, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
+        $sql = "SELECT COUNT(DISTINCT CASE WHEN courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable='Y') THEN courseSelectionChoice.gibbonPersonIDStudent END) as count, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
                 FROM courseSelectionChoice
-                JOIN courseSelectionBlock ON (courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
-                WHERE courseSelectionBlock.countable=:countable
+                LEFT JOIN courseSelectionBlock ON (courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
+                WHERE (courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable='Y'))
                 AND courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND (courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended')
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
