@@ -104,7 +104,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                         echo '</a>';
                     echo '</td>';
                     echo '<td>'.$student['rollGroupName'].'</td>';
-                    echo '<td>'.$student['status'].'</td>';
+                    echo '<td>'.$student['status'];
+                    if (!($student['blockIsCountable'] == 'Y' || empty($student['courseSelectionBlockID']))) {
+                        echo ' <i>('.__('Alternate').')</i>';
+                    }
+                    echo '</td>';
                     echo '<td>';
 
                         echo '<span title="'.date('M j, Y \a\t g:i a', strtotime($student['timestampSelected'])).'">';
