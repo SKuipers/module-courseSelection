@@ -157,13 +157,14 @@ class ToolsGateway
     public function selectTimetableDaysByClass($gibbonCourseClassID, $gibbonTTID)
     {
         $data = array('gibbonCourseClassID' => $gibbonCourseClassID, 'gibbonTTID' => $gibbonTTID);
-        $sql = "SELECT gibbonTTDayRowClass.gibbonTTDayRowClassID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.name as className, gibbonTTColumnRow.name as columnName, gibbonTTDay.name as dayName, gibbonTT.name as ttName, gibbonTTDayRowClass.gibbonSpaceID
+        $sql = "SELECT gibbonTTDayRowClass.gibbonTTDayRowClassID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.name as className, gibbonTTColumnRow.name as columnName, gibbonTTDay.name as dayName, gibbonTT.name as ttName, gibbonSpace.name as spaceName
                 FROM gibbonCourseClass
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
                 JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
                 JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
                 JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
                 JOIN gibbonTT ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID)
+                LEFT JOIN gibbonSpace ON (gibbonSpace.gibbonSpaceID=gibbonTTDayRowClass.gibbonSpaceID)
                 WHERE gibbonTT.gibbonTTID=:gibbonTTID
                 AND gibbonCourseClass.gibbonCourseClassID=:gibbonCourseClassID
                 ORDER BY gibbonTTDay.name, gibbonTTColumnRow.name";

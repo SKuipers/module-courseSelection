@@ -102,7 +102,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
                     echo '<td>'.$ttDay['ttName'].'</td>';
                     echo '<td>'.$ttDay['dayName'].'</td>';
                     echo '<td>'.$ttDay['columnName'].'</td>';
-                    echo '<td>'.$ttDay['gibbonSpaceID'].'</td>';
+                    echo '<td>'.$ttDay['spaceName'].'</td>';
                     echo '<td>';
                         echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/tools_timetableByClass_deleteProcess.php?gibbonTTDayRowClassID=".$ttDay['gibbonTTDayRowClassID']."&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}&gibbonSchoolYearID={$gibbonSchoolYearID}'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
                     echo '</td>';
@@ -114,6 +114,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
         }
 
         $form = Form::create('ttAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/tools_timetableByClass_addProcess.php');
+        $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonTTID', $gibbonTTID);
@@ -130,6 +131,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
         $gibbonTTDayID = $_GET['gibbonTTDayID'] ?? '';
         $gibbonTTColumnRowID = $_GET['gibbonTTColumnRowID'] ?? '';
+        $gibbonTTSpaceID = $_GET['gibbonTTSpaceID'] ?? '';
 
         $row = $form->addRow();
             $row->addLabel('gibbonTTDayID', __('Timetable Day'));
@@ -145,6 +147,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
                 ->isRequired()
                 ->chainedTo('gibbonTTDayID', $columnRowsChained)
                 ->selected($gibbonTTColumnRowID);
+
+        $row = $form->addRow();
+            $row->addLabel('gibbonTTSpaceID', __('Location'));
+            $row->addSelectSpace('gibbonTTSpaceID')->selected($gibbonTTSpaceID);
 
         $row = $form->addRow();
             $row->addSubmit(__('Add'));
