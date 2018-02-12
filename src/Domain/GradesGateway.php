@@ -147,6 +147,12 @@ class GradesGateway
                 $courseName .= (intval($row['creditsAwarded']) > 1)? ' Retroactive Credits Awarded' : ' Retroactive Credit Awarded';
             }
 
+            // Change in report term names
+            if ($row['reportTerm'] == 'Term 1 Mid') $row['reportTerm'] = 'Sem1-Mid';
+            if ($row['reportTerm'] == 'Term 1 End') $row['reportTerm'] = 'Sem1-End';
+            if ($row['reportTerm'] == 'Term 2 Mid') $row['reportTerm'] = 'Sem2-Mid';
+            if ($row['reportTerm'] == 'Term 2 End') $row['reportTerm'] = 'Sem2-End';
+
             $courseGrades['courseName'] = $courseName;
             $courseGrades['courseNameShort'] = $row['courseNameShort'];
             $courseGrades['gibbonCourseClassID'] = $row['gibbonCourseClassID'];

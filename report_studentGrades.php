@@ -62,15 +62,26 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
             echo '<tr class="break">';
                 echo '<td>'.__('Course').'</td>';
                 echo '<td>'.__('Name').'</td>';
-                echo '<td>'.__('Sem1-Mid').'</td>';
-                echo '<td>'.__('Sem1-End').'</td>';
-                echo '<td>'.__('Sem2-Mid').'</td>';
-                echo '<td>'.__('Sem2-End').'</td>';
+
+                if (intval($enrolment['schoolYearID']) >= 12) {
+                    echo '<td>'.__('Term 1 Mid').'</td>';
+                    echo '<td>'.__('Term 1 End').'</td>';
+                    echo '<td>'.__('Term 1 Mid').'</td>';
+                    echo '<td>'.__('Term 2 End').'</td>';
+                } else {
+                    echo '<td>'.__('Sem1-Mid').'</td>';
+                    echo '<td>'.__('Sem1-End').'</td>';
+                    echo '<td>'.__('Sem2-Mid').'</td>';
+                    echo '<td>'.__('Sem2-End').'</td>';
+                }
+            
                 echo '<td style="border-left: 2px solid #bbb;">'.__('Exam').'</td>';
                 echo '<td>'.__('Final').'</td>';
             echo '</tr>';
 
             $schoolYearGrades = $gradesGateway->processStudentGrades($enrolment, $gradesResults->fetchAll());
+
+
 
             foreach ($schoolYearGrades as $courseGrades) {
 
