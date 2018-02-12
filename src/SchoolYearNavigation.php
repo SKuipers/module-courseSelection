@@ -21,7 +21,7 @@ class SchoolYearNavigation
     protected $previousYear;
     protected $nextYear;
 
-    public function __construct(\Gibbon\sqlConnection $pdo, \Gibbon\session $session)
+    public function __construct(\Gibbon\sqlConnection $pdo, \Gibbon\Session $session)
     {
         $this->pdo = $pdo;
         $this->session = $session;
