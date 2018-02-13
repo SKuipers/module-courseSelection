@@ -11,7 +11,7 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/moduleFunctions.php';
 
 // Add module namespace to Gibbon autoloader
-$loader->addNameSpace('CourseSelection\\', 'modules/Course Selection/src/');
+$autoloader->addPsr4('CourseSelection\\', $_SESSION[$guid]['absolutePath'].'/modules/Course Selection/src/');
 
 // Setup the DI Container
 $container = new League\Container\Container;
