@@ -78,7 +78,7 @@ class TimetableGateway
     public function selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionChoice.gibbonPersonIDStudent as groupBy, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as classNameShort, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,'-',gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
+        $sql = "SELECT courseSelectionChoice.gibbonPersonIDStudent as groupBy, gibbonCourse.gibbonCourseID, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as classNameShort, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,'-',gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
                 FROM courseSelectionChoice
                 JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)

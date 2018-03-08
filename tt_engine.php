@@ -85,12 +85,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             return (collect($item)->sum('gibbonCourseClassID') == 0);
         });
 
-        $untimetabledCount = collect($courses)->sum(function($item){
-            $untimetabled = collect($item)->filter(function($item) {
-                return empty($item['ttDays']) && !empty($item['gibbonCourseClassID']);
-            })->count();
+        $classless = collect($courses)->filter(function($item){
+            return (collect($item)->sum('gibbonCourseClassID') == 0);
+        })->map(function($item) {
+            return collect($item)->first()['courseNameShort'];
+        });
 
-            return ($untimetabled > 0);
+        $untimetabled = collect($courses)->filter(function($item) {
+            return (collect($item)->filter(function($item) {
+                return empty($item['ttDays']) && !empty($item['gibbonCourseClassID']);
+            })->count() > 0);
+        })->map(function($item) {
+            return collect($item)->first()['courseNameShort'];
         });
 
         // RUN
@@ -107,12 +113,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $column->addAlert(__("All student course requests have been approved. You're ready to do some timetabling!"), 'success');
         }
 
-        if ($classlessCount > 0) {
-            $column->addAlert(sprintf(__('There are %1$s requested courses that do not have any classes. If you continue with the timetabling process, those courses will not be included.'), $classlessCount), 'warning');
+        if ($classless->count() > 0) {
+            $alertText = sprintf(__('There are %1$s requested courses that do not have any classes. If you continue with the timetabling process, these courses will not be included: '), $classless->count());
+            $alertText .= implode(', ', $classless->toArray());
+
+            $column->addAlert($alertText, 'warning');
         }
 
-        if ($untimetabledCount > 0) {
-            $column->addAlert(sprintf(__('There are %1$s requested courses that have not been timetabled. If you continue with the timetabling process, those courses will not be included.'), $untimetabledCount), 'warning');
+        if ($untimetabled->count() > 0) {
+            $alertText = sprintf(__('There are %1$s requested courses that have not been timetabled. If you continue with the timetabling process, these courses will not be included: '), $untimetabled->count());
+            $alertText .= implode(', ', $untimetabled->toArray());
+
+            $column->addAlert($alertText, 'warning');
         }
 
         $row = $form->addRow();
