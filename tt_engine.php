@@ -81,10 +81,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             return $count;
         }, 0);
 
-        $classlessCount = collect($courses)->sum(function($item){
-            return (collect($item)->sum('gibbonCourseClassID') == 0);
-        });
-
         $classless = collect($courses)->filter(function($item){
             return (collect($item)->sum('gibbonCourseClassID') == 0);
         })->map(function($item) {
