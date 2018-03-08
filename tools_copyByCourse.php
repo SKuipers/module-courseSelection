@@ -145,7 +145,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
             $row->addTextField('gibbonSchoolYearCopyToName')->readonly()->setValue($schoolYearCopyToName);
 
         if ($actionCopyTo == 'Requests') {
-            $courseCopyToOffered = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearIDCopyTo);
+            $courseCopyToOffered = $toolsGateway->selectAllCoursesBySchoolYear($gibbonSchoolYearIDCopyTo);
             $row = $form->addRow()->addClass('actionCopyToRequest');
                 $row->addLabel('gibbonCourseIDCopyTo', __('Course Selection'));
                 $row->addSelect('gibbonCourseIDCopyTo')->fromResults($courseCopyToOffered)->isRequired();
