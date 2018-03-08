@@ -51,7 +51,8 @@ class TimetableGateway
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
                 JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
                 WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
-                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
+                AND (gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current') 
+                    OR gibbonStudentEnrolment.gibbonSchoolYearID=courseSelectionChoice.gibbonSchoolYearID)
                 GROUP BY gibbonPerson.gibbonPersonID
                 ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(gibbonPerson.gibbonPersonID)";
 
