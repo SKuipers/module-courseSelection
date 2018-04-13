@@ -25,6 +25,7 @@ if (!isCommandLine()) {
 // Setup default settings
 ini_set('memory_limit', '2048M');
 ini_set('max_execution_time', 900);
+set_time_limit(900);
 getSystemSettings($guid, $connection2);
 setCurrentSchoolYear($guid, $connection2);
 
