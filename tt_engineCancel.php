@@ -4,8 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-include '../../functions.php';
-include '../../config.php';
+include '../../gibbon.php';
 
 use CourseSelection\BackgroundProcess;
 use CourseSelection\Domain\SettingsGateway;

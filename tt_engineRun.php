@@ -11,8 +11,7 @@ use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
 
-include '../../functions.php';
-include '../../config.php';
+include '../../gibbon.php';
 
 // Module Bootstrap
 require 'module.php';
