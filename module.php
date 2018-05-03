@@ -21,7 +21,8 @@ $container->delegate(
     new League\Container\ReflectionContainer
 );
 
+
 // Register the core services as instances
-$container->share('Gibbon\sqlConnection', $pdo);
+$container->share('Gibbon\Contracts\Database\Connection', $pdo);
 $container->share('Gibbon\session', $gibbon->session);
 $container->add('pdo', $pdo, true);

@@ -6,6 +6,8 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection\Domain;
 
+use Gibbon\Contracts\Database\Connection;
+
 /**
  * Course Selection: courseSelectionOffering Table Gateway
  *
@@ -27,7 +29,7 @@ class OfferingsGateway
 {
     protected $pdo;
 
-    public function __construct(\Gibbon\sqlConnection $pdo)
+    public function __construct(Connection $pdo)
     {
         $this->pdo = $pdo;
     }

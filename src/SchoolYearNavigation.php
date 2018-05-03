@@ -6,6 +6,8 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection;
 
+use Gibbon\Contracts\Database\Connection;
+
 /**
  * School Year Navigation
  *
@@ -21,7 +23,7 @@ class SchoolYearNavigation
     protected $previousYear;
     protected $nextYear;
 
-    public function __construct(\Gibbon\sqlConnection $pdo, \Gibbon\Session $session)
+    public function __construct(Connection $pdo, \Gibbon\Session $session)
     {
         $this->pdo = $pdo;
         $this->session = $session;
