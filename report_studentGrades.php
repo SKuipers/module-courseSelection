@@ -66,7 +66,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 if (intval($enrolment['schoolYearID']) >= 12) {
                     echo '<td>'.__('Term 1 Mid').'</td>';
                     echo '<td>'.__('Term 1 End').'</td>';
-                    echo '<td>'.__('Term 1 Mid').'</td>';
+                    echo '<td>'.__('Term 2 Interim').'</td>';
                     echo '<td>'.__('Term 2 End').'</td>';
                 } else {
                     echo '<td>'.__('Sem1-Mid').'</td>';
