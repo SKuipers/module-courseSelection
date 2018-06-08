@@ -209,6 +209,7 @@ class TimetableGateway
                 AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
                 AND gibbonCourseClassPerson.role = 'Student'
                 AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%TAP'
                 AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
                 AND gibbonCourse.nameShort NOT LIKE '%ECA%'
                 AND (FIND_IN_SET('014', gibbonCourse.gibbonYearGroupIDList)
