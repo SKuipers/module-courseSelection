@@ -11,34 +11,13 @@ class ComposerStaticInit0f6a15463250c0d85df04820b9cfef74
     );
 
     public static $prefixLengthsPsr4 = array (
-        'P' => 
-        array (
-            'Psr\\Container\\' => 14,
-        ),
-        'L' => 
-        array (
-            'League\\Container\\' => 17,
-        ),
         'I' => 
         array (
-            'Interop\\Container\\' => 18,
             'Illuminate\\' => 11,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Psr\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/container/src',
-        ),
-        'League\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/league/container/src',
-        ),
-        'Interop\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
-        ),
         'Illuminate\\' => 
         array (
             0 => __DIR__ . '/..' . '/tightenco/collect/src/Illuminate',

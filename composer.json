@@ -3,7 +3,6 @@
         "preferred-install": "dist"
     },
     "require": {
-        "league/container": "^2.4",
         "tightenco/collect": "^5.4"
     }
 }
