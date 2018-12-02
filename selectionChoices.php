@@ -158,7 +158,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 $row = $form->addRow();
                 $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                $row->addCourseGrades()->fromResults($gradesRequest);
+                // $row->addCourseGrades()->fromResults($gradesRequest);
                 $row->addCourseSelection($fieldName)
                     ->fromResults($coursesRequest)
                     ->selected($selectedChoices)
@@ -178,7 +178,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
             $row = $form->addRow();
             $row->addLabel('courseSelection', __('Other Courses'));
-            $row->addContent();
+            // $row->addContent();
             $row->addCourseSelection('courseSelection[][]')
                 ->fromArray($unofferedChoices)
                 ->selected($unofferedChoices)
