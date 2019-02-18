@@ -44,7 +44,13 @@ class CourseGrades extends Element
             if (empty($grade['grade'])) return '';
             $output = ($grade['schoolYearStatus'] == 'Current')? '<div title="Current Year '.$grade['reportName'].'" class="courseGrades" style="background:#fff4da;">' : '<div title="Final Grade" class="courseGrades" style="background:#D4F6DC;">';
             $output .= $grade['courseNameShort'].' ('.$grade['schoolYearName'].'): ';
-            $output .= intval($grade['grade']).'%';
+
+            if ($grade['reportID'] >= 25) {
+                $output .= intval($grade['grade']);
+            } else {
+                $output .= intval($grade['grade']).'%';
+            }
+            
             $output .= '</div>';
             return $output;
         }, $this->grades));
