@@ -85,25 +85,25 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
             foreach ($schoolYearGrades as $courseGrades) {
 
-                $sem1Mid = (!empty($courseGrades['Sem1-Mid']))? $courseGrades['Sem1-Mid'].'%' : '';
-                $sem1MidClass = (!empty($sem1Mid) && intval($sem1Mid) < 50)? 'gradesRow warning' : 'gradesRow';
+                $sem1Mid = (!empty($courseGrades['Sem1-Mid']))? $courseGrades['Sem1-Mid'] : '';
+                $sem1MidClass = (!empty($sem1Mid) && intval($sem1Mid) < 50)? 'gradesRow' : 'gradesRow';
 
-                $sem1End = (!empty($courseGrades['Sem1-End']))? $courseGrades['Sem1-End'].'%' : '';
-                $sem1EndClass = (!empty($sem1End) && intval($sem1End) < 50)? 'gradesRow warning' : 'gradesRow';
+                $sem1End = (!empty($courseGrades['Sem1-End']))? $courseGrades['Sem1-End'] : '';
+                $sem1EndClass = (!empty($sem1End) && intval($sem1End) < 50)? 'gradesRow' : 'gradesRow';
 
-                $sem2Mid = (!empty($courseGrades['Sem2-Mid']))? $courseGrades['Sem2-Mid'].'%' : '';
-                $sem2MidClass = (!empty($sem2Mid) && intval($sem2Mid) < 50)? 'gradesRow warning' : 'gradesRow';
+                $sem2Mid = (!empty($courseGrades['Sem2-Mid']))? $courseGrades['Sem2-Mid'] : '';
+                $sem2MidClass = (!empty($sem2Mid) && intval($sem2Mid) < 50)? 'gradesRow' : 'gradesRow';
 
-                $sem2End = (!empty($courseGrades['Sem2-End']))? $courseGrades['Sem2-End'].'%' : '';
-                $sem2EndClass = (!empty($sem2End) && intval($sem2End) < 50)? 'gradesRow warning' : 'gradesRow';
+                $sem2End = (!empty($courseGrades['Sem2-End']))? $courseGrades['Sem2-End'] : '';
+                $sem2EndClass = (!empty($sem2End) && intval($sem2End) < 50)? 'gradesRow' : 'gradesRow';
 
-                $credits = (!empty($courseGrades['credits']))? $courseGrades['credits'].'%' : '';
+                $credits = (!empty($courseGrades['credits']))? $courseGrades['credits'] : '';
 
-                $exam = (!empty($courseGrades['Exam']))? $courseGrades['Exam'].'%' : '';
-                $examClass = (!empty($exam) && intval($exam) < 50)? 'gradesRow warning' : 'gradesRow';
+                $exam = (!empty($courseGrades['Exam']))? $courseGrades['Exam'] : '';
+                $examClass = (!empty($exam) && intval($exam) < 50)? 'gradesRow' : 'gradesRow';
 
-                $final = (!empty($courseGrades['Final']))? $courseGrades['Final'].'%' : '';
-                $finalClass = (!empty($final) && intval($final) < 50)? 'gradesRow warning' : 'gradesRow';
+                $final = (!empty($courseGrades['Final']))? $courseGrades['Final'] : '';
+                $finalClass = (!empty($final) && intval($final) < 50)? 'gradesRow' : 'gradesRow';
 
                 if (!empty($courseGrades['gibbonCourseClassID']) && $enrolment['schoolYearID'] == $_SESSION[$guid]['gibbonSchoolYearID']) {
                     $courseGrades['courseNameShort'] = sprintf('<a href="%2$s">%1$s</a>', $courseGrades['courseNameShort'], $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'&search=&search=&allStudents=&subpage=Markbook#'.str_pad($courseGrades['gibbonCourseClassID'], 8, '0', STR_PAD_LEFT));
