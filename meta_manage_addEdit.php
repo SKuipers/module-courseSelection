@@ -74,7 +74,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     } else {
         $row = $form->addRow()->addClass('courseEnrolment');
             $row->addLabel('gibbonCourseID', __('Course'));
-            $row->addSelect('gibbonCourseID')->fromResults($courseResults)->isRequired();
+            $row->addSelect('gibbonCourseID')->fromResults($courseResults)->required();
     }
 
 

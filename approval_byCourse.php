@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $row = $form->addRow();
         $row->addLabel('gibbonCourseID', __('Course'));
-        $row->addSelect('gibbonCourseID')->fromResults($courseResults)->isRequired()->selected($gibbonCourseID);
+        $row->addSelect('gibbonCourseID')->fromResults($courseResults)->required()->selected($gibbonCourseID);
 
     $row = $form->addRow();
         $row->addSubmit();

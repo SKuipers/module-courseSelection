@@ -52,13 +52,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
     $row = $form->addRow();
         $row->addLabel('gibbonTTID', __('Timetable'));
-        $row->addSelect('gibbonTTID')->fromResults($timetableResults)->isRequired()->placeholder()->selected($gibbonTTID);
+        $row->addSelect('gibbonTTID')->fromResults($timetableResults)->required()->placeholder()->selected($gibbonTTID);
 
     $row = $form->addRow();
         $row->addLabel('gibbonCourseClassID', __('Class'));
         $row->addSelect('gibbonCourseClassID')
             ->fromArray($classesOptions)
-            ->isRequired()
+            ->required()
             ->placeholder()
             ->selected($gibbonCourseClassID);;
             //->chainedTo('gibbonTTID', $classesChained);;
@@ -137,14 +137,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
             $row->addLabel('gibbonTTDayID', __('Timetable Day'));
             $row->addSelect('gibbonTTDayID')
                 ->fromResults($dayResults)
-                ->isRequired()
+                ->required()
                 ->selected($gibbonTTDayID);
 
         $row = $form->addRow();
             $row->addLabel('gibbonTTColumnRowID', __('Timetable Column Row'));
             $row->addSelect('gibbonTTColumnRowID')
                 ->fromArray($columnRowsOptions)
-                ->isRequired()
+                ->required()
                 ->chainedTo('gibbonTTDayID', $columnRowsChained)
                 ->selected($gibbonTTColumnRowID);
 
@@ -173,11 +173,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
         $row = $form->addRow();
             $row->addLabel('name', __('Name'));
-            $row->addTextField('name')->isRequired()->maxLength(12)->setValue($class['name']);
+            $row->addTextField('name')->required()->maxLength(12)->setValue($class['name']);
 
         $row = $form->addRow();
             $row->addLabel('nameShort', __('Short Name'));
-            $row->addTextField('nameShort')->isRequired()->maxLength(5)->setValue($class['nameShort']);
+            $row->addTextField('nameShort')->required()->maxLength(5)->setValue($class['nameShort']);
 
         $row = $form->addRow();
             $row->addSubmit(__('Rename'));

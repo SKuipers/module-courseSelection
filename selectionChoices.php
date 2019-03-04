@@ -235,11 +235,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
             $row = $form->addRow();
                 $row->addLabel('gibbonCourseID', __('Course'));
-                $row->addSelect('gibbonCourseID')->fromArray($courses)->isRequired();
+                $row->addSelect('gibbonCourseID')->fromArray($courses)->required();
 
             $row = $form->addRow();
                     $row->addLabel('status', __('Selection Status'));
-                    $row->addSelect('status')->fromArray(array('Required', 'Recommended', 'Selected', 'Requested'))->isRequired();
+                    $row->addSelect('status')->fromArray(array('Required', 'Recommended', 'Selected', 'Requested'))->required();
 
             $row = $form->addRow();
                 $row->addSubmit('Add');

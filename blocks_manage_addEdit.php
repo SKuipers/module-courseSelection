@@ -72,7 +72,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     } else {
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
-            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
+            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->required()->selected($values['gibbonSchoolYearID']);
     }
 
     $row = $form->addRow();
@@ -81,7 +81,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
-        $row->addTextField('name')->isRequired()->maxLength(90)->setValue($values['name']);
+        $row->addTextField('name')->required()->maxLength(90)->setValue($values['name']);
 
     $row = $form->addRow();
         $row->addLabel('description', __('Description'));
@@ -151,7 +151,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
             $row->addLabel('gibbonCourseID', __('Course'));
             $row->addSelect('gibbonCourseID')
                 ->fromResults($courseList)
-                ->isRequired()
+                ->required()
                 ->selectMultiple();
 
         $row = $form->addRow();

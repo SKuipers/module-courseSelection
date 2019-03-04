@@ -32,12 +32,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $setting = getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear', true);
     $row = $form->addRow();
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
-        $row->addSelectSchoolYear($setting['name'], 'Active')->selected($setting['value'])->isRequired();
+        $row->addSelectSchoolYear($setting['name'], 'Active')->selected($setting['value'])->required();
 
     $setting = getSettingByScope($connection2, 'Course Selection', 'requireApproval', true);
     $row = $form->addRow();
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
-        $row->addYesNo($setting['name'])->selected($setting['value'])->isRequired();
+        $row->addYesNo($setting['name'])->selected($setting['value'])->required();
 
     $form->addRow()->addHeading(__('Information'));
 

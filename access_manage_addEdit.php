@@ -58,15 +58,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearID', __('School Year'));
-        $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
+        $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->required()->selected($values['gibbonSchoolYearID']);
 
     $row = $form->addRow();
         $row->addLabel('dateStart', __('Start Date'));
-        $row->addDate('dateStart')->isRequired()->setValue(dateConvertBack($guid, $values['dateStart']));
+        $row->addDate('dateStart')->required()->setValue(dateConvertBack($guid, $values['dateStart']));
 
     $row = $form->addRow();
         $row->addLabel('dateEnd', __('End Date'));
-        $row->addDate('dateEnd')->isRequired()->setValue(dateConvertBack($guid, $values['dateEnd']));
+        $row->addDate('dateEnd')->required()->setValue(dateConvertBack($guid, $values['dateEnd']));
 
     $row = $form->addRow();
         $row->addLabel('accessType', __('Access Type'));
@@ -74,7 +74,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
                 'View' => __('View'),
                 'Request' => __('Request Courses (approval)'),
                 'Select' => __('Select Courses (no approval)')
-            ))->isRequired()->selected($values['accessType']);
+            ))->required()->selected($values['accessType']);
 
     $roleResults = $gateway->getAccessRolesWithSelectionPermission();
     $roles = ($roleResults && $roleResults->rowCount() > 0)? $roleResults->fetchAll(\PDO::FETCH_KEY_PAIR) : array();
@@ -83,7 +83,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         $row->addLabel('gibbonRoleIDList', __('Roles'))->description(__('Available to roles with access to Course Selection page.'));
         $row->addSelect('gibbonRoleIDList')
             ->fromArray($roles)
-            ->isRequired()
+            ->required()
             ->selectMultiple()
             ->placeholder(null)
             ->selected(explode(',', $values['gibbonRoleIDList']));

@@ -68,12 +68,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     } else {
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('School Year'));
-            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->selected($values['gibbonSchoolYearID']);
+            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->required()->selected($values['gibbonSchoolYearID']);
     }
 
     $row = $form->addRow();
         $row->addLabel('name', __('Name'));
-        $row->addTextField('name')->isRequired()->maxLength(90)->setValue($values['name']);
+        $row->addTextField('name')->required()->maxLength(90)->setValue($values['name']);
 
     $row = $form->addRow();
         $row->addLabel('description', __('Description'));
@@ -81,15 +81,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
     $row = $form->addRow();
         $row->addLabel('minSelect', __('Min Selections'))->description(__('Across all course blocks.'));
-        $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['minSelect']);
+        $row->addNumber('minSelect')->required()->minimum(0)->maximum(100)->setValue($values['minSelect']);
 
     $row = $form->addRow();
         $row->addLabel('maxSelect', __('Max Selections'))->description(__('Across all course blocks.'));
-        $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
+        $row->addNumber('maxSelect')->required()->minimum(0)->maximum(100)->setValue($values['maxSelect']);
 
     $row = $form->addRow();
         $row->addLabel('sequenceNumber', __('Sequence Number'));
-        $row->addNumber('sequenceNumber')->isRequired()->minimum(0)->maximum(999)->setValue($values['sequenceNumber']);
+        $row->addNumber('sequenceNumber')->required()->minimum(0)->maximum(999)->setValue($values['sequenceNumber']);
 
     $row = $form->addRow();
         $row->addFooter();
@@ -145,8 +145,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('Student Enrolment'));
-            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->isRequired()->setClass('mediumWidth');
-            $row->addSelectYearGroup('gibbonYearGroupID')->isRequired()->setClass('mediumWidth');
+            $row->addSelectSchoolYear('gibbonSchoolYearID', 'Active')->required()->setClass('mediumWidth');
+            $row->addSelectYearGroup('gibbonYearGroupID')->required()->setClass('mediumWidth');
 
         $row = $form->addRow();
             $row->addSubmit(__('Add'));
@@ -228,16 +228,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             $row->addLabel('courseSelectionBlockID', __('Course Block'));
             $row->addSelect('courseSelectionBlockID')
                 ->fromResults($blockList)
-                ->isRequired()
+                ->required()
                 ->selectMultiple();
 
         $row = $form->addRow();
             $row->addLabel('minSelect', __('Min Selections'));
-            $row->addNumber('minSelect')->isRequired()->minimum(0)->maximum(100)->setValue(1);
+            $row->addNumber('minSelect')->required()->minimum(0)->maximum(100)->setValue(1);
 
         $row = $form->addRow();
             $row->addLabel('maxSelect', __('Max Selections'));
-            $row->addNumber('maxSelect')->isRequired()->minimum(0)->maximum(100)->setValue(1);
+            $row->addNumber('maxSelect')->required()->minimum(0)->maximum(100)->setValue(1);
 
         $row = $form->addRow();
             $row->addSubmit(__('Add'));

@@ -133,7 +133,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 $row = $form->addRow();
                     $row->addLabel('courseSelectionOfferingID', $offering['name'])->description($offering['description']);
                     $row->addRadio('courseSelectionOfferingID')
-                        ->isRequired()
+                        ->required()
                         ->setClass('')
                         ->fromArray(array($offering['courseSelectionOfferingID'] => ''))
                         ->checked($offeringChoice)

@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $row = $form->addRow();
         $row->addLabel('courseSelectionOfferingID', __('Offering'));
-        $row->addSelect('courseSelectionOfferingID')->fromArray($offeringsArray)->isRequired()->placeholder()->selected($courseSelectionOfferingID);
+        $row->addSelect('courseSelectionOfferingID')->fromArray($offeringsArray)->required()->placeholder()->selected($courseSelectionOfferingID);
 
     $row = $form->addRow();
         $row->addSubmit();
