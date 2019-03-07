@@ -142,7 +142,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
                         echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."' target='_blank'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;&nbsp;";
 
-                        echo "<a class='thickbox' href='".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/".$_SESSION[$guid]['module']."/report_studentGrades.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false&width=900&height=600' target='_blank'><img title='".__('Student Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/report_studentGrades.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false' target='_blank'><img title='".__('Student Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
 
                     echo '</td>';
                 echo '</tr>';

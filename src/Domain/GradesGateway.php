@@ -123,7 +123,7 @@ class GradesGateway
                 WHERE gibbonPerson.gibbonPersonID = :gibbonPersonID
                 AND gibbonStudentEnrolment.gibbonStudentEnrolmentID IS NULL
                 GROUP BY gibbonSchoolYear.gibbonSchoolYearID )
-                ORDER BY sequenceNumber";
+                ORDER BY sequenceNumber DESC";
         return $this->pdo->executeQuery($data, $sql);
     }
 
