@@ -25,7 +25,7 @@ class ClassSizeHeuristic extends Heuristic
 
         // Look for any existing enrolments and return them if found (eg: no decisions to make)
         $currentEnrolment = array_filter($options, function($item){
-            return ($item['currentEnrolment'] == 1);
+            return (isset($item['currentEnrolment']) && $item['currentEnrolment'] == 1);
         });
 
         if (count($currentEnrolment) > 0) {
@@ -34,6 +34,7 @@ class ClassSizeHeuristic extends Heuristic
 
         // Exclude options
         $options = array_filter($options, function($item) use ($environment) {
+            if (!isset($item['gibbonCourseClassID'])) return false;
             return empty($environment->getClassValue($item['gibbonCourseClassID'], 'excluded'));
         });
 
