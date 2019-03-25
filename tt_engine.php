@@ -145,11 +145,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel('classEnrolmentGoal', __('Class Enrolment Goal'));
             $row->addSelect('classEnrolmentGoal')->fromArray($enrolmentGoals);
 
-        $studentOrders = array('yearGroupDesc' => __('Year Group, descending'));
+        $studentOrders = array(
+            'yearGroupDesc' => __('Year Group, descending'),
+            'yearGroupAsc'  => __('Year Group, ascending'),
+            'random'        => __('Random'),
+        );
 
+        $setting = getSettingByScope($connection2, 'Course Selection', 'studentOrder', true);
         $row = $form->addRow();
-            $row->addLabel('studentOrder', __('Student Order'))->setClass('mediumWidth');
-            $row->addSelect('studentOrder')->fromArray($studentOrders);
+            $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
+            $row->addSelect($setting['name'])->fromArray($studentOrders)->selected($setting['value']);
 
         $priorities = array(
             '0' => __('None'),

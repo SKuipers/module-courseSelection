@@ -40,7 +40,8 @@ $classResults = $timetableGateway->selectTimetabledClassesBySchoolYear($gibbonSc
 $classData = ($classResults && $classResults->rowCount() > 0)? $classResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
 // Build a set of students information
-$studentResults = $timetableGateway->selectApprovedStudentsBySchoolYear($gibbonSchoolYearID);
+$studentOrder = getSettingByScope($connection2, 'Course Selection', 'studentOrder');
+$studentResults = $timetableGateway->selectApprovedStudentsBySchoolYear($gibbonSchoolYearID, $studentOrder);
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
 $enrolmentsResults = $timetableGateway->selectCourseEnrolmentsBySchoolYear($gibbonSchoolYearID);

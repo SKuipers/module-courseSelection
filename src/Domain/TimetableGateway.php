@@ -43,7 +43,7 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectApprovedStudentsBySchoolYear($gibbonSchoolYearID)
+    public function selectApprovedStudentsBySchoolYear($gibbonSchoolYearID, $orderBy = 'yearGroupDesc')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         $sql = "SELECT gibbonPerson.gibbonPersonID as groupBy, gibbonPerson.gibbonPersonID, gibbonPerson.gender
@@ -55,8 +55,14 @@ class TimetableGateway
                 WHERE courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND (gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current') 
                     OR gibbonStudentEnrolment.gibbonSchoolYearID=courseSelectionChoice.gibbonSchoolYearID)
-                GROUP BY gibbonPerson.gibbonPersonID
-                ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(gibbonPerson.gibbonPersonID)";
+                GROUP BY gibbonPerson.gibbonPersonID";
+
+        switch ($orderBy) {
+            case 'yearGroupDesc':   $sql .= " ORDER BY gibbonYearGroup.sequenceNumber DESC, MD5(gibbonPerson.gibbonPersonID)"; break;
+            case 'yearGroupAsc':    $sql .= " ORDER BY gibbonYearGroup.sequenceNumber ASC, MD5(gibbonPerson.gibbonPersonID)"; break;
+            case 'random':
+            default:                $sql .= " ORDER BY MD5(gibbonPerson.gibbonPersonID)"; break;
+        }
 
         return $this->pdo->executeQuery($data, $sql);
     }

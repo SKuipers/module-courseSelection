@@ -194,3 +194,10 @@ $sql[$count][1]="
 ALTER TABLE `courseSelectionBlock` DROP `minSelect`, DROP `maxSelect`;end
 ALTER TABLE `courseSelectionBlock` ADD `countable` ENUM('Y','N') NOT NULL DEFAULT 'Y' AFTER `description`;end
 ";
+
+//v0.1.08
+$count++;
+$sql[$count][0]="0.1.08" ;
+$sql[$count][1]="
+INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'studentOrder', 'Student Order', '', 'yearGroupDesc');end
+";

@@ -30,6 +30,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
 
         // Save any changes made to timetabling settings
+        $studentOrder = $_POST['studentOrder'] ?? 'yearGroupDesc';
+        $settingsGateway->update('Course Selection', 'studentOrder', $studentOrder);
+
         $genderBalancePriority = $_POST['genderBalancePriority'] ?? '0.5';
         $settingsGateway->update('Course Selection', 'genderBalancePriority', $genderBalancePriority);
 
