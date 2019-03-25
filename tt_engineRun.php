@@ -126,7 +126,7 @@ $engine = $factory->createEngine($settings);
 $engine->buildEngine($environment);
 
 // Add the student course selections data
-$courseSelectionData->each(function($courses, $gibbonPersonIDStudent) use ($engine) {
+$courseSelectionData->filter()->each(function($courses, $gibbonPersonIDStudent) use ($engine) {
     $engine->addData($gibbonPersonIDStudent, array_values($courses) );
 });
 

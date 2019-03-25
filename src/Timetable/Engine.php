@@ -65,7 +65,7 @@ class Engine
     public function addData($gibbonPersonIDStudent, $data)
     {
         if (empty($data) || !is_array($data)) {
-            throw new \Exception('Invalid data fed into engine: not a valid two-dimensional array.');
+            throw new \Exception("Invalid data fed into engine: not a valid two-dimensional array for student {$gibbonPersonIDStudent}.");
         }
 
         $this->dataSet[$gibbonPersonIDStudent] = $data;
