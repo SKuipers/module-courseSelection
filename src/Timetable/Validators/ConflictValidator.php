@@ -23,6 +23,8 @@ class ConflictValidator extends Validator
     {
         $this->performance['nodeValidations']++;
 
+        $node->number = $this->performance['nodeValidations'];
+
         // Flag values in this node if there are any full classes
         foreach ($node->values as $key => &$value) {
             if ($this->environment->getEnrolmentCount($value['gibbonCourseClassID']) >= $this->settings->maximumStudents) {
@@ -36,7 +38,10 @@ class ConflictValidator extends Validator
         $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
 
         // Put together a set of conflicting classes
-        $node->conflicts = $confictCount = array_reduce($node->values, function($conflicts, $item) use (&$node, &$enrolmentTTDays) {
+        $nodeIndex = -1;
+        $node->conflicts = array_reduce($node->values, function($conflicts, $item) use (&$node, &$enrolmentTTDays, &$nodeIndex) {
+            $nodeIndex++;
+
             if (!empty($item['flag'])) return $conflicts; // Don't conflict with courses already ruled out
 
             // Look for conflicts with pre-enrolled classes
@@ -46,10 +51,13 @@ class ConflictValidator extends Validator
 
             // Look for other classes that have conflicting TT days as this one
             if (is_array($item['ttDays'])) {
-                foreach ($node->values as $other) {
+                foreach ($node->values as $otherIndex => $other) {
                     if ($item['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue;
 
                     if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
+                        @$node->values[$nodeIndex]['conflicts']++;
+                        @$item['conflicts'][] = $otherIndex;
+                        $item['nodeIndex'] = $nodeIndex;
                         $conflicts[$item['gibbonCourseClassID']] = $item;
                     }
                 }
@@ -58,15 +66,54 @@ class ConflictValidator extends Validator
             return $conflicts;
         }, array());
 
+        // Go through each conflict, are there conflicts that do not conflict with each other?
+        foreach ($node->conflicts as $gibbonCourseClassID => $conflict) {
+            if (count($conflict['conflicts']) <= 1) continue;
+
+            foreach ($conflict['conflicts'] as $nodeIndex) {
+                $item = $node->values[$nodeIndex];
+                $conflictCount = 0;
+                // Look at each other node for conflicts
+                foreach ($node->values as $other) {
+                    if ($conflict['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue; // Ignore self
+                    if ($item['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue; // Ignore item
+
+                    if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
+                        $conflictCount++;
+                    }
+                }
+
+                // If this item has no conflicts with other nodes, remove it as a conflict with this node
+                if ($conflictCount == 0) {
+                    $node->conflicts[$item['gibbonCourseClassID']]['conflicts'] = array_diff($node->conflicts[$item['gibbonCourseClassID']]['conflicts'], [$conflict['nodeIndex']]);
+                }
+            }
+        }
+
+        // Trim out conflicts have have been internally resolved
+        $node->conflicts = array_filter($node->conflicts, function($item) {
+            return count($item['conflicts']) > 0;
+        });
+
         return (count($node->conflicts) <= $this->settings->timetableConflictTollerance);
     }
 
     public function resolveConflicts(&$node)
     {
+        // print_r($node);
+
         if (empty($node->conflicts) || count($node->conflicts) == 0) return;
 
         $environment = &$this->environment;
         $conflictIDs = array_column($node->conflicts, 'gibbonCourseClassID');
+
+        // Group conflicts by period to handle them in sets
+        $groupedConflicts = array_reduce($node->conflicts, function($grouped, &$item) use ($environment) {
+            $item['priority'] = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
+            $classPeriod = implode('-', $item['ttDays']);
+            $grouped[$classPeriod][] = $item;
+            return $grouped;
+        }, array());
 
         if ($this->settings->autoResolveConflicts == 'N') {
             // Simply flag conflicts if we're not auto-resolving
@@ -74,24 +121,33 @@ class ConflictValidator extends Validator
                 if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
                     // FLAGGED: Conflict
                     $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                    $this->createFlag($value, 'Conflict', 'Class : '.$className);
+                    $classPeriod = strrchr($value['classNameShort'], '-');
+                    $conflictNames = array_reduce($groupedConflicts[$classPeriod] ?? [], function ($group, $item) use ($className) {
+                        $conflictName = $item['courseNameShort'].'.'.$item['classNameShort'];
+                        if ($conflictName != $className) {
+                            $group[] = $conflictName;
+                        }
+                        return $group;
+                    }, []);
+
+                    $this->createFlag($value, 'Conflict', 'Conflicts with '.implode(', ', $conflictNames));
                 }
             }
             return;
         }
-
-        // Group conflicts by period to handle them in sets
-        $groupedConflicts = array_reduce($node->conflicts, function($grouped, &$item) use ($environment) {
-            $item['priority'] = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
-            $grouped[$item['classNameShort']][] = $item;
-            return $grouped;
-        }, array());
 
         $gibbonPersonID = current($node->values)['gibbonPersonID'];
         $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
 
         // Sort by priority and flag every conflict that isn't top priority
         foreach ($groupedConflicts as &$values) {
+            if (count($values) == 1) {
+                $nodeIndex = current($values)['nodeIndex'];
+                $value = &$node->values[$nodeIndex];
+                $this->createFlag($value, 'Conflict', 'Unresolvable');
+                continue;
+            }
+
             usort($values, function($a, $b) {
                 return $a['priority'] - $b['priority'];
             });
@@ -129,6 +185,12 @@ class ConflictValidator extends Validator
     {
         $value['flag'] = $flag;
         $value['reason'] = $reason;
+    }
+
+    protected function removeFlag(&$value)
+    {
+        $value['flag'] = null;
+        $value['reason'] = null;
     }
 
     protected function inArrayWithArray(array $needle, array $haystack) {
