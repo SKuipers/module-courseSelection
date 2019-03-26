@@ -106,13 +106,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                     echo '</a><br/><br/>';
 
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID=".$student['gibbonPersonID']."&allStudents=on' target='_blank'><img title='".__('View Student')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>&nbsp";
-                    echo '&nbsp;';
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_previewByStudent.php&gibbonPersonID=".$student['gibbonPersonID']."' target='_blank'><img title='".__('Preview Timetable')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/markbook.png'/></a>";
+                    echo '&nbsp;&nbsp;';
+                    
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Timetable Admin/courseEnrolment_manage_byPerson_edit.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonPersonID=".$student['gibbonPersonID']."&allUsers=on&ttDate=06/09/2017&type=Student&search=' target='_blank'><img title='".__('Course Enrolment')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/attendance.png'/></a>";
                     echo '&nbsp;&nbsp;';
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Timetable/tt_view.php&gibbonTTID=00000004&gibbonPersonID=".$student['gibbonPersonID']."&&allUsers=on&ttDate=06/09/2017&search=' target='_blank'><img title='".__('Next Year Timetable')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/markbook.png'/></a>";
-                    echo '&nbsp;&nbsp;';
+
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/report_studentGrades.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false' target='_blank'><img title='".__('Student Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
+                    echo '&nbsp;&nbsp;';
+                    
+                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID=".$student['gibbonPersonID']."&allStudents=on' target='_blank'><img title='".__('View Student')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>&nbsp";
+                    
                 echo '</td>';
 
                 echo '<td>'.$student['rollGroupName'].'</td>';

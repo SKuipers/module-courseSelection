@@ -228,6 +228,38 @@ class TimetableGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+
+    public function selectTimetableDaysAndColumns($gibbonTTID)
+    {
+        $data = array('gibbonTTID' => $gibbonTTID);
+        $sql = "SELECT gibbonTTColumnRow.nameShort as groupBy, gibbonTTColumnRow.gibbonTTColumnRowID, gibbonTTDay.*, gibbonTTColumn.name AS columnName, gibbonTTColumnRow.nameShort as rowName
+                FROM gibbonTTDay 
+                JOIN gibbonTTColumn ON (gibbonTTDay.gibbonTTColumnID=gibbonTTColumn.gibbonTTColumnID) 
+                JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnID=gibbonTTDay.gibbonTTColumnID)
+                WHERE gibbonTTDay.gibbonTTID=:gibbonTTID
+                AND gibbonTTColumnRow.type='Lesson'
+                AND gibbonTTDay.nameShort LIKE '%MF'
+                ORDER BY gibbonTTColumnRow.timeStart, gibbonTTColumnRow.name";
+
+        return $this->pdo->select($sql, $data);
+    }
+
+    public function selectTimetablePreviewByStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)
+    {
+        $data = array('gibbonPersonIDStudent' => $gibbonPersonIDStudent, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT CONCAT(gibbonTTDayRowClass.gibbonTTDayID, '-', gibbonTTDayRowClass.gibbonTTColumnRowID) as groupBy, courseSelectionTTResult.*, gibbonTTDayRowClass.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as className, gibbonTTColumnRow.nameShort as period
+                FROM courseSelectionTTResult
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionTTResult.gibbonCourseID)
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=courseSelectionTTResult.gibbonCourseClassID)
+                LEFT JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
+                LEFT JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
+                WHERE courseSelectionTTResult.gibbonSchoolYearID=:gibbonSchoolYearID 
+                AND courseSelectionTTResult.gibbonPersonIDStudent=:gibbonPersonIDStudent";
+
+        return $this->pdo->select($sql, $data);
+    }
+
+
     public function insertResult(array $data)
     {
         $sql = "INSERT INTO courseSelectionTTResult SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, gibbonCourseClassID=:gibbonCourseClassID, weight=:weight, status=:status, flag=:flag, reason=:reason";
