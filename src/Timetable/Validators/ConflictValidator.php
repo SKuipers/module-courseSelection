@@ -37,6 +37,8 @@ class ConflictValidator extends Validator
         $gibbonPersonID = current($node->values)['gibbonPersonID'];
         $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
 
+        
+
         // Put together a set of conflicting classes
         $nodeIndex = -1;
         $node->conflicts = array_reduce($node->values, function($conflicts, $item) use (&$node, &$enrolmentTTDays, &$nodeIndex) {
@@ -44,8 +46,11 @@ class ConflictValidator extends Validator
 
             if (!empty($item['flag'])) return $conflicts; // Don't conflict with courses already ruled out
 
+            $item['nodeIndex'] = $nodeIndex;
+
             // Look for conflicts with pre-enrolled classes
             if ($this->inArrayWithArray($item['ttDays'], $enrolmentTTDays)) {
+                $item['blocked'] = true;
                 $conflicts[$item['gibbonCourseClassID']] = $item;
             }
 
@@ -57,7 +62,6 @@ class ConflictValidator extends Validator
                     if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
                         @$node->values[$nodeIndex]['conflicts']++;
                         @$item['conflicts'][] = $otherIndex;
-                        $item['nodeIndex'] = $nodeIndex;
                         $conflicts[$item['gibbonCourseClassID']] = $item;
                     }
                 }
@@ -68,11 +72,13 @@ class ConflictValidator extends Validator
 
         // Go through each conflict, are there conflicts that do not conflict with each other?
         foreach ($node->conflicts as $gibbonCourseClassID => $conflict) {
+            if (!empty($conflict['blocked'])) continue;
             if (count($conflict['conflicts']) <= 1) continue;
 
             foreach ($conflict['conflicts'] as $nodeIndex) {
                 $item = $node->values[$nodeIndex];
                 $conflictCount = 0;
+
                 // Look at each other node for conflicts
                 foreach ($node->values as $other) {
                     if ($conflict['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue; // Ignore self
@@ -84,7 +90,7 @@ class ConflictValidator extends Validator
                 }
 
                 // If this item has no conflicts with other nodes, remove it as a conflict with this node
-                if ($conflictCount == 0) {
+                if ($conflictCount == 0 && isset($node->conflicts[$item['gibbonCourseClassID']])) {
                     $node->conflicts[$item['gibbonCourseClassID']]['conflicts'] = array_diff($node->conflicts[$item['gibbonCourseClassID']]['conflicts'], [$conflict['nodeIndex']]);
                 }
             }
@@ -92,7 +98,7 @@ class ConflictValidator extends Validator
 
         // Trim out conflicts have have been internally resolved
         $node->conflicts = array_filter($node->conflicts, function($item) {
-            return count($item['conflicts']) > 0;
+            return !empty($item['blocked']) || count($item['conflicts']) > 0;
         });
 
         return (count($node->conflicts) <= $this->settings->timetableConflictTollerance);
@@ -111,6 +117,7 @@ class ConflictValidator extends Validator
         $groupedConflicts = array_reduce($node->conflicts, function($grouped, &$item) use ($environment) {
             $item['priority'] = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
             $classPeriod = implode('-', $item['ttDays']);
+            // $classPeriod = preg_replace('/[^0-9-]/', '', strrchr($item['classNameShort'], '-'));
             $grouped[$classPeriod][] = $item;
             return $grouped;
         }, array());
@@ -121,7 +128,9 @@ class ConflictValidator extends Validator
                 if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
                     // FLAGGED: Conflict
                     $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                    $classPeriod = strrchr($value['classNameShort'], '-');
+                    // $classPeriod = preg_replace('/[^0-9-]/', '', strrchr($value['classNameShort'], '-'));
+                    $classPeriod = implode('-', $value['ttDays']);
+
                     $conflictNames = array_reduce($groupedConflicts[$classPeriod] ?? [], function ($group, $item) use ($className) {
                         $conflictName = $item['courseNameShort'].'.'.$item['classNameShort'];
                         if ($conflictName != $className) {
