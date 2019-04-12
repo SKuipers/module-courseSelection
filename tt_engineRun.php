@@ -50,6 +50,19 @@ $enrolmentsData = ($enrolmentsResults && $enrolmentsResults->rowCount() > 0)? $e
 $selectionsResults = $timetableGateway->selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID);
 $selectionsData = ($selectionsResults && $selectionsResults->rowCount() > 0)? $selectionsResults->fetchAll(\PDO::FETCH_GROUP) : array();
 
+
+
+// TESTING!
+// $studentData = collect($studentData)->filter(function($value, $key) {
+//     return $key == '0000001944';
+// })->toArray();
+
+// echo '<pre>';
+// print_r($studentData);
+// echo '</pre>';
+
+
+
 // Build the course selections grouped by student
 foreach ($studentData as $gibbonPersonIDStudent => &$student) {
     $enrolments = (!empty($enrolmentsData[$gibbonPersonIDStudent]))? $enrolmentsData[$gibbonPersonIDStudent] : array();
@@ -64,7 +77,7 @@ foreach ($studentData as $gibbonPersonIDStudent => &$student) {
                       'gibbonCourseClassID' => $enrolment['gibbonCourseClassID'],
                       'status' => 'Complete',
                       'flag' => '',
-                      'reason' => '',
+                      'reason' => 'Locked',
         );
 
         $timetableGateway->insertResult($data);

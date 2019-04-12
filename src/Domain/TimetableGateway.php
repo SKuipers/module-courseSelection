@@ -78,6 +78,7 @@ class TimetableGateway
                 JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
                 JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND gibbonCourseClassPerson.role = 'Student'
                 GROUP BY gibbonCourseClassPerson.gibbonPersonID, gibbonCourseClass.gibbonCourseClassID";
 
         return $this->pdo->executeQuery($data, $sql);
@@ -239,7 +240,7 @@ class TimetableGateway
                 WHERE gibbonTTDay.gibbonTTID=:gibbonTTID
                 AND gibbonTTColumnRow.type='Lesson'
                 AND gibbonTTDay.nameShort LIKE '%MF'
-                ORDER BY gibbonTTColumnRow.timeStart, gibbonTTColumnRow.name";
+                ORDER BY gibbonTTDay.gibbonTTDayID, gibbonTTColumnRow.timeStart, gibbonTTColumnRow.name";
 
         return $this->pdo->select($sql, $data);
     }

@@ -102,6 +102,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     $complete = current($preview['Complete']);
                     $name = '<span class="font-bold text-sm">'.$complete['courseNameShort'].'.'.$complete['className'].'</span><br>';
                     $name .= '<span class="text-xs text-gray-700">'.$complete['courseName'].'</span>';
+
+                    if ($complete['reason'] == 'Locked') {
+                        
+                        $name .= '<span class="text-xs text-gray-700 font-bold">';
+                        $name .= '<img class="mr-1" src="./themes/Default/img/key.png" width="15" height="15">';
+                        $name .= __('Pre-enrolled').'</span>';
+                    }
                     $url = 'index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonSchoolYearID='.$complete['gibbonSchoolYearID'].'&gibbonCourseClassID='.$complete['gibbonCourseClassID'];
 
                     // $name = $complete['courseSelectionTTResultID'];
@@ -139,66 +146,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 return $cell;
             });
     }
-    // $table->addColumn('name', __('Name'));
-    // $table->addColumn('tutors', __('Form Tutors'))->format($formatTutorsList);
-    // $table->addColumn('space', __('Room'));
-    // $table->addColumn('students', __('Students'));
-    // $table->addColumn('website', __('Website'))->format(Format::using('link', 'website'));
-
-    // $actions = $table->addActionColumn()->addParam('gibbonRollGroupID');
-    // $actions->addAction('view', __('View'))
-    //         ->setURL('/modules/Roll Groups/rollGroups_details.php');
 
     echo $table->render($timetableData);
-    
-    // echo '<pre>';
-    // print_r($studentResults);
-    // echo '</pre>';
-
-    // if (!$courses || $courses->rowCount() == 0) {
-    //     echo '<div class="error">';
-    //     echo __('There are no records to display.');
-    //     echo '</div>';
-    // } else {
-    //     echo '<h3>';
-    //     echo sprintf(__('Timetable Courses for %1$s'), $nextSchoolYear['name']);
-    //     echo '</h3>';
-
-    //     echo '<table class="fullWidth colorOddEven" cellspacing="0">';
-
-    //     echo '<tr class="head">';
-    //         echo '<th style="width: 14%;">';
-    //             echo __('Day');
-    //         echo '</th>';
-    //         echo '<th style="width: 12%;">';
-    //             echo __('Period');
-    //         echo '</th>';
-    //         echo '<th>';
-    //             echo __('Course Name');
-    //         echo '</th>';
-    //         echo '<th>';
-    //             echo __('Course Code');
-    //         echo '</th>';
-    //     echo '</tr>';
-
-    //     while ($course = $courses->fetch()) {
-    //         $dayShort = substr($course['className'], 0, 1);
-
-    //         switch ($dayShort) {
-    //             case 'A':   $dayName = 'Day 1'; break;
-    //             case 'B':   $dayName = 'Day 2'; break;
-    //             case '1':   $dayName = 'Semester 1'; break;
-    //             case '2':   $dayName = 'Semester 2'; break;
-    //         }
-
-    //         echo '<tr>';
-    //             echo '<td>'.$dayName.'</td>';
-    //             echo '<td>'.$course['period'].'</td>';
-    //             echo '<td>'.$course['courseName'].'</td>';
-    //             echo '<td>'.$course['courseNameShort'].'.'.$course['className'].'</td>';
-    //         echo '</tr>';
-    //     }
-
-    //     echo '</table>';
-    // }
 }
