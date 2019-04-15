@@ -61,7 +61,7 @@ class ConflictValidator extends Validator
 
                     if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
                         @$node->values[$nodeIndex]['conflicts']++;
-                        @$item['conflicts'][] = $otherIndex;
+                        @$item['conflicts']++;
                         $conflicts[$item['gibbonCourseClassID']] = $item;
                     }
                 }
@@ -70,39 +70,9 @@ class ConflictValidator extends Validator
             return $conflicts;
         }, array());
 
-        // Go through each conflict, are there conflicts that do not conflict with each other?
-        foreach ($node->conflicts as $gibbonCourseClassID => $conflict) {
-            if (!empty($conflict['blocked'])) continue;
-            if (count($conflict['conflicts']) <= 1) continue;
-
-            foreach ($conflict['conflicts'] as $nodeIndex) {
-                $item = $node->values[$nodeIndex];
-                $conflictCount = 0;
-
-                // Look at each other node for conflicts
-                foreach ($node->values as $other) {
-                    if ($conflict['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue; // Ignore self
-                    if ($item['gibbonCourseClassID'] == $other['gibbonCourseClassID']) continue; // Ignore item
-
-                    if ($this->inArrayWithArray($item['ttDays'], $other['ttDays'])) {
-                        $conflictCount++;
-                    }
-                }
-
-                // If this item has no conflicts with other nodes, remove it as a conflict with this node
-                if ($conflictCount == 0 && isset($node->conflicts[$item['gibbonCourseClassID']])) {
-                    $node->conflicts[$item['gibbonCourseClassID']]['conflicts'] = array_diff($node->conflicts[$item['gibbonCourseClassID']]['conflicts'], [$conflict['nodeIndex']]);
-                }
-            }
-        }
-
-        // Trim out conflicts have have been internally resolved
-        $node->conflicts = array_filter($node->conflicts, function($item) {
-            return !empty($item['blocked']) || count($item['conflicts']) > 0;
-        });
-
         return (count($node->conflicts) <= $this->settings->timetableConflictTollerance);
     }
+
 
     public function resolveConflicts(&$node)
     {
@@ -110,80 +80,93 @@ class ConflictValidator extends Validator
 
         if (empty($node->conflicts) || count($node->conflicts) == 0) return;
 
-        $environment = &$this->environment;
-        $conflictIDs = array_column($node->conflicts, 'gibbonCourseClassID');
+        $gibbonPersonID = current($node->values)['gibbonPersonID'];
+        $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
 
-        // Group conflicts by period to handle them in sets
-        $groupedConflicts = array_reduce($node->conflicts, function($grouped, &$item) use ($environment) {
-            $item['priority'] = $environment->getClassValue($item['gibbonCourseClassID'], 'priority');
-            $classPeriod = implode('-', $item['ttDays']);
-            // $classPeriod = preg_replace('/[^0-9-]/', '', strrchr($item['classNameShort'], '-'));
-            $grouped[$classPeriod][] = $item;
-            return $grouped;
-        }, array());
+        // Group the conflicts by TT Column Row (Period)
+        $groupedByRow = collect($node->conflicts)
+            ->map(function ($item) {
+                // Pull in any additional data needed for resolving conflicts  
+                $item['priority'] = $this->environment->getClassValue($item['gibbonCourseClassID'], 'priority');
+                $item['className'] = $item['courseNameShort'].'.'.$item['classNameShort'];
+                $item['ttDaysGroup'] = implode('-', $item['ttDays']);
 
+                return $item;
+            })->groupBy('ttColumnRow');
+
+        // Not resolving? Just flag them.
         if ($this->settings->autoResolveConflicts == 'N') {
-            // Simply flag conflicts if we're not auto-resolving
-            foreach ($node->values as &$value) {
-                if (in_array($value['gibbonCourseClassID'], $conflictIDs)) {
-                    // FLAGGED: Conflict
-                    $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                    // $classPeriod = preg_replace('/[^0-9-]/', '', strrchr($value['classNameShort'], '-'));
-                    $classPeriod = implode('-', $value['ttDays']);
+            foreach ($groupedByRow as $groupedConflicts) {
+                $groupedConflicts = collect($groupedConflicts);
 
-                    $conflictNames = array_reduce($groupedConflicts[$classPeriod] ?? [], function ($group, $item) use ($className) {
-                        $conflictName = $item['courseNameShort'].'.'.$item['classNameShort'];
-                        if ($conflictName != $className) {
-                            $group[] = $conflictName;
-                        }
-                        return $group;
-                    }, []);
+                foreach ($groupedConflicts as $item) {
+                    $itemObject = &$node->values[$item['nodeIndex']];
+                    $classNames = $groupedConflicts->whereNotIn('gibbonCourseClassID', [$item['gibbonCourseClassID']])->pluck('className')->implode(', ');
 
-                    $this->createFlag($value, 'Conflict', 'Conflicts with '.implode(', ', $conflictNames));
+                    $this->createFlag($itemObject, 'Conflict', 'Conflicts with '.$classNames);
                 }
             }
             return;
         }
+        
 
-        $gibbonPersonID = current($node->values)['gibbonPersonID'];
-        $enrolmentTTDays = $this->environment->getStudentValue($gibbonPersonID, 'ttDays');
+        // Sub-group by TT Days Group (Days + Periods), select the top priority for each, then order by priority
+        // and start 'accepting' courses in order if they don't conflict with existing accepted ones
+        foreach ($groupedByRow as $groupedConflicts) {
+            $groupedByDay = collect($groupedConflicts)
+                ->groupBy('ttDaysGroup')
+                ->map(function ($item) {
+                    return collect($item)->sortBy('priority');
+                });
 
-        // Sort by priority and flag every conflict that isn't top priority
-        foreach ($groupedConflicts as &$values) {
-            if (count($values) == 1) {
-                $nodeIndex = current($values)['nodeIndex'];
-                $value = &$node->values[$nodeIndex];
-                $this->createFlag($value, 'Conflict', 'Unresolvable');
-                continue;
-            }
+            // Flag the non-top-priority classes
+            $groupedByDay
+                ->map(function ($item) {
+                    return $item->slice(1)->map(function ($subItem) use ($item) {
+                        $subItem['resolvedWith'] = $item->first()['className'] ?? 'Unknown';
+                        return $subItem;
+                    });
+                })
+                ->flatten(1)
+                ->filter()
+                ->each(function ($item) use (&$node) {
+                    // FLAGGED resolved with higher-priority class
+                    $itemObject = &$node->values[$item['nodeIndex']];
+                    $this->createFlag($itemObject, 'Conflict', 'Conflicts with higher-priority '.$item['resolvedWith']);
+                });
 
-            usort($values, function($a, $b) {
-                return $a['priority'] - $b['priority'];
-            });
+            // Sort the remaining classes by priority + conflicts
+            $groupedByDay = $groupedByDay
+                ->map(function ($item) {
+                    return $item->first();
+                })
+                ->sortBy('conflicts')
+                ->sortBy('priority')
+                ->values();
 
-            $keep = $values[0];
-            $keepClassName = $this->environment->getClassValue($keep['gibbonCourseClassID'], 'className');
+            $keepNodes = collect();
 
-            $groupedConflictIDs = array_column($values, 'gibbonCourseClassID');
+            foreach ($groupedByDay as $item) {
+                $itemObject = &$node->values[$item['nodeIndex']];
+                $itemObject['className'] = $item['className'];
 
-            // Look for conflicts with pre-enrolled classes
-            if ($this->inArrayWithArray($keep['ttDays'], $enrolmentTTDays)) {
-                // Simply flag all conflicts
-                foreach ($node->values as &$value) {
-                    if (in_array($value['gibbonCourseClassID'], $groupedConflictIDs)) {
-                        // FLAGGED: Conflict
-                        $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                        $this->createFlag($value, 'Conflict', 'Conflicts with existing enrolment');
+                if ($this->inArrayWithArray($item['ttDays'], $enrolmentTTDays)) {
+                    // FLAGGED conflicts with existing enrolment
+                    $this->createFlag($itemObject, 'Conflict', 'Conflicts with existing enrolment');
+                } else {
+                    $keepThisNode = true;
+                    foreach ($keepNodes as $keepIndex => $keepObject) {
+                        // FLAGGED if this conflicts with a valid, higher-priority course
+                        if ($this->inArrayWithArray($item['ttDays'], $keepObject['ttDays'])) {
+                            $classNames = $keepNodes->pluck('className')->implode(', ');
+                            $this->createFlag($itemObject, 'Conflict', 'Resolved with '.$classNames);
+                            $keepThisNode = false;
+                        }
                     }
-                }
-            } else {
-                $remove = array_column(array_slice($values, 1), 'gibbonCourseClassID');
 
-                foreach ($node->values as &$value) {
-                    if (in_array($value['gibbonCourseClassID'], $remove)) {
-                        // FLAGGED: Conflict Resolved
-                        $className = $this->environment->getClassValue($value['gibbonCourseClassID'], 'className');
-                        $this->createFlag($value, 'Conflict', 'Resolved with '.$keepClassName.' instead of '.$className);
+                    // Keep this class if it has no conflicts (resolves cross-conflicts in order)
+                    if ($keepThisNode) {
+                        $keepNodes[$item['nodeIndex']] = $itemObject;
                     }
                 }
             }

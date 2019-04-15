@@ -70,7 +70,7 @@ class TimetableGateway
     public function selectCourseEnrolmentsBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonCourseClassPerson.gibbonPersonID as groupBy, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as classNameShort, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,'-',gibbonTTDay.nameShort) SEPARATOR ',') as ttDays
+        $sql = "SELECT gibbonCourseClassPerson.gibbonPersonID as groupBy, gibbonCourse.gibbonCourseID, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as classNameShort, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,'-',gibbonTTDay.nameShort) ORDER BY gibbonTTDay.nameShort SEPARATOR ',') as ttDays, GROUP_CONCAT(DISTINCT gibbonTTColumnRow.gibbonTTColumnRowID ORDER BY gibbonTTColumnRow.gibbonTTColumnRowID SEPARATOR ',') as ttColumnRow
                 FROM gibbonCourseClassPerson
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=gibbonCourseClassPerson.gibbonCourseClassID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
@@ -87,7 +87,7 @@ class TimetableGateway
     public function selectApprovedCourseSelectionsBySchoolYear($gibbonSchoolYearID)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionChoice.gibbonPersonIDStudent as groupBy, gibbonCourse.gibbonCourseID, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as classNameShort, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,'-',gibbonTTDay.nameShort) SEPARATOR ',') as ttDays, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
+        $sql = "SELECT courseSelectionChoice.gibbonPersonIDStudent as groupBy, gibbonCourse.gibbonCourseID, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as classNameShort, (CASE WHEN gibbonCourseClassPerson.gibbonCourseClassID IS NOT NULL THEN 1 ELSE 0 END) as currentEnrolment, GROUP_CONCAT(CONCAT(gibbonTTColumnRow.nameShort,'-',gibbonTTDay.nameShort) ORDER BY gibbonTTDay.nameShort SEPARATOR ',') as ttDays, GROUP_CONCAT(DISTINCT gibbonTTColumnRow.gibbonTTColumnRowID ORDER BY gibbonTTColumnRow.gibbonTTColumnRowID SEPARATOR ',') as ttColumnRow, courseSelectionChoice.gibbonPersonIDStudent as gibbonPersonID
                 FROM courseSelectionChoice
                 JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
