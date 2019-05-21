@@ -7,6 +7,9 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 use CourseSelection\SchoolYearNavigation;
+use Gibbon\Tables\DataTable;
+use Gibbon\Domain\DataSet;
+use Gibbon\Services\Format;
 
 // Module Bootstrap
 require 'module.php';
@@ -54,53 +57,62 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     // Cancel out early if there's no valid student selected
     if (empty($nextSchoolYear) || empty($gibbonPersonIDStudent)) return;
 
+    // TODO: dont hardcode this :(
+    $gibbonTTID = '00000010';
+
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-    $courses = $timetableGateway->selectEnroledCoursesBySchoolYearAndStudent($nextSchoolYear['gibbonSchoolYearID'], $gibbonPersonIDStudent);
 
-    if (!$courses || $courses->rowCount() == 0) {
-        echo '<div class="error">';
-        echo __('There are no records to display.');
-        echo '</div>';
-    } else {
-        echo '<h3>';
-        echo sprintf(__('Timetable Courses for %1$s'), $nextSchoolYear['name']);
-        echo '</h3>';
+    $timetableDays = $timetableGateway->selectTimetableDaysAndColumns($gibbonTTID)->fetchGrouped();
+    $courses = $timetableGateway->selectEnroledCoursesBySchoolYearAndStudent($nextSchoolYear['gibbonSchoolYearID'], $gibbonPersonIDStudent)->fetchGrouped();
 
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
 
-        echo '<tr class="head">';
-            echo '<th style="width: 14%;">';
-                echo __('Day');
-            echo '</th>';
-            echo '<th style="width: 12%;">';
-                echo __('Period');
-            echo '</th>';
-            echo '<th>';
-                echo __('Course Name');
-            echo '</th>';
-            echo '<th>';
-                echo __('Course Code');
-            echo '</th>';
-        echo '</tr>';
+    $table = DataTable::create('timetable');
 
-        while ($course = $courses->fetch()) {
-            $dayShort = substr($course['className'], 0, 1);
+    $timetableData = new DataSet($timetableDays);
 
-            switch ($dayShort) {
-                case 'A':   $dayName = 'Day 1'; break;
-                case 'B':   $dayName = 'Day 2'; break;
-                case '1':   $dayName = 'Semester 1'; break;
-                case '2':   $dayName = 'Semester 2'; break;
+    $timetableData->transform(function (&$ttDay) use (&$courses) {
+        foreach ($ttDay as $index => $values) {
+            $ttDayRow = $values['gibbonTTDayID'].'-'.$values['gibbonTTColumnRowID'];
+            if (isset($courses[$ttDayRow])) {
+                $ttDay[$index]['courseClass'] = current($courses[$ttDayRow]);
             }
-
-            echo '<tr>';
-                echo '<td>'.$dayName.'</td>';
-                echo '<td>'.$course['period'].'</td>';
-                echo '<td>'.$course['courseName'].'</td>';
-                echo '<td>'.$course['courseNameShort'].'.'.$course['className'].'</td>';
-            echo '</tr>';
         }
+    });
 
-        echo '</table>';
+    foreach (array_keys($timetableDays) as $index => $ttRow) {
+        $table->addColumn('period', '')
+            ->width('8%')
+            ->format(function ($values) use ($index) {
+                return $values[$index]['rowName'];
+            });
     }
+
+    $canAccessTT = isActionAccessible($guid, $connection2, '/modules/Timetable Admin/courseEnrolment_manage_class_edit.php');
+    foreach (current($timetableDays) as $index => $ttDay) {
+        $table->addColumn($ttDay['nameShort'], str_replace('MF', '', $ttDay['nameShort']))
+            ->width('23%')
+            ->format(function ($values) use ($index, $canAccessTT) {
+                $name = $url = $title = $class = '';
+
+                $courseClass = $values[$index]['courseClass'] ?? [];
+                if (!empty($courseClass)) {
+                    $class = 'bg-blue-200';
+                    $name = '<span class="font-bold text-sm">'.$courseClass['courseNameShort'].'.'.$courseClass['className'].'</span><br>';
+                    $name .= '<span class="text-xs text-gray-700">'.$courseClass['courseName'].'</span>';
+                    $url = $canAccessTT
+                        ? './index.php?q=/modules/Timetable Admin/courseEnrolment_manage_class_edit.php&gibbonSchoolYearID='.$courseClass['gibbonSchoolYearID'].'&gibbonCourseID='.$courseClass['gibbonCourseID'].'&gibbonCourseClassID='.$courseClass['gibbonCourseClassID']
+                        : "#";
+                }
+
+                $class .= ' block px-4 h-20 border border-gray-500 border-solid flex flex-col justify-center';
+                
+                return Format::link($url, $name, ['title' => $title, 'class' => $class, 'style' => 'text-decoration: none;']);
+            })
+            ->modifyCells(function ($values, $cell) use ($index) {
+                $cell->addClass('p-1 text-center leading-tight');
+                return $cell;
+            });
+    }
+
+    echo $table->render(new DataSet(array_values($timetableData->toArray())));
 }

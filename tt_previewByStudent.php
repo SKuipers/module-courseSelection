@@ -147,5 +147,5 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             });
     }
 
-    echo $table->render($timetableData);
+    echo $table->render(new DataSet(array_values($timetableData->toArray())));
 }

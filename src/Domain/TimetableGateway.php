@@ -205,7 +205,7 @@ class TimetableGateway
     public function selectEnroledCoursesBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)
     {
         $data = array('gibbonPersonIDStudent' => $gibbonPersonIDStudent, 'gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.nameShort as className, gibbonTTColumnRow.nameShort as period
+        $sql = "SELECT CONCAT(gibbonTTDayRowClass.gibbonTTDayID, '-', gibbonTTDayRowClass.gibbonTTColumnRowID) as groupBy, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, gibbonCourseClass.nameShort as className, gibbonTTColumnRow.nameShort as period, gibbonCourse.gibbonSchoolYearID
                 FROM gibbonCourseClassPerson
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseClassID=gibbonCourseClassPerson.gibbonCourseClassID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID)
@@ -215,14 +215,14 @@ class TimetableGateway
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
                 AND gibbonCourseClassPerson.role = 'Student'
-                AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%Advis%'
                 AND gibbonCourse.nameShort NOT LIKE '%TAP'
-                AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
+                AND gibbonCourse.nameShort NOT LIKE '%HOME%'
                 AND gibbonCourse.nameShort NOT LIKE '%ECA%'
                 AND (FIND_IN_SET('014', gibbonCourse.gibbonYearGroupIDList)
                     OR FIND_IN_SET('015', gibbonCourse.gibbonYearGroupIDList)
                     OR FIND_IN_SET('016', gibbonCourse.gibbonYearGroupIDList) )
-                GROUP BY gibbonCourseClass.gibbonCourseClassID
+                GROUP BY gibbonCourseClass.gibbonCourseClassID, gibbonTTDay.gibbonTTDayID
                 ORDER BY gibbonCourseClass.nameShort
         ";
 
