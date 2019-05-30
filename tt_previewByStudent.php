@@ -92,6 +92,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
     foreach (current($timetableDays) as $index => $ttDay) {
         $table->addColumn($ttDay['nameShort'], str_replace('MF', '', $ttDay['nameShort']))
+            ->context('primary')
             ->width('23%')
             ->format(function ($values) use ($index) {
                 $name = $url = $title = $class = '';

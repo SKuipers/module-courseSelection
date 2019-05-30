@@ -90,6 +90,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     $canAccessTT = isActionAccessible($guid, $connection2, '/modules/Timetable Admin/courseEnrolment_manage_class_edit.php');
     foreach (current($timetableDays) as $index => $ttDay) {
         $table->addColumn($ttDay['nameShort'], str_replace('MF', '', $ttDay['nameShort']))
+            ->context('primary')
             ->width('23%')
             ->format(function ($values) use ($index, $canAccessTT) {
                 $name = $url = $title = $class = '';
