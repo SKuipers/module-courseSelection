@@ -25,7 +25,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionAccess` (
   `dateEnd` date DEFAULT NULL,
   `accessType` enum('View','Request','Select') NOT NULL DEFAULT 'Request',
   PRIMARY KEY (`courseSelectionAccessID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -35,13 +35,13 @@ $moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   `description` varchar(255) NOT NULL,
   `countable` ENUM('Y','N') NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`courseSelectionBlockID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionBlockCourse` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   `gibbonCourseID` int(8) unsigned zerofill NOT NULL,
   PRIMARY KEY (`courseSelectionBlockID`,`gibbonCourseID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionOffering` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -53,7 +53,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionOffering` (
   `maxSelect` smallint(3) DEFAULT NULL,
   `sequenceNumber` smallint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`courseSelectionOfferingID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionOfferingRestriction` (
   `courseSelectionOfferingRestrictionID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
@@ -61,7 +61,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingRestriction` (
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonYearGroupID` int(3) unsigned zerofill DEFAULT NULL,
   PRIMARY KEY (`courseSelectionOfferingRestrictionID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
@@ -69,7 +69,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
   `minSelect` smallint(3) DEFAULT NULL,
   `maxSelect` smallint(3) DEFAULT NULL,
   PRIMARY KEY (`courseSelectionOfferingID`,`courseSelectionBlockID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
   `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
@@ -85,14 +85,14 @@ $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
   `notes` VARCHAR(255) NULL ,
   PRIMARY KEY (`courseSelectionChoiceID`),
   UNIQUE KEY (`gibbonPersonIDStudent`, `gibbonCourseID`)
-) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionChoiceOffering` (
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NOT NULL,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL,
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   PRIMARY KEY (`gibbonSchoolYearID`,`gibbonPersonIDStudent`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionLog` (
   `courseSelectionLogID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
@@ -103,14 +103,14 @@ $moduleTables[]="CREATE TABLE `courseSelectionLog` (
   `timestampChanged` DATETIME NULL,
   `action` ENUM('Create','Update','Delete') NOT NULL DEFAULT 'Update',
   PRIMARY KEY (`courseSelectionLogID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;" ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionApproval` (
   `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL,
   `gibbonPersonIDApproved` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampApproved` DATETIME NULL ,
   PRIMARY KEY (`courseSelectionChoiceID`)
-) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
   `courseSelectionRecommendationID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
@@ -120,7 +120,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
   `gibbonPersonIDRecommended` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampRecommended` DATETIME NULL ,
   PRIMARY KEY (`courseSelectionRecommendationID`)
-) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;" ;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
 $moduleTables[]="CREATE TABLE `courseSelectionTTResult` (
   `courseSelectionTTResultID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
@@ -134,7 +134,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionTTResult` (
   `reason` VARCHAR(255) NULL,
   PRIMARY KEY (`courseSelectionTTResultID`),
   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`)
-) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
+) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
 
 $moduleTables[]="CREATE TABLE `courseSelectionMetaData` (
   `courseSelectionMetaDataID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
@@ -145,7 +145,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionMetaData` (
   `excludeClasses` VARCHAR(255) NULL ,
   PRIMARY KEY (`courseSelectionMetaDataID`),
   UNIQUE KEY (`gibbonCourseID`)
-) ENGINE=MyISAM CHARSET=utf8 COLLATE utf8_general_ci;";
+) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
 
 // TODO:
 // courseSelectionRequisite (Ruleset/Rule)
