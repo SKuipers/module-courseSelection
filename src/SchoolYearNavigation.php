@@ -46,14 +46,16 @@ class SchoolYearNavigation
             //Print year picker
             $this->previousYear = $this->selectPreviousSchoolYearByID($gibbonSchoolYearID);
             $this->nextYear = $this->selectNextSchoolYearByID($gibbonSchoolYearID);
+            $sidebar = $_GET['sidebar'] ?? '';
+
             if (!empty($this->previousYear)) {
-                $output .= '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$this->previousYear['gibbonSchoolYearID'].'">'.__('Previous Year').'</a> ';
+                $output .= '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$this->previousYear['gibbonSchoolYearID'].'&sidebar='.$sidebar.'">'.__('Previous Year').'</a> ';
             } else {
                 $output .= __('Previous Year').' ';
             }
             $output .=  ' | ';
             if (!empty($this->nextYear)) {
-                $output .=  '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$this->nextYear['gibbonSchoolYearID'].'">'.__('Next Year').'</a> ';
+                $output .=  '<a href="'.$this->session->get('absoluteURL').'/index.php?q='.$this->session->get('address').'&gibbonSchoolYearID='.$this->nextYear['gibbonSchoolYearID'].'&sidebar='.$sidebar.'">'.__('Next Year').'</a> ';
             } else {
                 $output .=  __('Next Year').' ';
             }

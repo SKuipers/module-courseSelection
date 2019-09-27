@@ -84,7 +84,7 @@ class SelectionsGateway
     public function selectChoicesByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
-        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, courseSelectionChoiceOffering.courseSelectionOfferingID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourse.credits, courseSelectionChoice.courseSelectionChoiceID, (CASE WHEN courseSelectionApproval.courseSelectionChoiceID IS NOT NULL THEN 'Approved' ELSE '' END) as approval
+        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, courseSelectionChoiceOffering.courseSelectionOfferingID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, courseSelectionChoice.courseSelectionChoiceID, (CASE WHEN courseSelectionApproval.courseSelectionChoiceID IS NOT NULL THEN 'Approved' ELSE '' END) as approval
                 FROM courseSelectionChoice
                 JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
