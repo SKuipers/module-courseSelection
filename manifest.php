@@ -17,7 +17,7 @@ $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
 // Module tables
-$moduleTables[]="CREATE TABLE `courseSelectionAccess` (
+$moduleTables[] = "CREATE TABLE `courseSelectionAccess` (
   `courseSelectionAccessID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonRoleIDList` varchar(255) DEFAULT NULL,
@@ -27,7 +27,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionAccess` (
   PRIMARY KEY (`courseSelectionAccessID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionBlock` (
+$moduleTables[] = "CREATE TABLE `courseSelectionBlock` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonDepartmentIDList` varchar(255) DEFAULT NULL,
@@ -37,13 +37,13 @@ $moduleTables[]="CREATE TABLE `courseSelectionBlock` (
   PRIMARY KEY (`courseSelectionBlockID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionBlockCourse` (
+$moduleTables[] = "CREATE TABLE `courseSelectionBlockCourse` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   `gibbonCourseID` int(8) unsigned zerofill NOT NULL,
   PRIMARY KEY (`courseSelectionBlockID`,`gibbonCourseID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionOffering` (
+$moduleTables[] = "CREATE TABLE `courseSelectionOffering` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
   `gibbonYearGroupIDList` varchar(255) DEFAULT NULL,
@@ -55,7 +55,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionOffering` (
   PRIMARY KEY (`courseSelectionOfferingID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionOfferingRestriction` (
+$moduleTables[] = "CREATE TABLE `courseSelectionOfferingRestriction` (
   `courseSelectionOfferingRestrictionID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   `gibbonSchoolYearID` int(3) unsigned zerofill DEFAULT NULL,
@@ -63,7 +63,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingRestriction` (
   PRIMARY KEY (`courseSelectionOfferingRestrictionID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
+$moduleTables[] = "CREATE TABLE `courseSelectionOfferingBlock` (
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   `minSelect` smallint(3) DEFAULT NULL,
@@ -71,7 +71,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionOfferingBlock` (
   PRIMARY KEY (`courseSelectionOfferingID`,`courseSelectionBlockID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionChoice` (
+$moduleTables[] = "CREATE TABLE `courseSelectionChoice` (
   `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL ,
@@ -87,14 +87,14 @@ $moduleTables[]="CREATE TABLE `courseSelectionChoice` (
   UNIQUE KEY (`gibbonPersonIDStudent`, `gibbonCourseID`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionChoiceOffering` (
+$moduleTables[] = "CREATE TABLE `courseSelectionChoiceOffering` (
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NOT NULL,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL,
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   PRIMARY KEY (`gibbonSchoolYearID`,`gibbonPersonIDStudent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionLog` (
+$moduleTables[] = "CREATE TABLE `courseSelectionLog` (
   `courseSelectionLogID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `courseSelectionOfferingID` int(8) unsigned zerofill NOT NULL,
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
@@ -105,14 +105,14 @@ $moduleTables[]="CREATE TABLE `courseSelectionLog` (
   PRIMARY KEY (`courseSelectionLogID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionApproval` (
+$moduleTables[] = "CREATE TABLE `courseSelectionApproval` (
   `courseSelectionChoiceID` INT(12) UNSIGNED ZEROFILL NOT NULL,
   `gibbonPersonIDApproved` INT(10) UNSIGNED ZEROFILL NULL ,
   `timestampApproved` DATETIME NULL ,
   PRIMARY KEY (`courseSelectionChoiceID`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
+$moduleTables[] = "CREATE TABLE `courseSelectionRecommendation` (
   `courseSelectionRecommendationID` INT(12) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL DEFAULT NULL,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NOT NULL ,
@@ -122,7 +122,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionRecommendation` (
   PRIMARY KEY (`courseSelectionRecommendationID`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;" ;
 
-$moduleTables[]="CREATE TABLE `courseSelectionTTResult` (
+$moduleTables[] = "CREATE TABLE `courseSelectionTTResult` (
   `courseSelectionTTResultID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `gibbonSchoolYearID` INT(3) UNSIGNED ZEROFILL NULL ,
   `gibbonPersonIDStudent` INT(10) UNSIGNED ZEROFILL NULL ,
@@ -136,7 +136,7 @@ $moduleTables[]="CREATE TABLE `courseSelectionTTResult` (
   INDEX `gibbonSchoolYear` (`gibbonSchoolYearID`, `gibbonPersonIDStudent`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
 
-$moduleTables[]="CREATE TABLE `courseSelectionMetaData` (
+$moduleTables[] = "CREATE TABLE `courseSelectionMetaData` (
   `courseSelectionMetaDataID` INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT ,
   `gibbonCourseID` INT(8) UNSIGNED ZEROFILL NULL ,
   `enrolmentGroup` VARCHAR(30) NULL ,
@@ -147,39 +147,36 @@ $moduleTables[]="CREATE TABLE `courseSelectionMetaData` (
   UNIQUE KEY (`gibbonCourseID`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
 
-// TODO:
-// courseSelectionRequisite (Ruleset/Rule)
-
 
 //gibbonSettings entries
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'activeSchoolYear', 'Course Selection School Year', 'Sets the default school year to be pre-selected on various pages.', (SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Upcoming' ORDER BY sequenceNumber ASC LIMIT 1));";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'requireApproval', 'Require Course Approval', 'Require a staff member to approve course selections.', 'Y');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'activeSchoolYear', 'Course Selection School Year', 'Sets the default school year to be pre-selected on various pages.', (SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Upcoming' ORDER BY sequenceNumber ASC LIMIT 1));";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'requireApproval', 'Require Course Approval', 'Require a staff member to approve course selections.', 'Y');";
 
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextOfferings', 'Course Offerings Introduction', 'Information to display with the course offerings.', '');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionBefore', 'Course Selection Introduction', 'Information to display before the course selections form.', '');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionAfter', 'Course Selection Postscript', 'Information to display after the course selections form.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextOfferings', 'Course Offerings Introduction', 'Information to display with the course offerings.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionBefore', 'Course Selection Introduction', 'Information to display before the course selections form.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'infoTextSelectionAfter', 'Course Selection Postscript', 'Information to display after the course selections form.', '');";
 
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionComplete', 'Message on Completion', 'The text to display when the course selection process is complete.', 'Great! The course selection form is complete, you\'re ready to submit.');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionInvalid', 'Message on Invalid', 'The text to display when an invalid selection has been made.', 'The form is incomplete or contains an invalid choice. Please check your course selections above.');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionContinue', 'Message to Continue', 'The text to display when the course selection is in progress.', 'Continue selecting courses. You can submit a partial selection now and complete your choices at a later date.');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionComplete', 'Message on Completion', 'The text to display when the course selection process is complete.', 'Great! The course selection form is complete, you\'re ready to submit.');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionInvalid', 'Message on Invalid', 'The text to display when an invalid selection has been made.', 'The form is incomplete or contains an invalid choice. Please check your course selections above.');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'selectionContinue', 'Message to Continue', 'The text to display when the course selection is in progress.', 'Continue selecting courses. You can submit a partial selection now and complete your choices at a later date.');";
 
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetablingResults', 'Timetabling Results', 'Performance and result counts from last timetable operation.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetablingResults', 'Timetabling Results', 'Performance and result counts from last timetable operation.', '');";
 
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentMinimum', 'Minimum Students per Class', 'Timetabling will aim to fill every class beyond the minimum.', '');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentTarget', 'Target Students per Class', 'An ideal amount for timetabling to aim for.', '');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentMaximum', 'Maximum Students per Class', 'Timetabling will not exceed this amount.', '');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetableConflictTollerance', 'Timetabling Conflict Tollerance', 'Maximum number of conflicts allowed per student.', '0');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'genderBalancePriority', 'Gender Balanace Priority', '', '0.5');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'targetEnrolmentPriority', 'Target Enrolment Priority', '', '1.0');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'coreCoursePriority', 'Core Course Priority', '', '1.0');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'avoidConflictPriority', 'Avoid Conflict Priority', '', '2.0');";
-$gibbonSetting[]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'autoResolveConflicts', 'Auto-Resolve Conflicts?', 'If enabled conflicts will be resolved by keeping the course with the highest priority.', 'Y');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentMinimum', 'Minimum Students per Class', 'Timetabling will aim to fill every class beyond the minimum.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentTarget', 'Target Students per Class', 'An ideal amount for timetabling to aim for.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'classEnrolmentMaximum', 'Maximum Students per Class', 'Timetabling will not exceed this amount.', '');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'timetableConflictTollerance', 'Timetabling Conflict Tollerance', 'Maximum number of conflicts allowed per student.', '0');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'genderBalancePriority', 'Gender Balanace Priority', '', '0.5');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'targetEnrolmentPriority', 'Target Enrolment Priority', '', '1.0');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'coreCoursePriority', 'Core Course Priority', '', '1.0');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'avoidConflictPriority', 'Avoid Conflict Priority', '', '2.0');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'autoResolveConflicts', 'Auto-Resolve Conflicts?', 'If enabled conflicts will be resolved by keeping the course with the highest priority.', 'Y');";
 
 
 
 //Action rows
 //One array per action
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Course Selection Access',
     'precedence'                => '0',
     'category'                  => 'Administration',
@@ -197,9 +194,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Manage Course Offerings',
     'precedence'                => '0',
     'category'                  => 'Administration',
@@ -217,9 +214,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Manage Course Blocks',
     'precedence'                => '0',
     'category'                  => 'Administration',
@@ -237,9 +234,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Manage Meta Data',
     'precedence'                => '0',
     'category'                  => 'Administration',
@@ -257,30 +254,30 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
-    'name'                      => 'Manage Prerequisites',
-    'precedence'                => '0',
-    'category'                  => 'Administration',
-    'description'               => '',
-    'URLList'                   => 'rules_manage.php,rules_manage_addEdit.php,rules_manage_delete.php',
-    'entryURL'                  => 'rules_manage.php',
-    'entrySidebar'              => 'Y',
-    'menuShow'                  => 'Y',
-    'defaultPermissionAdmin'    => 'Y',
-    'defaultPermissionTeacher'  => 'N',
-    'defaultPermissionStudent'  => 'N',
-    'defaultPermissionParent'   => 'N',
-    'defaultPermissionSupport'  => 'N',
-    'categoryPermissionStaff'   => 'Y',
-    'categoryPermissionStudent' => 'N',
-    'categoryPermissionParent'  => 'N',
-    'categoryPermissionOther'   => 'N',
-);
+// $actionRows[] = [
+//     'name'                      => 'Manage Prerequisites',
+//     'precedence'                => '0',
+//     'category'                  => 'Administration',
+//     'description'               => '',
+//     'URLList'                   => 'rules_manage.php,rules_manage_addEdit.php,rules_manage_delete.php',
+//     'entryURL'                  => 'rules_manage.php',
+//     'entrySidebar'              => 'Y',
+//     'menuShow'                  => 'Y',
+//     'defaultPermissionAdmin'    => 'Y',
+//     'defaultPermissionTeacher'  => 'N',
+//     'defaultPermissionStudent'  => 'N',
+//     'defaultPermissionParent'   => 'N',
+//     'defaultPermissionSupport'  => 'N',
+//     'categoryPermissionStaff'   => 'Y',
+//     'categoryPermissionStudent' => 'N',
+//     'categoryPermissionParent'  => 'N',
+//     'categoryPermissionOther'   => 'N',
+// ];
 
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Course Selection_all',
     'precedence'                => '1',
     'category'                  => 'Courses',
@@ -298,9 +295,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Course Selection_my',
     'precedence'                => '0',
     'category'                  => 'Courses',
@@ -318,9 +315,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'Y',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Upcoming Timetable_all',
     'precedence'                => '0',
     'category'                  => 'Courses',
@@ -338,9 +335,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Upcoming Timetable_my',
     'precedence'                => '0',
     'category'                  => 'Courses',
@@ -358,15 +355,15 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'Y',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Approve Requests by Course',
     'precedence'                => '0',
     'category'                  => 'Approval',
     'description'               => '',
-    'URLList'                   => 'approval_byClass.php',
-    'entryURL'                  => 'approval_byClass.php',
+    'URLList'                   => 'approval_byCourse.php',
+    'entryURL'                  => 'approval_byCourse.php',
     'entrySidebar'              => 'Y',
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'Y',
@@ -378,9 +375,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Approve Requests by Offering',
     'precedence'                => '0',
     'category'                  => 'Approval',
@@ -398,9 +395,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Activity Log',
     'precedence'                => '0',
     'category'                  => 'Reports',
@@ -418,9 +415,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Total Requests by Course',
     'precedence'                => '0',
     'category'                  => 'Reports',
@@ -438,9 +435,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Students Not Selected',
     'precedence'                => '0',
     'category'                  => 'Reports',
@@ -458,9 +455,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Students Not Approved',
     'precedence'                => '0',
     'category'                  => 'Reports',
@@ -478,9 +475,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Course Selection Settings',
     'precedence'                => '0',
     'category'                  => 'Settings',
@@ -498,9 +495,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Copy Selections By Course',
     'precedence'                => '0',
     'category'                  => 'Tools',
@@ -518,9 +515,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Edit Timetable by Class',
     'precedence'                => '0',
     'category'                  => 'Tools',
@@ -538,9 +535,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Timetable Deletion',
     'precedence'                => '0',
     'category'                  => 'Tools',
@@ -558,9 +555,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'Timetabling Engine',
     'precedence'                => '0',
     'category'                  => 'Timetable',
@@ -578,9 +575,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'View Results by Course',
     'precedence'                => '0',
     'category'                  => 'Timetable',
@@ -598,9 +595,9 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
-$actionRows[] = array(
+$actionRows[] = [
     'name'                      => 'View Results by Student',
     'precedence'                => '0',
     'category'                  => 'Timetable',
@@ -618,7 +615,7 @@ $actionRows[] = array(
     'categoryPermissionStudent' => 'N',
     'categoryPermissionParent'  => 'N',
     'categoryPermissionOther'   => 'N',
-);
+];
 
 
 //Hooks
