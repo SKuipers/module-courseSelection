@@ -55,6 +55,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $classEnrolmentMaximum = $_POST['classEnrolmentMaximum'] ?? '';
     $partialFail &= !$settingsGateway->update('Course Selection', 'classEnrolmentMaximum', $classEnrolmentMaximum);
 
+    $enableCourseGrades = $_POST['enableCourseGrades'] ?? '';
+    $partialFail &= !$settingsGateway->update('Course Selection', 'enableCourseGrades', $enableCourseGrades);
+
     if ($partialFail == true) {
         $URL .= '&return=warning2';
         header("Location: {$URL}");

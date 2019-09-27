@@ -96,6 +96,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             }
         }
 
+        $enableCourseGrades = getSettingByScope($connection2, 'Course Selection', 'enableCourseGrades');
         $infoTextBefore = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionBefore');
         if (!empty($infoTextBefore)) {
             echo '<p>'.$infoTextBefore.'</p>';
@@ -123,7 +124,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $row = $form->addRow()->setClass('break');
             $row->addContent(__('Department'));
-            $row->addContent(__('Course Marks'));
+            $row->onlyIf($enableCourseGrades == 'Y')->addContent(__('Course Grades'));
             $row->addContent(__('Choices'));
 
             if ($readOnly == false) {
@@ -141,7 +142,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 $fieldName = 'courseSelection['.$courseSelectionBlockID.'][]';
 
-                $gradesRequest = $gradesGateway->selectStudentReportGradesByDepartments($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
+                if ($enableCourseGrades == 'Y') {
+                    $gradesRequest = $gradesGateway->selectStudentReportGradesByDepartments($block['gibbonDepartmentIDList'], $gibbonPersonIDStudent);
+                }
                 $coursesRequest = $blocksGateway->selectAllCoursesByBlock($courseSelectionBlockID);
 
                 $selectedChoicesRequest = $selectionsGateway->selectChoicesByBlockAndPerson($courseSelectionBlockID, $gibbonPersonIDStudent);
@@ -158,7 +161,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
                 $row = $form->addRow();
                 $row->addLabel('courseSelection', $block['blockName'])->description($block['blockDescription']);
-                $row->addCourseGrades()->fromResults($gradesRequest);
+                $row->onlyIf($enableCourseGrades == 'Y')->addCourseGrades()->fromResults($gradesRequest ?? []);
                 $row->addCourseSelection($fieldName)
                     ->fromResults($coursesRequest)
                     ->selected($selectedChoices)

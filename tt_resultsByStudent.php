@@ -27,6 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $gibbonCourseClassID = $_REQUEST['gibbonCourseClassID'] ?? null;
+    $enableCourseGrades = getSettingByScope($connection2, 'Course Selection', 'enableCourseGrades');
 
     $sort = $_GET['sort'] ?? 'surname';
     $allCourses = $_GET['allCourses'] ?? false;
@@ -112,8 +113,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Timetable Admin/courseEnrolment_manage_byPerson_edit.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonPersonID=".$student['gibbonPersonID']."&allUsers=on&ttDate=06/09/2017&type=Student&search=' target='_blank'><img title='".__('Course Enrolment')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/attendance.png'/></a>";
                     echo '&nbsp;&nbsp;';
 
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/report_studentGrades.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false' target='_blank'><img title='".__('Student Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
-                    echo '&nbsp;&nbsp;';
+                    if ($enableCourseGrades == 'Y') {
+                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/report_studentGrades.php&gibbonPersonIDStudent=".$student['gibbonPersonID']."&sidebar=false' target='_blank'><img title='".__('Student Grades')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/internalAssessment.png'/></a>";
+                        echo '&nbsp;&nbsp;';
+                    }
                     
                     echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID=".$student['gibbonPersonID']."&allStudents=on' target='_blank'><img title='".__('View Student')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>&nbsp";
                     

@@ -33,7 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
 
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
-
+    
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
@@ -127,7 +127,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                         } else {
                             echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selection.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
                         }
-
 
                     echo '</td>';
                 echo '</tr>';

@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="0.1.09" ;
+$version="0.2.00" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -68,6 +68,7 @@ $moduleTables[] = "CREATE TABLE `courseSelectionOfferingBlock` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   `minSelect` smallint(3) DEFAULT NULL,
   `maxSelect` smallint(3) DEFAULT NULL,
+  `sequenceNumber` INT(3) NULL,
   PRIMARY KEY (`courseSelectionOfferingID`,`courseSelectionBlockID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
@@ -171,6 +172,7 @@ $gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` 
 $gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'coreCoursePriority', 'Core Course Priority', '', '1.0');";
 $gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'avoidConflictPriority', 'Avoid Conflict Priority', '', '2.0');";
 $gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'autoResolveConflicts', 'Auto-Resolve Conflicts?', 'If enabled conflicts will be resolved by keeping the course with the highest priority.', 'Y');";
+$gibbonSetting[] = "INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'enableCourseGrades', 'Enable Course Grades?', 'If enabled, past course grades from the Reporting module will be displayed in the course selection screen.', 'N');";
 
 
 
@@ -348,7 +350,7 @@ $actionRows[] = [
     'menuShow'                  => 'Y',
     'defaultPermissionAdmin'    => 'N',
     'defaultPermissionTeacher'  => 'N',
-    'defaultPermissionStudent'  => 'Y',
+    'defaultPermissionStudent'  => 'N',
     'defaultPermissionParent'   => 'N',
     'defaultPermissionSupport'  => 'N',
     'categoryPermissionStaff'   => 'N',
