@@ -54,14 +54,21 @@ class ToolsGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
-    public function selectAllCoursesBySchoolYear($gibbonSchoolYearID)
+    public function selectAllCoursesBySchoolYear($gibbonSchoolYearID, $grouped = true)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT gibbonYearGroup.name as grouping, gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
+        if ($grouped) {
+            $sql = "SELECT gibbonYearGroup.name as grouping, gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
                 FROM gibbonCourse
                 JOIN gibbonYearGroup ON (FIND_IN_SET(gibbonYearGroup.gibbonYearGroupID, gibbonCourse.gibbonYearGroupIDList))
                 WHERE gibbonSchoolYearID=:gibbonSchoolYearID
                 ORDER BY gibbonYearGroup.sequenceNumber DESC, gibbonCourse.nameShort, gibbonCourse.name";
+        } else {
+            $sql = "SELECT gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
+                FROM gibbonCourse
+                WHERE gibbonSchoolYearID=:gibbonSchoolYearID
+                ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
+        }
 
         return $this->pdo->executeQuery($data, $sql);
     }
