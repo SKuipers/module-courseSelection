@@ -202,7 +202,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 $progress->setMessage('continue', getSettingByScope($connection2, 'Course Selection', 'selectionContinue'));
 
             $row = $form->addRow();
-                $row->addSubmit();
+                $row->addSubmit(__('Save'));
         }
 
         echo $form->getOutput();
