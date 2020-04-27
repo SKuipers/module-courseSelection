@@ -64,15 +64,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 echo '<td>'.__('Name').'</td>';
 
                 if (intval($enrolment['schoolYearID']) >= 12) {
-                    echo '<td>'.__('Term 1 Mid').'</td>';
-                    echo '<td>'.__('Term 1 End').'</td>';
-                    echo '<td>'.__('Term 2 Interim').'</td>';
-                    echo '<td>'.__('Term 2 End').'</td>';
+                    echo '<td class="w-24">'.__('Term 1 Mid').'</td>';
+                    echo '<td class="w-24">'.__('Term 1 End').'</td>';
+                    echo '<td class="w-24">'.__('Term 2 Interim').'</td>';
+                    echo '<td class="w-24">'.__('Term 2 End').'</td>';
                 } else {
-                    echo '<td>'.__('Sem1-Mid').'</td>';
-                    echo '<td>'.__('Sem1-End').'</td>';
-                    echo '<td>'.__('Sem2-Mid').'</td>';
-                    echo '<td>'.__('Sem2-End').'</td>';
+                    echo '<td class="w-24">'.__('Sem1-Mid').'</td>';
+                    echo '<td class="w-24">'.__('Sem1-End').'</td>';
+                    echo '<td class="w-24">'.__('Sem2-Mid').'</td>';
+                    echo '<td class="w-24">'.__('Sem2-End').'</td>';
                 }
             
                 echo '<td style="border-left: 2px solid #bbb;">'.__('Exam').'</td>';

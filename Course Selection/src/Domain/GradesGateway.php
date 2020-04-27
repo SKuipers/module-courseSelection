@@ -75,7 +75,44 @@ class GradesGateway
             'gibbonSchoolYearID' => $gibbonSchoolYearID
         );
 
-        $sql = "(SELECT (CASE WHEN arrCriteria.criteriaType=4 THEN 'Final' WHEN arrCriteria.criteriaType=1 THEN 'Exam' ELSE arrReport.reportName END) as reportTerm, gradeID as grade, 'Standard' as gradeType, (CASE WHEN arrCriteria.criteriaType=4 AND gradeID >= 50.0 THEN gibbonCourse.credits WHEN gradeID = '' THEN '' ELSE 0 END) as creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+        $sql = "(SELECT (CASE WHEN gibbonReportingCriteriaType.name like 'Final%' THEN 'Final' ELSE gibbonReportingCycle.nameShort END) as reportTerm, gibbonReportingValue.value as grade, 'Standard' as gradeType, (CASE WHEN gibbonReportingCriteriaType.name = 'Final Percent' AND gibbonReportingValue.value >= 50.0 THEN gibbonCourse.credits WHEN gibbonReportingValue.value = '' THEN '' ELSE 0 END) as creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+                FROM gibbonCourse
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
+
+                LEFT JOIN gibbonReportingCriteria ON (gibbonReportingCriteria.gibbonCourseID=gibbonCourse.gibbonCourseID AND gibbonReportingCriteria.target='Per Student' AND gibbonReportingCriteria.gibbonReportingCriteriaTypeID = 12 )
+                LEFT JOIN gibbonReportingCriteriaType ON (gibbonReportingCriteriaType.gibbonReportingCriteriaTypeID=gibbonReportingCriteria.gibbonReportingCriteriaTypeID  )                
+                LEFT JOIN gibbonReportingValue ON (gibbonReportingValue.gibbonReportingCriteriaID=gibbonReportingCriteria.gibbonReportingCriteriaID
+                    AND gibbonReportingValue.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID 
+                    AND gibbonReportingValue.gibbonPersonIDStudent=gibbonCourseClassPerson.gibbonPersonID)
+                LEFT JOIN gibbonReportingProgress ON (gibbonReportingProgress.gibbonReportingScopeID=gibbonReportingCriteria.gibbonReportingScopeID AND gibbonReportingProgress.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonReportingProgress.gibbonPersonIDStudent=gibbonReportingValue.gibbonPersonIDStudent)
+                LEFT JOIN gibbonReportingCycle ON (gibbonReportingCycle.gibbonReportingCycleID=gibbonReportingCriteria.gibbonReportingCycleID)
+
+                WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonID
+                AND gibbonCourseClass.reportable='Y'
+                AND gibbonCourse.nameShort NOT LIKE '%ECA%'
+                AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
+                AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%TAP'
+            ) UNION ALL (
+                SELECT (CASE WHEN arrCriteria.criteriaType=10 THEN 'Final' WHEN arrCriteria.criteriaType=1 THEN 'Exam' ELSE arrReport.reportName END) as reportTerm, gradeID as grade, 'Standard' as gradeType, (CASE WHEN arrCriteria.criteriaType=10 AND gradeID >= 50.0 THEN gibbonCourse.credits WHEN gradeID = '' THEN '' ELSE 0 END) as creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+                FROM gibbonCourse
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
+                LEFT JOIN arrCriteria ON (gibbonCourse.gibbonCourseID=arrCriteria.subjectID AND (arrCriteria.criteriaType=7 OR arrCriteria.criteriaType=10) )
+                LEFT JOIN arrReportGrade ON (arrReportGrade.criteriaID=arrCriteria.criteriaID AND arrReportGrade.studentID = gibbonCourseClassPerson.gibbonPersonID )
+                LEFT JOIN arrReport ON (arrReport.reportID=arrReportGrade.reportID AND arrReport.schoolYearID=gibbonCourse.gibbonSchoolYearID )
+                WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND gibbonCourse.gibbonSchoolYearID=013
+                AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonID
+                AND gibbonCourseClass.reportable='Y'
+                AND gibbonCourse.nameShort NOT LIKE '%ECA%'
+                AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
+                AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%TAP'
+            ) UNION ALL (
+                SELECT (CASE WHEN arrCriteria.criteriaType=4 THEN 'Final' WHEN arrCriteria.criteriaType=1 THEN 'Exam' ELSE arrReport.reportName END) as reportTerm, gradeID as grade, 'Standard' as gradeType, (CASE WHEN arrCriteria.criteriaType=4 AND gradeID >= 50.0 THEN gibbonCourse.credits WHEN gradeID = '' THEN '' ELSE 0 END) as creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonCourseClass.gibbonCourseClassID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
@@ -83,11 +120,14 @@ class GradesGateway
                 LEFT JOIN arrReportGrade ON (arrReportGrade.criteriaID=arrCriteria.criteriaID AND arrReportGrade.studentID = gibbonCourseClassPerson.gibbonPersonID )
                 LEFT JOIN arrReport ON (arrReport.reportID=arrReportGrade.reportID AND arrReport.schoolYearID=gibbonCourse.gibbonSchoolYearID )
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
+                AND gibbonCourse.gibbonSchoolYearID<013
                 AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonID
                 AND gibbonCourseClass.reportable='Y'
                 AND gibbonCourse.nameShort NOT LIKE '%ECA%'
                 AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
-                AND gibbonCourse.nameShort NOT LIKE '%Advisor%') UNION ALL (
+                AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%TAP'
+            )  UNION ALL (
             SELECT DISTINCT reportTerm, grade, gradeType, creditsAwarded, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, '', (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
                 FROM arrLegacyGrade
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=arrLegacyGrade.gibbonCourseID)
@@ -132,7 +172,7 @@ class GradesGateway
         $grades = array();
 
         foreach ($gradesData as $row) {
-            if ($this->isTranscriptCourse($row['courseNameShort']) == false) continue;
+            //if ($this->isTranscriptCourse($row['courseNameShort']) == false) continue;
 
             $courseGrades = (isset($grades[$row['courseNameShort']]))? $grades[$row['courseNameShort']] : array('Sem1-Mid' => '', 'Sem2-Mid' => '', 'Final' => '', 'credits' => '' );
 
@@ -164,6 +204,7 @@ class GradesGateway
             $courseGrades['gibbonCourseClassID'] = $row['gibbonCourseClassID'];
 
             $grade = (is_numeric($row['grade']))? round($row['grade']) : $row['grade'];
+            $grade = (stripos($row['grade'], '%') !== false)? intval($row['grade']) : $row['grade'];
             $courseGrades[ $row['reportTerm'] ] = $grade;
 
             if ($row['reportTerm'] == 'Final') {
