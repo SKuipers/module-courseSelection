@@ -48,21 +48,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     // Cancel out early if there's no valid student selected
     if (empty($gibbonPersonIDStudent)) return;
 
-    // TODO: dont hardcode this :(
-    $gibbonTTID = '00000010';
-
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+    $timetables = $timetableGateway->selectRelevantTimetablesByPerson($gibbonSchoolYearID, $gibbonPersonIDStudent)->fetchAll();
+
+    $gibbonTTID = $timetables[0]['gibbonTTID'] ?? null;
+
+    if (empty($gibbonTTID)) {
+        $page->addError(__m('A relevant timetable could not be located for this student in the target school year.'));
+        return;
+    }
 
     $timetableDays = $timetableGateway->selectTimetableDaysAndColumns($gibbonTTID)->fetchGrouped();
     $timetablePreview = $timetableGateway->selectTimetablePreviewByStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)->fetchGrouped();
-
-    // echo '<pre>';
-    // print_r($timetableDays);
-    // echo '</pre>';
-
-    // echo '<pre>';
-    // print_r($timetablePreview);
-    // echo '</pre>';
 
     $table = DataTable::create('timetable');
 

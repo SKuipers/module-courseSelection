@@ -223,7 +223,7 @@ class TimetableGateway
                     OR FIND_IN_SET('015', gibbonCourse.gibbonYearGroupIDList)
                     OR FIND_IN_SET('016', gibbonCourse.gibbonYearGroupIDList) )
                 GROUP BY gibbonCourseClass.gibbonCourseClassID, gibbonTTDay.gibbonTTDayID
-                ORDER BY gibbonCourseClass.nameShort
+                ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort
         ";
 
         return $this->pdo->executeQuery($data, $sql);
@@ -260,6 +260,20 @@ class TimetableGateway
         return $this->pdo->select($sql, $data);
     }
 
+    public function selectRelevantTimetablesByPerson($gibbonSchoolYearID, $gibbonPersonID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonID' => $gibbonPersonID);
+        $sql = "SELECT DISTINCT gibbonTT.gibbonTTID, gibbonTT.name, gibbonTT.nameShortDisplay 
+                FROM gibbonTT 
+                JOIN gibbonTTDay ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID) 
+                JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonTTDayID=gibbonTTDay.gibbonTTDayID) 
+                JOIN gibbonCourseClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) 
+                JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
+                 WHERE gibbonPersonID=:gibbonPersonID 
+                 AND gibbonSchoolYearID=:gibbonSchoolYearID";
+
+        return $this->pdo->select($sql, $data);
+    }
 
     public function insertResult(array $data)
     {
