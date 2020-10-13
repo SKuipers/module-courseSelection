@@ -111,10 +111,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo '</div>';
         }
 
-        $form = Form::create('selectionChoices', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoicesProcess.php');
+        $form = Form::createTable('selectionChoices', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoicesProcess.php');
         $form->setFactory(CourseSelectionFormFactory::create($selectionsGateway));
 
-        $form->setClass('fullWidth');
+        $form->setClass('fullWidth smallIntBorder');
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('courseSelectionOfferingID', $courseSelectionOfferingID);
         $form->addHiddenValue('gibbonSchoolYearID', $offering['gibbonSchoolYearID']);

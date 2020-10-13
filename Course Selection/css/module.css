@@ -102,6 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     height: 26px;
     width: 120px;
     margin-top: -6px;
+    padding: 4px;
 }
 
 .courseChoiceContainer[data-status='']:not(:hover) .courseStatusSelect,
