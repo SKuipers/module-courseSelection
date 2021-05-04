@@ -216,3 +216,9 @@ $sql[$count][0]="0.2.00" ;
 $sql[$count][1]="
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`) VALUES ('Course Selection', 'enableCourseGrades', 'Enable Course Grades?', 'If enabled, past course grades from the Reporting module will be displayed in the course selection screen.', 'N');end
 ";
+
+//v1.0.00
+$count++;
+$sql[$count][0]="1.0.00" ;
+$sql[$count][1]="
+";
