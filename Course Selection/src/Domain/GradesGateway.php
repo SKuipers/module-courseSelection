@@ -148,9 +148,9 @@ class GradesGateway
         $sql = "(SELECT gibbonYearGroup.name as yearGroupName, SUBSTRING(gibbonYearGroup.nameShort, 2) as gradeLevel, teacher.surname as teacherSurname, teacher.preferredName as teacherPreferredName, teacher.title as teacherTitle, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonSchoolYear.gibbonSchoolYearID as schoolYearID, gibbonSchoolYear.sequenceNumber
                 FROM gibbonPerson
                 JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID = gibbonPerson.gibbonPersonID)
-                JOIN gibbonRollGroup ON (gibbonRollGroup.gibbonRollGroupID=gibbonStudentEnrolment.gibbonRollGroupID)
+                JOIN gibbonFormGroup ON (gibbonFormGroup.gibbonFormGroupID=gibbonStudentEnrolment.gibbonFormGroupID)
                 JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)
-                JOIN gibbonPerson AS teacher ON (teacher.gibbonPersonID=gibbonRollGroup.gibbonPersonIDTutor)
+                JOIN gibbonPerson AS teacher ON (teacher.gibbonPersonID=gibbonFormGroup.gibbonPersonIDTutor)
                 JOIN gibbonSchoolYear ON (gibbonStudentEnrolment.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
                 WHERE gibbonPerson.gibbonPersonID = :gibbonPersonID
                 AND CAST(SUBSTRING(gibbonYearGroup.nameShort, 2) AS UNSIGNED) >= :yearStart

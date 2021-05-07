@@ -46,7 +46,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $row = $form->addRow();
         $row->addLabel('sort', __('Sort By'));
-        $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'approvalCount' => __('Approvals')))->selected($sort);
+        $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'formGroup' => __('Form Group'), 'approvalCount' => __('Approvals')))->selected($sort);
 
     $row = $form->addRow();
         $row->addSubmit('Go');
@@ -73,7 +73,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                 echo __('Student');
             echo '</th>';
             echo '<th>';
-                echo __('Roll Group');
+                echo __('Form Group');
             echo '</th>';
             echo '<th>';
                 echo __('Course Selections');
@@ -114,7 +114,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
                     echo '</a>';
                 echo '</td>';
 
-                echo '<td>'.$student['rollGroupName'].'</td>';
+                echo '<td>'.$student['formGroupName'].'</td>';
                 echo '<td>'.$student['choiceCount'].'</td>';
                 echo '<td>'.$student['approvalCount'].'</td>';
                 echo '<td>'.$status.'</td>';

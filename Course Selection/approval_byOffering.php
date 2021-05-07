@@ -111,7 +111,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                         echo getUserPhoto($guid, $student['image_240'], 75).'<br/>';
                         echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                         echo '</a><br/>';
-                        echo $student['rollGroupName'];
+                        echo $student['formGroupName'];
                     echo '</td>';
 
                     echo '<td width="35%">';

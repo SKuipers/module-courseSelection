@@ -55,7 +55,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $row = $form->addRow();
             $row->addLabel('sort', __('Sort By'));
-            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'rollGroup' => __('Roll Group'), 'count' => __('Classes'), 'count' => __('Issues'), 'weight' => __('Weight')))->selected($sort);
+            $row->addSelect('sort')->fromArray(array('surname' => __('Surname'), 'formGroup' => __('Form Group'), 'count' => __('Classes'), 'count' => __('Issues'), 'weight' => __('Weight')))->selected($sort);
 
         $row = $form->addRow();
             $row->addLabel('allCourses', __('All Courses'))->description(__('Include courses with no classes or not timetabled.'));
@@ -122,7 +122,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                     
                 echo '</td>';
 
-                echo '<td>'.$student['rollGroupName'].'</td>';
+                echo '<td>'.$student['formGroupName'].'</td>';
                 echo '<td>';
 
                 $conflictCount = 0;

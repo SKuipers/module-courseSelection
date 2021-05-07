@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.1.00
+-------
+Change Roll Groups to Form Groups, requires v22.0.00
+
 v1.0.00
 -------
 Initial release

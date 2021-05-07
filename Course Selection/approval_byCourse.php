@@ -77,7 +77,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                     echo __('Student');
                 echo '</th>';
                 echo '<th>';
-                    echo __('Roll Group');
+                    echo __('Form Group');
                 echo '</th>';
                 echo '<th>';
                     echo __('Status');
@@ -103,7 +103,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                         echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                         echo '</a>';
                     echo '</td>';
-                    echo '<td>'.$student['rollGroupName'].'</td>';
+                    echo '<td>'.$student['formGroupName'].'</td>';
                     echo '<td>'.$student['status'];
                     if (!($student['blockIsCountable'] == 'Y' || empty($student['courseSelectionBlockID']))) {
                         echo ' <i>('.__('Alternate').')</i>';
