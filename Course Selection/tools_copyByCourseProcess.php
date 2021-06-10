@@ -15,7 +15,7 @@ $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
 
 $gibbonCourseID = $_POST['gibbonCourseID'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_copyByCourse.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonCourseID={$gibbonCourseID}";
+$URL = $session->get('absoluteURL')."/index.php?q=/modules/Course Selection/tools_copyByCourse.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonCourseID={$gibbonCourseID}";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_copyByCourse.php') == false) {
     $URL .= '&return=error0';
@@ -45,13 +45,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
             $data['gibbonSchoolYearID'] = $gibbonSchoolYearIDCopyTo;
             $data['gibbonCourseID'] = $gibbonCourseIDCopyTo;
             $data['courseSelectionBlockID'] = null;
-            $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
+            $data['gibbonPersonIDSelected'] = $session->get('gibbonPersonID');
             $data['timestampSelected'] = date('Y-m-d H:i:s');
             $data['status'] = ($status != 'Approved')? $status : 'Requested';
             $data['notes'] = '';
 
             $dataApproval = array();
-            $dataApproval['gibbonPersonIDApproved'] = $_SESSION[$guid]['gibbonPersonID'];
+            $dataApproval['gibbonPersonIDApproved'] = $session->get('gibbonPersonID');
             $dataApproval['timestampApproved'] = date('Y-m-d H:i:s');
 
             foreach ($studentList as $gibbonPersonIDStudent) {

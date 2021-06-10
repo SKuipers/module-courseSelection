@@ -15,7 +15,7 @@ $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
 $courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';
 $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false&gibbonPersonIDStudent={$gibbonPersonIDStudent}&courseSelectionOfferingID={$courseSelectionOfferingID}";
+$URL = $session->get('absoluteURL')."/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false&gibbonPersonIDStudent={$gibbonPersonIDStudent}&courseSelectionOfferingID={$courseSelectionOfferingID}";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selectionChoices.php') == false) {
     $URL .= '&return=error0';
@@ -46,7 +46,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
         $data['gibbonCourseID'] = $gibbonCourseID;
         $data['courseSelectionBlockID'] = null;
-        $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
+        $data['gibbonPersonIDSelected'] = $session->get('gibbonPersonID');
         $data['timestampSelected'] = date('Y-m-d H:i:s');
         $data['status'] = $status;
         $data['notes'] = '';

@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Preview Timetable', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Preview Timetable', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -30,14 +30,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
     $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? $_GET['gibbonPersonID'] ?? 0;
 
-    $form = Form::create('selectStudent', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/tt_previewByStudent.php');
+    $form = Form::create('selectStudent', $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_previewByStudent.php');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
 
     $row = $form->addRow();
         $row->addLabel('gibbonPersonIDStudent', __('Student'));
-        $row->addSelectStudent('gibbonPersonIDStudent', $_SESSION[$guid]['gibbonSchoolYearID'])->selected($gibbonPersonIDStudent);
+        $row->addSelectStudent('gibbonPersonIDStudent', $session->get('gibbonSchoolYearID'))->selected($gibbonPersonIDStudent);
 
     $row = $form->addRow();
         $row->addFooter();

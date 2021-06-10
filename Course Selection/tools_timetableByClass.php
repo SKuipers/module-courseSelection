@@ -19,7 +19,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Edit Timetable by Class', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Edit Timetable by Class', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -37,7 +37,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
 
     // SELECT TIMETABLE & CLASS
-    $form = Form::create('timetableByClass', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form = Form::create('timetableByClass', $session->get('absoluteURL').'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('q', '/modules/Course Selection/tools_timetableByClass.php');
@@ -104,7 +104,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
                     echo '<td>'.$ttDay['columnName'].'</td>';
                     echo '<td>'.$ttDay['spaceName'].'</td>';
                     echo '<td>';
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/tools_timetableByClass_deleteProcess.php?gibbonTTDayRowClassID=".$ttDay['gibbonTTDayRowClassID']."&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}&gibbonSchoolYearID={$gibbonSchoolYearID}'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                        echo "<a href='".$session->get('absoluteURL')."/modules/".$session->get('module')."/tools_timetableByClass_deleteProcess.php?gibbonTTDayRowClassID=".$ttDay['gibbonTTDayRowClassID']."&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}&gibbonSchoolYearID={$gibbonSchoolYearID}'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
             }
@@ -113,14 +113,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
         }
 
-        $form = Form::create('ttAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/tools_timetableByClass_addProcess.php');
+        $form = Form::create('ttAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/tools_timetableByClass_addProcess.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonTTID', $gibbonTTID);
         $form->addHiddenValue('gibbonCourseClassID', $gibbonCourseClassID);
 
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $dayResults = $toolsGateway->selectTimetableDaysByTimetable($gibbonTTID);
         $columnResults = $toolsGateway->selectTimetableColumnsByTimetable($gibbonTTID);
@@ -164,12 +164,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
             echo __('Rename Class');
         echo '</h4>';
 
-        $form = Form::create('ttRenameClass', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/tools_timetableByClass_renameProcess.php');
+        $form = Form::create('ttRenameClass', $session->get('absoluteURL').'/modules/'.$session->get('module').'/tools_timetableByClass_renameProcess.php');
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonTTID', $gibbonTTID);
         $form->addHiddenValue('gibbonCourseClassID', $gibbonCourseClassID);
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $row = $form->addRow();
             $row->addLabel('name', __('Name'));

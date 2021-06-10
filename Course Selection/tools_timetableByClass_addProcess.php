@@ -18,7 +18,7 @@ $gibbonTTDayID = $_POST['gibbonTTDayID'] ?? '';
 $gibbonTTColumnRowID = $_POST['gibbonTTColumnRowID'] ?? '';
 $gibbonTTSpaceID = $_POST['gibbonTTSpaceID'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_timetableByClass.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}&gibbonTTDayID={$gibbonTTDayID}&gibbonTTColumnRowID={$gibbonTTColumnRowID}&gibbonTTSpaceID={$gibbonTTSpaceID}";
+$URL = $session->get('absoluteURL')."/index.php?q=/modules/Course Selection/tools_timetableByClass.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}&gibbonTTDayID={$gibbonTTDayID}&gibbonTTColumnRowID={$gibbonTTColumnRowID}&gibbonTTSpaceID={$gibbonTTSpaceID}";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_timetableByClass.php') == false) {
     $URL .= '&return=error0';

@@ -11,7 +11,7 @@ use CourseSelection\Domain\TimetableGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tools_timetableDelete.php";
+$URL = $session->get('absoluteURL')."/index.php?q=/modules/Course Selection/tools_timetableDelete.php";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_timetableDelete.php') == false) {
     $URL .= '&return=error0';

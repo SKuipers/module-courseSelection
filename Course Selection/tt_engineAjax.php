@@ -11,7 +11,7 @@ use CourseSelection\BackgroundProcess;
 // Module Bootstrap
 require 'module.php';
 
-$process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
+$process = new BackgroundProcess($session->get('absolutePath').'/uploads/engine');
 
 echo ($process->isProcessRunning('engine'))? '1' : '0';
 

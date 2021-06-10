@@ -14,7 +14,7 @@ require 'module.php';
 $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 $gibbonSchoolYearIDNext = $_REQUEST['gibbonSchoolYearIDNext'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage.php&gibbonSchoolYearID='.$gibbonSchoolYearIDNext;
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/offerings_manage.php&gibbonSchoolYearID='.$gibbonSchoolYearIDNext;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings_manage.php') == false) {
     $URL .= '&return=error0';

@@ -12,7 +12,7 @@ use CourseSelection\Domain\SettingsGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/tt_engine.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_engine.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine.php') == false) {
     $URL .= '&return=error0';
@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     exit;
 } else {
     //Proceed!
-    $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
+    $process = new BackgroundProcess($session->get('absolutePath').'/uploads/engine');
     $process->stopProcess('engine');
 
     header("Location: {$URL}");

@@ -31,7 +31,7 @@ setCurrentSchoolYear($guid, $connection2);
 // Incoming variables from command line
 $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;
 
-$processor = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
+$processor = new BackgroundProcess($session->get('absolutePath').'/uploads/engine');
 $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
 $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
 

@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Upcoming Timetable', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Upcoming Timetable', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -30,16 +30,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/upcomingTimetable.php', $connection2);
 
     if ($highestGroupedAction == 'Upcoming Timetable_all') {
-        $gibbonPersonIDStudent = isset($_POST['gibbonPersonIDStudent'])? $_POST['gibbonPersonIDStudent'] : 0;
+        $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? 0;
 
-        $form = Form::create('selectStudent', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/upcomingTimetable.php');
+        $form = Form::create('selectStudent', $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/upcomingTimetable.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $row = $form->addRow();
             $row->addLabel('gibbonPersonIDStudent', __('Student'));
-            $row->addSelectStudent('gibbonPersonIDStudent', $_SESSION[$guid]['gibbonSchoolYearID'])->selected($gibbonPersonIDStudent);
+            $row->addSelectStudent('gibbonPersonIDStudent', $session->get('gibbonSchoolYearID'))->selected($gibbonPersonIDStudent);
 
         $row = $form->addRow();
             $row->addFooter();
@@ -47,7 +47,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
 
         echo $form->getOutput();
     } else if ($highestGroupedAction == 'Upcoming Timetable_my') {
-        $gibbonPersonIDStudent = $_SESSION[$guid]['gibbonPersonID'];
+        $gibbonPersonIDStudent = $session->get('gibbonPersonID');
     }
 
     $gibbonSchoolYearID = getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
@@ -115,8 +115,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
                     $output .= Format::link($url, $name, ['title' => $title, 'class' => $class.' h-20', 'style' => 'text-decoration: none;']);
                 }
 
-                
-                
+
+
                 return $output;
             })
             ->modifyCells(function ($values, $cell) use ($index) {

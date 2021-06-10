@@ -12,7 +12,7 @@ use CourseSelection\Domain\SettingsGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/tt_engine.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_engine.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine.php') == false) {
     $URL .= '&return=error0';
@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
     exit;
 } else {
     //Proceed!
-    $gibbonSchoolYearID = (isset($_POST['gibbonSchoolYearID']))? $_POST['gibbonSchoolYearID'] : null;
+    $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? null;
 
     if (empty($gibbonSchoolYearID)) {
         $URL .= "&return=error1";
@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         $autoResolveConflicts = $_POST['autoResolveConflicts'] ?? 'Y';
         $settingsGateway->update('Course Selection', 'autoResolveConflicts', $autoResolveConflicts);
 
-        $process = new BackgroundProcess($_SESSION[$guid]['absolutePath'].'/uploads/engine');
+        $process = new BackgroundProcess($session->get('absolutePath').'/uploads/engine');
         $process->startProcess('engine', __DIR__.'/tt_engineRun.php', array($gibbonSchoolYearID));
 
         header("Location: {$URL}");
