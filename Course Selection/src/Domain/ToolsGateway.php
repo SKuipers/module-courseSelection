@@ -208,6 +208,20 @@ class ToolsGateway
         return $this->pdo->executeQuery($data, $sql);
     }
 
+    public function selectTTDayRowClasses($gibbonCourseClassID, $gibbonTTID) {
+        $data = array('gibbonCourseClassID' => $gibbonCourseClassID, 'gibbonTTID' => $gibbonTTID);
+        $sql = "SELECT gibbonTTDayRowClassID, gibbonTTDayRowClass.gibbonTTDayID, gibbonTTDayRowClass.gibbonTTColumnRowID, gibbonTTDayRowClass.gibbonSpaceID
+                FROM gibbonTTDayRowClass
+                JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnRowID=gibbonTTDayRowClass.gibbonTTColumnRowID)
+                JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
+                JOIN gibbonTT ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID)
+                LEFT JOIN gibbonSpace ON (gibbonSpace.gibbonSpaceID=gibbonTTDayRowClass.gibbonSpaceID)
+                WHERE gibbonTT.gibbonTTID=:gibbonTTID
+                AND gibbonTTDayRowClass.gibbonCourseClassID=:gibbonCourseClassID
+                ORDER BY gibbonTTDay.name, gibbonTTColumnRow.name";
+        return $this->pdo->executeQuery($data, $sql);
+    }
+
     public function insertTTDayRowClass(array $data)
     {
         $sql = "INSERT INTO gibbonTTDayRowClass SET gibbonTTColumnRowID=:gibbonTTColumnRowID, gibbonTTDayID=:gibbonTTDayID, gibbonCourseClassID=:gibbonCourseClassID, gibbonSpaceID=:gibbonSpaceID";
@@ -216,11 +230,16 @@ class ToolsGateway
         return $this->pdo->getConnection()->lastInsertID();
     }
 
-    public function deleteTTDayRowClass($gibbonTTDayRowClassID)
+    public function deleteTTDayRowClasses($gibbonCourseClassID, $gibbonTTID)
     {
-        $data = array('gibbonTTDayRowClassID' => $gibbonTTDayRowClassID);
-        $sql = "DELETE FROM gibbonTTDayRowClass WHERE gibbonTTDayRowClassID=:gibbonTTDayRowClassID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $data = array('gibbonCourseClassID' => $gibbonCourseClassID, 'gibbonTTID' => $gibbonTTID);
+        $sql = "DELETE gibbonTTDayRowClass
+                FROM gibbonTTDayRowClass
+                INNER JOIN gibbonTTDay ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayRowClass.gibbonTTDayID)
+                INNER JOIN gibbonTT ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID)
+                WHERE gibbonTT.gibbonTTID=:gibbonTTID
+                AND gibbonTTDayRowClass.gibbonCourseClassID=:gibbonCourseClassID";
+        $this->pdo->executeQuery($data, $sql);
 
         return $this->pdo->getQuerySuccess();
     }
