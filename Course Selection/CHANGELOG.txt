@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v1.1.02
+-------
+Fix core include for all files
+
 v1.1.01
 -------
 Session variable and null coalesce refactoring

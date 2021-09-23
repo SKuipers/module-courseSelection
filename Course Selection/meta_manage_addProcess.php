@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-include '../../functions.php';
+require_once '../../gibbon.php';
 
 use CourseSelection\Domain\MetaDataGateway;
 
