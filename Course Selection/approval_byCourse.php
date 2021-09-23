@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Course Approval by Class', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Course Approval by Class', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -38,7 +38,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     echo $navigation->getYearPicker($gibbonSchoolYearID);
 
     // SELECT COURSE
-    $form = Form::create('courseApprovalByCourse', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form = Form::create('courseApprovalByCourse', $session->get('absoluteURL').'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('q', '/modules/Course Selection/approval_byCourse.php');
@@ -99,7 +99,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
                 echo '<tr class="'.$class.'">';
                     echo '<td>';
-                        echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
+                        echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
                         echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
                         echo '</a>';
                     echo '</td>';
@@ -121,11 +121,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                     echo '</td>';
                     echo '<td>';
                         if (!empty($student['courseSelectionOfferingID'])) {
-                            echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a> &nbsp;";
+                            echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a> &nbsp;";
 
-                            echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byOffering.php&sidebar=false&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."#".$student['gibbonPersonID']."'><img title='".__('Go to Approval')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_right.png'/></a>";
+                            echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/approval_byOffering.php&sidebar=false&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."#".$student['gibbonPersonID']."'><img title='".__('Go to Approval')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_right.png'/></a>";
                         } else {
-                            echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/selection.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                            echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/selection.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."'><img title='".__('View')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
                         }
 
                     echo '</td>';

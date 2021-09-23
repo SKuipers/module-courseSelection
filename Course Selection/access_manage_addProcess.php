@@ -11,7 +11,7 @@ use CourseSelection\Domain\AccessGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/access_manage_addEdit.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/access_manage_addEdit.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_manage_addEdit.php') == false) {
     $URL .= '&return=error0';

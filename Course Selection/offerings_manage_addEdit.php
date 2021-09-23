@@ -21,7 +21,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
     $values = array(
         'courseSelectionOfferingID' => '',
-        'gibbonSchoolYearID'        => $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'],
+        'gibbonSchoolYearID'        => $_REQUEST['gibbonSchoolYearID'] ?? $session->get('gibbonSchoolYearID'),
         'gibbonYearGroupIDList'     => '',
         'name'                      => '',
         'description'               => '',
@@ -38,19 +38,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
         $action = 'edit';
         $actionName = __('Edit Course Offering');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_editProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/offerings_manage_editProcess.php';
     } else {
         $action = 'add';
         $actionName = __('Add Course Offering');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_addProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/offerings_manage_addProcess.php';
     }
 
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__('Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/offerings_manage.php'>".__('Manage Course Offerings', 'Course Selection')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
+    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/offerings_manage.php'>".__('Manage Course Offerings', 'Course Selection')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
-        $editLink = (isset($_GET['editID']))? $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$_GET['editID'] : '';
+        $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$_GET['editID'] : '';
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
@@ -58,7 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
 
     if ($action == 'edit') {
         $form->addHiddenValue('gibbonSchoolYearID', $values['gibbonSchoolYearID']);
@@ -129,7 +129,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
                     echo '<td>'.$block['schoolYearName'].'</td>';
                     echo '<td>'.$block['yearGroupName'].'</td>';
                     echo '<td>';
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/offerings_manage_restriction_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionOfferingRestrictionID=".$block['courseSelectionOfferingRestrictionID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                        echo "<a href='".$session->get('absoluteURL')."/modules/".$session->get('module')."/offerings_manage_restriction_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionOfferingRestrictionID=".$block['courseSelectionOfferingRestrictionID']."'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
             }
@@ -137,11 +137,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             echo '</table>';
         }
 
-        $form = Form::create('offeringsRestrictionAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_restriction_addProcess.php');
+        $form = Form::create('offeringsRestrictionAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/offerings_manage_restriction_addProcess.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $row = $form->addRow();
             $row->addLabel('gibbonSchoolYearID', __('Student Enrolment'));
@@ -196,7 +196,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
                     echo '<td style="width: 15%;">'.$block['maxSelect'].'</td>';
                     echo '<td style="width: 10%;">';
                         echo '<input type="hidden" name="offeringBlockID" class="offeringBlockID" value="'.$block['courseSelectionBlockID'].'">';
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/offerings_manage_block_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionBlockID=".$block['courseSelectionBlockID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                        echo "<a href='".$session->get('absoluteURL')."/modules/".$session->get('module')."/offerings_manage_block_deleteProcess.php?courseSelectionOfferingID=".$block['courseSelectionOfferingID']."&courseSelectionBlockID=".$block['courseSelectionBlockID']."'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
             }
@@ -209,7 +209,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 
                 $('#offeringBlocks tbody').sortable({
                     update: function() {
-                        offeringBlockOrderSave('<?php echo $values['courseSelectionOfferingID']; ?>', '<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/'; ?>');
+                        offeringBlockOrderSave('<?php echo $values['courseSelectionOfferingID']; ?>', '<?php echo $session->get('absoluteURL').'/modules/Course Selection/'; ?>');
                     }
                 }).disableSelection();
             </script>
@@ -217,10 +217,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
             <?php
         }
 
-        $form = Form::create('offeringsBlockAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/offerings_manage_block_addProcess.php');
+        $form = Form::create('offeringsBlockAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/offerings_manage_block_addProcess.php');
 
         $form->addHiddenValue('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $blockList = $gateway->selectAvailableBlocksBySchoolYear($values['courseSelectionOfferingID'], $values['gibbonSchoolYearID']);
 

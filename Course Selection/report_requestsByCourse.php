@@ -18,7 +18,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Total Requests by Course', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Total Requests by Course', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -37,7 +37,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
     echo __('Filter');
     echo '</h2>';
 
-    $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form = Form::create('action', $session->get('absoluteURL').'/index.php', 'get');
 
     $form->setClass('noIntBorder fullWidth');
     $form->addHiddenValue('q', '/modules/Course Selection/report_requestsByCourse.php');
@@ -103,7 +103,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
                 echo '<td>'.$course['count'].'</td>';
 
                 echo '<td>';
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
 
@@ -158,7 +158,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
                     echo '<td>'.$course['count'].'</td>';
     
                     echo '<td>';
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                        echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
     

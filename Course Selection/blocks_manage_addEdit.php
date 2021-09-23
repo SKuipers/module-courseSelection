@@ -21,7 +21,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 
     $values = array(
         'courseSelectionBlockID' => '',
-        'gibbonSchoolYearID'     => $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'],
+        'gibbonSchoolYearID'     => $_REQUEST['gibbonSchoolYearID'] ?? $session->get('gibbonSchoolYearID'),
         'gibbonDepartmentIDList' => '',
         'name'                   => '',
         'description'            => '',
@@ -42,19 +42,19 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 
         $action = 'edit';
         $actionName = __('Edit Block');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/blocks_manage_editProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/blocks_manage_editProcess.php';
     } else {
         $action = 'add';
         $actionName = __('Add Block');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/blocks_manage_addProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/blocks_manage_addProcess.php';
     }
 
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__('Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/blocks_manage.php'>".__('Manage Course Blocks', 'Course Selection')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
+    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/blocks_manage.php'>".__('Manage Course Blocks', 'Course Selection')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
-        $editLink = (isset($_GET['editID']))? $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/blocks_manage_addEdit.php&courseSelectionBlockID='.$_GET['editID'] : '';
+        $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/blocks_manage_addEdit.php&courseSelectionBlockID='.$_GET['editID'] : '';
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
@@ -62,7 +62,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('courseSelectionBlockID', $values['courseSelectionBlockID']);
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
 
     if ($action == 'edit') {
         $form->addHiddenValue('gibbonSchoolYearID', $values['gibbonSchoolYearID']);
@@ -128,7 +128,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
                     echo '<td>'.$course['courseNameShort'].'</td>';
                     echo '<td>'.$course['courseName'].'</td>';
                     echo '<td>';
-                        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/modules/".$_SESSION[$guid]['module']."/blocks_manage_course_deleteProcess.php?courseSelectionBlockID=".$course['courseSelectionBlockID']."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                        echo "<a href='".$session->get('absoluteURL')."/modules/".$session->get('module')."/blocks_manage_course_deleteProcess.php?courseSelectionBlockID=".$course['courseSelectionBlockID']."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
                     echo '</td>';
                 echo '</tr>';
             }
@@ -136,10 +136,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
             echo '</table>';
         }
 
-        $form = Form::create('blocksCourseAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/blocks_manage_course_addProcess.php');
+        $form = Form::create('blocksCourseAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/blocks_manage_course_addProcess.php');
 
         $form->addHiddenValue('courseSelectionBlockID', $values['courseSelectionBlockID']);
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         if (!empty($values['gibbonDepartmentIDList'])) {
             $courseList = $gateway->selectAvailableCoursesByDepartments($values['courseSelectionBlockID'], $values['gibbonDepartmentIDList']);

@@ -36,7 +36,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
 
     // SELECT TIMETABLE & CLASS
-    $form = Form::create('timetableByClass', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
+    $form = Form::create('timetableByClass', $session->get('absoluteURL').'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('q', '/modules/Course Selection/tools_timetableByClass.php');
@@ -72,14 +72,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     echo $form->getOutput();
 
     if (!empty($gibbonCourseClassID)) {
-        $form = Form::create('ttAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/tools_timetableByClass_addProcess.php');
+        $form = Form::create('ttAdd', $session->get('absoluteURL').'/modules/Course Selection/tools_timetableByClass_addProcess.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonTTID', $gibbonTTID);
         $form->addHiddenValue('gibbonCourseClassID', $gibbonCourseClassID);
 
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $dayResults = $toolsGateway->selectTimetableDaysByTimetable($gibbonTTID);
         $columnResults = $toolsGateway->selectTimetableColumnsByTimetable($gibbonTTID);
@@ -142,12 +142,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
             echo __('Rename Class');
         echo '</h4>';
 
-        $form = Form::create('ttRenameClass', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/tools_timetableByClass_renameProcess.php');
+        $form = Form::create('ttRenameClass', $session->get('absoluteURL').'/modules/'.$session->get('module').'/tools_timetableByClass_renameProcess.php');
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonTTID', $gibbonTTID);
         $form->addHiddenValue('gibbonCourseClassID', $gibbonCourseClassID);
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $row = $form->addRow();
             $row->addLabel('name', __('Name'));

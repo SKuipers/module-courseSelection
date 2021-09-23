@@ -18,7 +18,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Results by Course', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Results by Course', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -44,7 +44,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         echo __('Filter');
         echo '</h2>';
 
-        $form = Form::create('resultsByCourse', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+        $form = Form::create('resultsByCourse', $session->get('absoluteURL').'/index.php', 'get');
 
         $form->setClass('noIntBorder fullWidth');
         $form->addHiddenValue('q', '/modules/Course Selection/tt_resultsByCourse.php');
@@ -100,7 +100,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>'.$class['courseName'];
                 if (!empty($class['excluded'])) {
-                    echo " <img class='pullRight' title='".__('Excluded from timetabling via Meta Data settings.')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/key.png'/ style='width:20px;height:20px;margin: -4px 0 -4px 4px;opacity: 0.6;'>";
+                    echo " <img class='pullRight' title='".__('Excluded from timetabling via Meta Data settings.')."' src='./themes/".$session->get('gibbonThemeName')."/img/key.png'/ style='width:20px;height:20px;margin: -4px 0 -4px 4px;opacity: 0.6;'>";
                 }
                 echo '</td>';
                 echo '<td>'.$class['className'].'</td>';
@@ -120,7 +120,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
                 echo '<td>'.$class['issues'].'</td>';
                 echo '<td>';
                     $enrolmentGroup = (!empty($class['enrolmentGroup']))? $class['enrolmentGroup'] : $class['gibbonCourseClassID'];
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseClassID=".$enrolmentGroup."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/plus.png'/></a>";
+                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/Course Selection/tt_resultsByStudent.php&gibbonCourseClassID=".$enrolmentGroup."&gibbonSchoolYearID=".$gibbonSchoolYearID."'><img title='".__('View')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
                 echo '</td>';
             echo '</tr>';
         }

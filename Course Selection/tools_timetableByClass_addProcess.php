@@ -18,7 +18,7 @@ $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSet
 $gibbonCourseClassID = $_REQUEST['gibbonCourseClassID'] ?? '';
 $gibbonTTID = $_REQUEST['gibbonTTID'] ?? '';
 
-$URL = $gibbon->session->get('absoluteURL') . "/index.php?q=/modules/Course Selection/tools_timetableByClass.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}";
+$URL = $session->get('absoluteURL') . "/index.php?q=/modules/Course Selection/tools_timetableByClass.php&gibbonSchoolYearID={$gibbonSchoolYearID}&gibbonTTID={$gibbonTTID}&gibbonCourseClassID={$gibbonCourseClassID}";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_timetableByClass.php') == false) {
     $URL .= '&return=error0';

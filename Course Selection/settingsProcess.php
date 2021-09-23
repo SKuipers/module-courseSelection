@@ -11,7 +11,7 @@ use CourseSelection\Domain\SettingsGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/settings.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/settings.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.php') == false) {
     $URL .= '&return=error0';
@@ -22,7 +22,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $partialFail = false;
     $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
 
-    $activeSchoolYear = $_POST['activeSchoolYear'] ?? $_SESSION[$guid]['gibbonSchoolYearID'];
+    $activeSchoolYear = $_POST['activeSchoolYear'] ?? $session->get('gibbonSchoolYearID');
     $partialFail &= !$settingsGateway->update('Course Selection', 'activeSchoolYear', $activeSchoolYear);
 
     $requireApproval = $_POST['requireApproval'] ?? 'Y';

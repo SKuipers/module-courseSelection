@@ -22,10 +22,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         echo __($guid, 'You have not specified one or more required parameters.');
         echo '</div>';
     } else {
-        $form = Form::create('accessRecord', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/blocks_manage_deleteProcess.php');
+        $form = Form::create('accessRecord', $session->get('absoluteURL').'/modules/'.$session->get('module').'/blocks_manage_deleteProcess.php');
 
         $form->addHiddenValue('courseSelectionBlockID', $courseSelectionBlockID);
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $row = $form->addRow()->addHeading(__('Are you sure you want to delete this record?'));
 

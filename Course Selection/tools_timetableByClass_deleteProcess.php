@@ -23,25 +23,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     exit;
 } else {
     //Proceed!
-    $name = $_POST['name'] ?? '';
-    $nameShort = $_POST['nameShort'] ?? '';
+    $gibbonTTDayRowClassID = $_GET['gibbonTTDayRowClassID'] ?? '';
 
-    if (empty($gibbonCourseClassID) || empty($name) || empty($nameShort)) {
+    if (empty($gibbonTTDayRowClassID)) {
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
     } else {
         $gateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
-        $data = array(
-            'gibbonCourseClassID' => $gibbonCourseClassID,
-            'name'                => $name,
-            'nameShort'           => $nameShort,
-        );
+        $deleted = $gateway->deleteTTDayRowClass($gibbonTTDayRowClassID);
 
-        $renamed = $gateway->renameCourseClass($data);
-
-        if ($renamed == false) {
+        if ($deleted == false) {
             $URL .= '&return=error2';
             header("Location: {$URL}");
             exit;

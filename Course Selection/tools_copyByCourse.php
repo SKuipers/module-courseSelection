@@ -19,7 +19,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Copy Selections By Course', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Copy Selections By Course', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -45,7 +45,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     }
 
     // SELECT COURSE
-    $form = Form::create('copySelectionsPicker', $_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+    $form = Form::create('copySelectionsPicker', $session->get('absoluteURL').'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('q', '/modules/Course Selection/tools_copyByCourse.php');
@@ -105,7 +105,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
             return;
         }
 
-        $form = Form::create('copySelectionsStudents', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_copyByCourseProcess.php');
+        $form = Form::create('copySelectionsStudents', $session->get('absoluteURL').'/modules/Course Selection/tools_copyByCourseProcess.php');
 
         $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
         $form->addHiddenValue('gibbonSchoolYearIDCopyTo', $gibbonSchoolYearIDCopyTo);

@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         if ($status === 'true') {
             $data = array();
             $data['courseSelectionChoiceID'] = $courseSelectionChoiceID;
-            $data['gibbonPersonIDApproved'] = $_SESSION[$guid]['gibbonPersonID'];
+            $data['gibbonPersonIDApproved'] = $session->get('gibbonPersonID');
             $data['timestampApproved'] = date('Y-m-d H:i:s');
 
             $gateway->insertApproval($data);

@@ -39,18 +39,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         }
 
         $actionName = __('Edit Meta Data');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/meta_manage_editProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/meta_manage_editProcess.php';
     } else {
         $actionName = __('Add Meta Data');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/meta_manage_addProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/meta_manage_addProcess.php';
     }
 
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__('Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/meta_manage.php'>".__('Manage Meta Data')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
+    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/meta_manage.php'>".__('Manage Meta Data')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
-        $editLink = (isset($_GET['editID']))? $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/meta_manage_addEdit.php&courseSelectionMetaDataID='.$_GET['editID'] : '';
+        $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/meta_manage_addEdit.php&courseSelectionMetaDataID='.$_GET['editID'] : '';
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
@@ -58,7 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
 
     $form->addHiddenValue('courseSelectionMetaDataID', $values['courseSelectionMetaDataID']);
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
 
     $courseResults = $toolsGateway->selectCoursesOfferedBySchoolYear($gibbonSchoolYearID);
 
