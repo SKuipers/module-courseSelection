@@ -14,7 +14,7 @@ require 'module.php';
 $courseSelectionMetaDataID = $_POST['courseSelectionMetaDataID'] ?? '';
 $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/meta_manage_addEdit.php&gibbonSchoolYearID'.$gibbonSchoolYearID.'&courseSelectionMetaDataID='.$courseSelectionMetaDataID;
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/meta_manage_addEdit.php&gibbonSchoolYearID'.$gibbonSchoolYearID.'&courseSelectionMetaDataID='.$courseSelectionMetaDataID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_manage_addEdit.php') == false) {
     $URL .= '&return=error0';

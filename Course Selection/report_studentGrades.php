@@ -17,7 +17,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Student Grades', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Student Grades', 'Course Selection') . "</div>" ;
     echo "</div>" ;
     echo "<br/>" ;
 
@@ -43,7 +43,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         echo '<br/>';
         echo '<div>';
         echo __('Viewing report grades for ');
-        echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
+        echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
         echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', true).'</strong>';
         echo '</a>';
         echo '</div>';
@@ -105,8 +105,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 $final = (!empty($courseGrades['Final']))? $courseGrades['Final'] : '';
                 $finalClass = (!empty($final) && intval($final) < 50)? 'gradesRow' : 'gradesRow';
 
-                if (!empty($courseGrades['gibbonCourseClassID']) && $enrolment['schoolYearID'] == $_SESSION[$guid]['gibbonSchoolYearID']) {
-                    $courseGrades['courseNameShort'] = sprintf('<a href="%2$s">%1$s</a>', $courseGrades['courseNameShort'], $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'&search=&search=&allStudents=&subpage=Markbook#'.str_pad($courseGrades['gibbonCourseClassID'], 8, '0', STR_PAD_LEFT));
+                if (!empty($courseGrades['gibbonCourseClassID']) && $enrolment['schoolYearID'] == $session->get('gibbonSchoolYearID')) {
+                    $courseGrades['courseNameShort'] = sprintf('<a href="%2$s">%1$s</a>', $courseGrades['courseNameShort'], $session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'&search=&search=&allStudents=&subpage=Markbook#'.str_pad($courseGrades['gibbonCourseClassID'], 8, '0', STR_PAD_LEFT));
                 }
 
                 echo '<tr>';

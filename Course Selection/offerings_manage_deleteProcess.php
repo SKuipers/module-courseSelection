@@ -11,7 +11,7 @@ use CourseSelection\Domain\OfferingsGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/offerings_manage.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings_manage_delete.php') == false) {
     $URL .= '&return=error0';

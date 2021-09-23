@@ -13,7 +13,7 @@ require 'module.php';
 
 $courseSelectionBlockID = $_POST['courseSelectionBlockID'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/blocks_manage_addEdit.php&courseSelectionBlockID='.$courseSelectionBlockID;
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/blocks_manage_addEdit.php&courseSelectionBlockID='.$courseSelectionBlockID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_manage_addEdit.php') == false) {
     $URL .= '&return=error0';

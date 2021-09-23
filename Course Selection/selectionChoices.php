@@ -25,7 +25,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection Choices', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection Choices', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
@@ -42,7 +42,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     }
 
     // Cancel out if a student is accessing a different student record
-    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
+    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $session->get('gibbonPersonID')) {
         echo "<div class='error'>" ;
             echo __('You do not have access to this action.');
         echo "</div>" ;
@@ -59,7 +59,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
     $gradesGateway = $container->get('CourseSelection\Domain\GradesGateway');
 
-    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
+    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $session->get('gibbonPersonID'));
 
     $offeringRequest = $offeringsGateway->selectOne($courseSelectionOfferingID);
 
@@ -84,13 +84,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         echo __('Course Selection').' '.$access['schoolYearName'];
         echo '</h3>';
 
-        if ($gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
+        if ($gibbonPersonIDStudent != $session->get('gibbonPersonID')) {
             $studentRequest = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
             if ($studentRequest && $studentRequest->rowCount() > 0) {
                 $student = $studentRequest->fetch();
                 echo '<p>';
                 echo __('Selecting courses for ');
-                echo '<a href="'.$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
+                echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
                 echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', false, true).'</strong>';
                 echo '</a></p>';
             }
@@ -111,11 +111,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo '</div>';
         }
 
-        $form = Form::createTable('selectionChoices', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoicesProcess.php');
+        $form = Form::createTable('selectionChoices', $session->get('absoluteURL').'/modules/Course Selection/selectionChoicesProcess.php');
         $form->setFactory(CourseSelectionFormFactory::create($selectionsGateway));
 
         $form->setClass('fullWidth smallIntBorder');
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
         $form->addHiddenValue('courseSelectionOfferingID', $courseSelectionOfferingID);
         $form->addHiddenValue('gibbonSchoolYearID', $offering['gibbonSchoolYearID']);
         $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
@@ -220,10 +220,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo '</h3>';
 
             // MANUALLY ADD COURSE
-            $form = Form::create('selectByStudent', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/selectionChoices_addProcess.php');
+            $form = Form::create('selectByStudent', $session->get('absoluteURL').'/modules/Course Selection/selectionChoices_addProcess.php');
             $form->setFactory(DatabaseFormFactory::create($pdo));
 
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('gibbonSchoolYearID', $access['gibbonSchoolYearID']);
             $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
             $form->addHiddenValue('courseSelectionOfferingID', $courseSelectionOfferingID);

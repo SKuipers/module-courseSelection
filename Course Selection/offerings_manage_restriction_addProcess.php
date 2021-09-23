@@ -13,7 +13,7 @@ require 'module.php';
 
 $courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$courseSelectionOfferingID;
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$courseSelectionOfferingID;
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings_manage_addEdit.php') == false) {
     $URL .= '&return=error0';

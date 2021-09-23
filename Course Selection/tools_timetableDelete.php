@@ -31,9 +31,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     $schoolYearGateway = $container->get(SchoolYearGateway::class);
     $targetSchoolYear = $schoolYearGateway->getSchoolYearByID($gibbonSchoolYearID);
 
-    $form = Form::create('timetableClear', $_SESSION[$guid]['absoluteURL'].'/modules/Course Selection/tools_timetableDeleteProcess.php');
+    $form = Form::create('timetableClear', $session->get('absoluteURL').'/modules/Course Selection/tools_timetableDeleteProcess.php');
 
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
     $row = $form->addRow()->addHeading(__('Danger Zone'));

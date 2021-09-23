@@ -21,7 +21,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $values = array(
         'courseSelectionAccessID' => '',
-        'gibbonSchoolYearID'      => $_REQUEST['gibbonSchoolYearID'] ?? $_SESSION[$guid]['gibbonSchoolYearID'],
+        'gibbonSchoolYearID'      => $_REQUEST['gibbonSchoolYearID'] ?? $session->get('gibbonSchoolYearID'),
         'dateStart'               => '',
         'dateEnd'                 => '',
         'accessType'              => '',
@@ -35,18 +35,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         }
 
         $actionName = __('Edit Access');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/access_manage_editProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/access_manage_editProcess.php';
     } else {
         $actionName = __('Add Access');
-        $actionURL = $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/access_manage_addProcess.php';
+        $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/access_manage_addProcess.php';
     }
 
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$_SESSION[$guid]['absoluteURL']."'>".__('Home')."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/access_manage.php'>".__('Course Selection Access')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
+    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/access_manage.php'>".__('Course Selection Access')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
-        $editLink = (isset($_GET['editID']))? $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/access_manage_addEdit.php&courseSelectionAccessID='.$_GET['editID'] : '';
+        $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/access_manage_addEdit.php&courseSelectionAccessID='.$_GET['editID'] : '';
         returnProcess($guid, $_GET['return'], $editLink, null);
     }
 
@@ -54,7 +54,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
     $form->addHiddenValue('courseSelectionAccessID', $values['courseSelectionAccessID']);
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
 
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearID', __('School Year'));

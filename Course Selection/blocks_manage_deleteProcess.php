@@ -11,7 +11,7 @@ use CourseSelection\Domain\BlocksGateway;
 // Module Bootstrap
 require 'module.php';
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Course Selection/blocks_manage.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/blocks_manage.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_manage_delete.php') == false) {
     $URL .= '&return=error0';

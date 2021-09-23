@@ -16,7 +16,7 @@ require 'module.php';
 $courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';
 $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? '';
 
-$URL = $_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false&gibbonPersonIDStudent={$gibbonPersonIDStudent}&courseSelectionOfferingID={$courseSelectionOfferingID}";
+$URL = $session->get('absoluteURL')."/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false&gibbonPersonIDStudent={$gibbonPersonIDStudent}&courseSelectionOfferingID={$courseSelectionOfferingID}";
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selectionChoices.php') == false) {
     $URL .= '&return=error0';
@@ -26,7 +26,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     //Proceed!
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
 
-    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $_SESSION[$guid]['gibbonPersonID']) {
+    if ($highestGroupedAction != 'Course Selection_all' && $gibbonPersonIDStudent != $session->get('gibbonPersonID')) {
         $URL .= '&return=error0';
         header("Location: {$URL}");
         exit;
@@ -34,7 +34,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
     $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
 
-    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $_SESSION[$guid]['gibbonPersonID']);
+    $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $session->get('gibbonPersonID'));
 
     if (!$accessRequest || $accessRequest->rowCount() == 0) {
         $URL .= '&return=error0';
@@ -52,7 +52,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         $data = array();
         $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
         $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-        $data['gibbonPersonIDSelected'] = $_SESSION[$guid]['gibbonPersonID'];
+        $data['gibbonPersonIDSelected'] = $session->get('gibbonPersonID');
         $data['timestampSelected'] = date('Y-m-d H:i:s');
         $data['notes'] = '';
 
@@ -130,7 +130,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $data['courseSelectionOfferingID'] = $courseSelectionOfferingID ?? '';
             $data['gibbonSchoolYearID'] = $_POST['gibbonSchoolYearID'] ?? '';
             $data['gibbonPersonIDStudent'] = $gibbonPersonIDStudent;
-            $data['gibbonPersonIDChanged'] = $_SESSION[$guid]['gibbonPersonID'];
+            $data['gibbonPersonIDChanged'] = $session->get('gibbonPersonID');
             $data['timestampChanged'] = date('Y-m-d H:i:s');
             $data['action'] = 'Update';
 

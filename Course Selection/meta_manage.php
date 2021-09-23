@@ -17,7 +17,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Meta Data', 'Course Selection') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Meta Data', 'Course Selection') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -32,9 +32,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     echo "<div class='linkTop'>";
     if (!empty($navigation->getNextYear())) {
         $nextYear = $navigation->getNextYear();
-        echo "<a href='" . $_SESSION[$guid]['absoluteURL'] . '/modules/'.$_SESSION[$guid]['module']."/meta_manage_copyProcess.php?gibbonSchoolYearID=$gibbonSchoolYearID&gibbonSchoolYearIDNext=".$nextYear['gibbonSchoolYearID']."' onclick='return confirm(\"Are you sure you want to do this? All meta data from this year will be copied.\")'>" . __('Copy All To Next Year') . "<img style='margin-left: 5px' title='" . __('Copy All To Next Year') . "' src='./themes/" . $_SESSION[$guid]['gibbonThemeName'] . "/img/copy.png'/></a> | ";
+        echo "<a href='" . $session->get('absoluteURL') . '/modules/'.$session->get('module')."/meta_manage_copyProcess.php?gibbonSchoolYearID=$gibbonSchoolYearID&gibbonSchoolYearIDNext=".$nextYear['gibbonSchoolYearID']."' onclick='return confirm(\"Are you sure you want to do this? All meta data from this year will be copied.\")'>" . __('Copy All To Next Year') . "<img style='margin-left: 5px' title='" . __('Copy All To Next Year') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/copy.png'/></a> | ";
     }
-    echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/meta_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
+    echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/meta_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
     echo '</div>';
 
     $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
@@ -76,9 +76,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
                 echo '<td>'.$metaData['timetablePriority'].'</td>';
                 echo '<td>'.$metaData['tags'].'</td>';
                 echo '<td>';
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/".$_SESSION[$guid]['module']."/meta_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&courseSelectionMetaDataID=".$metaData['courseSelectionMetaDataID']."'><img title='".__('Edit')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/config.png'/></a> &nbsp;";
+                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/meta_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&courseSelectionMetaDataID=".$metaData['courseSelectionMetaDataID']."'><img title='".__('Edit')."' src='./themes/".$session->get('gibbonThemeName')."/img/config.png'/></a> &nbsp;";
 
-                    echo "<a class='thickbox' href='".$_SESSION[$guid]['absoluteURL']."/fullscreen.php?q=/modules/".$_SESSION[$guid]['module']."/meta_manage_delete.php&courseSelectionMetaDataID=".$metaData['courseSelectionMetaDataID']."&width=650&height=200'><img title='".__('Delete')."' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a>";
+                    echo "<a class='thickbox' href='".$session->get('absoluteURL')."/fullscreen.php?q=/modules/".$session->get('module')."/meta_manage_delete.php&courseSelectionMetaDataID=".$metaData['courseSelectionMetaDataID']."&width=650&height=200'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
                 echo '</td>';
             echo '</tr>';
         }
