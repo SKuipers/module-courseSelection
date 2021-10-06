@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+v1.1.03
+-------
+Fix the namespace for Session class in SchoolYearNavigation class
+Fix the autoloader in module.php
+
 v1.1.02
 -------
 Fix core include for all files
