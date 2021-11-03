@@ -5,7 +5,9 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 
@@ -18,17 +20,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Copy Selections By Course', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+	$page->breadcrumbs
+    	->add(__m('Copy Selections By Course'));
 
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $gibbonSchoolYearIDCopyTo = $_GET['gibbonSchoolYearIDCopyTo'] ?? null;
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
     $actionCopyFrom = $_GET['actionCopyFrom'] ?? '';
@@ -120,7 +118,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 
         while ($student = $studentsResults->fetch()) {
             $row = $form->addRow()->addClass('rowHighlight');
-                $row->addLabel('studentList[]', formatName('', $student['preferredName'], $student['surname'], 'Student', true))->setClass('w-2/5');
+                $row->addLabel('studentList[]', Format::name('', $student['preferredName'], $student['surname'], 'Student', true))->setClass('w-2/5');
                 $row->addContent($student['yearGroupName'])->setClass('w-1/5');
                 $row->addContent($student['courseClassName'])->setClass('w-1/5');
                 $row->addCheckbox('studentList[]')->addClass('w-1/5 studentList')->setValue($student['gibbonPersonID'])->checked($student['gibbonPersonID']);

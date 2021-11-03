@@ -5,8 +5,10 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
-use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Services\Format;
 use CourseSelection\Domain\Access;
+use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\AccessGateway;
 use CourseSelection\Domain\OfferingsGateway;
 use CourseSelection\Domain\BlocksGateway;
@@ -24,9 +26,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection Choices', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
+	$page->breadcrumbs
+		->add(__m('Course Selection'), 'selection.php')
+		->add(__m('Course Selection Choices'));
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
 
@@ -47,10 +49,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo __('You do not have access to this action.');
         echo "</div>" ;
         return;
-    }
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
     }
 
     $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
@@ -91,13 +89,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 echo '<p>';
                 echo __('Selecting courses for ');
                 echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
-                echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', false, true).'</strong>';
+                echo '<strong>'.Format::name('', $student['preferredName'], $student['surname'], 'Student', false, true).'</strong>';
                 echo '</a></p>';
             }
         }
-
-        $enableCourseGrades = getSettingByScope($connection2, 'Course Selection', 'enableCourseGrades');
-        $infoTextBefore = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionBefore');
+        
+		$settingGateway = $container->get(SettingGateway::class);
+        $enableCourseGrades = $settingGateway->getSettingByScope('Course Selection', 'enableCourseGrades');
+        $infoTextBefore = $settingGateway->getSettingByScope('Course Selection', 'infoTextSelectionBefore');
         if (!empty($infoTextBefore)) {
             echo '<p>'.$infoTextBefore.'</p>';
         }
@@ -197,9 +196,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         if ($readOnly == false) {
             $row = $form->addRow();
                 $progress = $row->addCourseProgressByOffering($offering);
-                $progress->setMessage('complete', getSettingByScope($connection2, 'Course Selection', 'selectionComplete'));
-                $progress->setMessage('invalid', getSettingByScope($connection2, 'Course Selection', 'selectionInvalid'));
-                $progress->setMessage('continue', getSettingByScope($connection2, 'Course Selection', 'selectionContinue'));
+                $progress->setMessage('complete', $settingGateway->getSettingByScope('Course Selection', 'selectionComplete'));
+                $progress->setMessage('invalid', $settingGateway->getSettingByScope('Course Selection', 'selectionInvalid'));
+                $progress->setMessage('continue', $settingGateway->getSettingByScope('Course Selection', 'selectionContinue'));
 
             $row = $form->addRow();
                 $row->addSubmit(__('Save'));
@@ -207,7 +206,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         echo $form->getOutput();
 
-        $infoTextAfter = getSettingByScope($connection2, 'Course Selection', 'infoTextSelectionAfter');
+        $infoTextAfter = $settingGateway->getSettingByScope('Course Selection', 'infoTextSelectionAfter');
         if (!empty($infoTextAfter)) {
             echo '<br/><p>'.$infoTextAfter.'</p>';
         }

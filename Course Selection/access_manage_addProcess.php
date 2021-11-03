@@ -4,9 +4,10 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-require_once '../../gibbon.php';
-
+use Gibbon\Services\Format;
 use CourseSelection\Domain\AccessGateway;
+
+require_once '../../gibbon.php';
 
 // Module Bootstrap
 require 'module.php';
@@ -26,8 +27,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
     $data['accessType'] = $_POST['accessType'] ?? '';
     $data['gibbonRoleIDList'] = $_POST['gibbonRoleIDList'] ?? array();
 
-    $data['dateStart'] = dateConvert($guid, $data['dateStart']);
-    $data['dateEnd'] = dateConvert($guid, $data['dateEnd']);
+    $data['dateStart'] = Format::dateConvert($data['dateStart']);
+    $data['dateEnd'] = Format::dateConvert($data['dateEnd']);
     $data['gibbonRoleIDList'] = implode(',', $data['gibbonRoleIDList']);
 
     if (empty($data['gibbonSchoolYearID']) || empty($data['dateStart']) || empty($data['dateEnd']) || empty($data['accessType']) || empty($data['gibbonRoleIDList'])) {

@@ -4,9 +4,10 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-include '../../gibbon.php';
-
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\TimetableGateway;
+
+include '../../gibbon.php';
 
 // Module Bootstrap
 require 'module.php';
@@ -19,7 +20,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     exit;
 } else {
     //Proceed!
-    $gibbonSchoolYearID = getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+    $settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $gibbonTTID = $_POST['gibbonTTID'] ?? '';
 
     if (empty($gibbonSchoolYearID) || empty($gibbonTTID)) {

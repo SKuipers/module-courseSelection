@@ -5,6 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\Domain\SelectionsGateway;
 use CourseSelection\SchoolYearNavigation;
@@ -20,13 +21,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Timetabling Engine', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+	$page->breadcrumbs
+    	->add(__m('Timetabling Engine'));
 
     $process = new BackgroundProcess($session->get('absolutePath').'/uploads/engine');
 
@@ -49,7 +45,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         return;
     }
 
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
@@ -131,9 +128,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel('courseCountInfo', __('Total Courses'))->setClass('mediumWidth');
             $row->addTextField('courseCount')->readonly()->setValue(count($courses));
 
-        $classEnrolmentMinimum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
-        $classEnrolmentTarget = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
-        $classEnrolmentMaximum = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
+        $classEnrolmentMinimum = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMinimum');
+        $classEnrolmentTarget = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentTarget');
+        $classEnrolmentMaximum = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMaximum');
 
         $row = $form->addRow();
             $row->addLabel('enrolmentInfo', __('Enrolment Targets'))->description(__('Edit in Settings'))->wrap('<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Course Selection/settings.php">', '</a>');
@@ -151,7 +148,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             'random'        => __('Random'),
         );
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'studentOrder', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'studentOrder', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addSelect($setting['name'])->fromArray($studentOrders)->selected($setting['value']);
@@ -165,32 +162,32 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             '8' => __('Very High'),
         );
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'genderBalancePriority', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'genderBalancePriority', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'targetEnrolmentPriority', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'targetEnrolmentPriority', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'coreCoursePriority', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'coreCoursePriority', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'avoidConflictPriority', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'avoidConflictPriority', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addSelect($setting['name'])->fromArray($priorities)->selected($setting['value']);
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'timetableConflictTollerance', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addNumber($setting['name'])->required()->minimum(0)->maximum(8)->setValue($setting['value']);
 
-        $setting = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts', true);
+        $setting = $settingGateway->getSettingByScope('Course Selection', 'autoResolveConflicts', true);
         $row = $form->addRow();
             $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
             $row->addYesNo($setting['name'])->required()->selected($setting['value']);
@@ -205,7 +202,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         echo $form->getOutput();
     } else {
         // RESULTS
-        $stats = getSettingByScope($connection2, 'Course Selection', 'timetablingResults');
+        $stats = $settingGateway->getSettingByScope('Course Selection', 'timetablingResults');
         $stats = json_decode($stats, true);
 
         $resultsCollection = collect($engineResults->fetchAll());

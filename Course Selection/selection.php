@@ -5,9 +5,10 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
-use Gibbon\Forms\DatabaseFormFactory;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\Access;
+use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
+use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\AccessGateway;
 use CourseSelection\Domain\OfferingsGateway;
 use CourseSelection\Domain\SelectionsGateway;
@@ -21,15 +22,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Course Selection', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
+    $page->breadcrumbs
+    	->add(__m('Course Selection'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
@@ -101,7 +98,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             return;
         }
 
-        $infoText = getSettingByScope($connection2, 'Course Selection', 'infoTextOfferings');
+        $infoText = $settingGateway->getSettingByScope('Course Selection', 'infoTextOfferings');
         if (!empty($infoText)) {
             echo '<p>'.$infoText.'</p>';
         }

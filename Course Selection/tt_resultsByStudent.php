@@ -5,6 +5,8 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\SchoolYearNavigation;
 
@@ -17,17 +19,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Results by Student', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
+    $page->breadcrumbs
+    	->add(__m('View Results by Student'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $gibbonCourseClassID = $_REQUEST['gibbonCourseClassID'] ?? null;
-    $enableCourseGrades = getSettingByScope($connection2, 'Course Selection', 'enableCourseGrades');
+    $enableCourseGrades = $settingGateway->getSettingByScope('Course Selection', 'enableCourseGrades');
 
     $sort = $_GET['sort'] ?? 'surname';
     $allCourses = $_GET['allCourses'] ?? false;
@@ -104,7 +102,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>';
                     echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Course Selection/approval_byOffering.php&sidebar=false&courseSelectionOfferingID='.$student['courseSelectionOfferingID'].'&gibbonSchoolYearID='.$gibbonSchoolYearID.'#'.$student['gibbonPersonID'].'" target="_blank">';
-                    echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
+                    echo Format::name('', $student['preferredName'], $student['surname'], 'Student', true);
                     echo '</a><br/><br/>';
 
                     echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/Course Selection/tt_previewByStudent.php&gibbonPersonID=".$student['gibbonPersonID']."' target='_blank'><img title='".__('Preview Timetable')."' src='./themes/".$session->get('gibbonThemeName')."/img/markbook.png'/></a>";

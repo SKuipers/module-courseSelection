@@ -6,6 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\MetaDataGateway;
 use CourseSelection\Domain\ToolsGateway;
 
@@ -21,7 +22,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
     $metaDataGateway = $container->get('CourseSelection\Domain\MetaDataGateway');
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
 
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
     $values = array(
         'courseSelectionMetaDataID' => '',
@@ -45,13 +47,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/meta_manage_addProcess.php';
     }
 
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/meta_manage.php'>".__('Manage Meta Data')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
-    echo "</div>" ;
+   	$page->breadcrumbs
+		->add(__m('Manage Meta Data'), 'meta_manage.php')
+		->add(__m($actionName));
 
     if (isset($_GET['return'])) {
         $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/meta_manage_addEdit.php&courseSelectionMetaDataID='.$_GET['editID'] : '';
-        returnProcess($guid, $_GET['return'], $editLink, null);
+        $page->return->setEditLink($editLink);
     }
 
     $form = Form::create('metaAddEdit', $actionURL);

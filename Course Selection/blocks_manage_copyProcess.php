@@ -4,14 +4,16 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-include '../../gibbon.php';
-
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\BlocksGateway;
+
+include '../../gibbon.php';
 
 // Module Bootstrap
 require 'module.php';
 
-$gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+$settingGateway = $container->get(SettingGateway::class);
+$gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 $gibbonSchoolYearIDNext = $_REQUEST['gibbonSchoolYearIDNext'] ?? '';
 
 $URL = $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/blocks_manage.php&gibbonSchoolYearID='.$gibbonSchoolYearIDNext;

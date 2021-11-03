@@ -5,6 +5,8 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\SelectionsGateway;
 
@@ -17,15 +19,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Students Not Selected', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
+   $page->breadcrumbs
+    	->add(__m('Students Not Selected'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $sort = $_GET['sort'] ?? 'surname';
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
@@ -112,7 +110,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
             echo '<tr class="'.$rowClass.'">';
                 echo '<td>';
                     echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
-                    echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
+                    echo Format::name('', $student['preferredName'], $student['surname'], 'Student', true);
                     echo '</a>';
                 echo '</td>';
 

@@ -6,6 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 use Gibbon\Services\Format;
@@ -19,13 +20,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Upcoming Timetable', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+    $page->breadcrumbs
+    	->add(__m('Upcoming Timetable'));
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/upcomingTimetable.php', $connection2);
 
@@ -50,7 +46,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
         $gibbonPersonIDStudent = $session->get('gibbonPersonID');
     }
 
-    $gibbonSchoolYearID = getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
     // Cancel out early if there's no valid student selected
     if (empty($gibbonSchoolYearID) || empty($gibbonPersonIDStudent)) return;

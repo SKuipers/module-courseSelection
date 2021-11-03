@@ -5,8 +5,10 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 use CourseSelection\Domain\AccessGateway;
+
 
 // Module Bootstrap
 require 'module.php';
@@ -40,14 +42,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         $actionName = __('Add Access');
         $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/access_manage_addProcess.php';
     }
-
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/access_manage.php'>".__('Course Selection Access')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
-    echo "</div>" ;
+    
+    $page->breadcrumbs
+         ->add(__m('Course Selection Access'), 'access_manage.php')
+         ->add(__m($actionName));
 
     if (isset($_GET['return'])) {
         $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/access_manage_addEdit.php&courseSelectionAccessID='.$_GET['editID'] : '';
-        returnProcess($guid, $_GET['return'], $editLink, null);
+        $page->return->setEditLink($editLink);
     }
 
     $form = Form::create('accessAddEdit', $actionURL);
@@ -62,11 +64,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $row = $form->addRow();
         $row->addLabel('dateStart', __('Start Date'));
-        $row->addDate('dateStart')->required()->setValue(dateConvertBack($guid, $values['dateStart']));
+        $row->addDate('dateStart')->required()->setValue(Format::date($values['dateStart']));
 
     $row = $form->addRow();
         $row->addLabel('dateEnd', __('End Date'));
-        $row->addDate('dateEnd')->required()->setValue(dateConvertBack($guid, $values['dateEnd']));
+        $row->addDate('dateEnd')->required()->setValue(Format::date($values['dateEnd']));
 
     $row = $form->addRow();
         $row->addLabel('accessType', __('Access Type'));

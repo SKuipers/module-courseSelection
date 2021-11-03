@@ -4,8 +4,9 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Services\Format;
 use CourseSelection\Domain\GradesGateway;
+use CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -16,14 +17,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Student Grades', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
-    echo "<br/>" ;
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+   $page->breadcrumbs
+    	->add(__m('Student Grades'));
 
     $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
 
@@ -44,7 +39,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         echo '<div>';
         echo __('Viewing report grades for ');
         echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$gibbonPersonIDStudent.'" target="_blank">';
-        echo '<strong>'.formatName('', $student['preferredName'], $student['surname'], 'Student', true).'</strong>';
+        echo '<strong>'.Format::name('', $student['preferredName'], $student['surname'], 'Student', true).'</strong>';
         echo '</a>';
         echo '</div>';
 

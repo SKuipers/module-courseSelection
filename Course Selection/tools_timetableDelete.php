@@ -5,6 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Domain\School\SchoolYearGateway;
 
 // Module Bootstrap
@@ -19,11 +20,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 
     $page->breadcrumbs->add(__m('Clear Timetable'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
-    $gibbonSchoolYearID = getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
     $timetableResults = $toolsGateway->selectTimetablesBySchoolYear($gibbonSchoolYearID);

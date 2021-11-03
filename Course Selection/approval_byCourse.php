@@ -5,7 +5,9 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 use CourseSelection\Domain\SelectionsGateway;
@@ -19,20 +21,16 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Course Approval by Class', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+	$page->breadcrumbs
+         ->add(__m('Course Approval by Class'));
 
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
 
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
+	$settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
@@ -100,7 +98,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 echo '<tr class="'.$class.'">';
                     echo '<td>';
                         echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
-                        echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
+                        echo Format::name('', $student['preferredName'], $student['surname'], 'Student', true);
                         echo '</a>';
                     echo '</td>';
                     echo '<td>'.$student['formGroupName'].'</td>';
@@ -115,7 +113,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                         if ($student['selectedPersonID'] == $student['gibbonPersonID']) {
                             echo 'Student';
                         } else {
-                            echo formatName('', $student['selectedPreferredName'], $student['selectedSurname'], 'Student', false);
+                            echo Format::name('', $student['selectedPreferredName'], $student['selectedSurname'], 'Student', false);
                         }
                         echo '</span>';
                     echo '</td>';

@@ -5,7 +5,9 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 use CourseSelection\Domain\OfferingsGateway;
@@ -20,13 +22,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __($guid, "Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Course Approval by Offering', 'Course Selection') . "</div>" ;
-    echo "</div>" ;
-
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+	$page->breadcrumbs
+	 	->add(__m('Course Approval by Offering'));
 
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
     $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
@@ -34,8 +31,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $courseSelectionOfferingID = $_REQUEST['courseSelectionOfferingID'] ?? '';
     $showRemoved = $_GET['showRemoved'] ?? 'N';
-    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? getSettingByScope($connection2, 'Course Selection', 'activeSchoolYear');
-    $enableCourseGrades = getSettingByScope($connection2, 'Course Selection', 'enableCourseGrades');
+    
+    $settingGateway = $container->get(SettingGateway::class);
+    $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
+    $enableCourseGrades = $settingGateway->getSettingByScope('Course Selection', 'enableCourseGrades');
 
     $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
     echo $navigation->getYearPicker($gibbonSchoolYearID);
@@ -108,8 +107,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                 echo '<tr class="'.$rowClass.'" id="'.$student['gibbonPersonID'].'">';
                     echo '<td width="15%">';
                         echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
-                        echo getUserPhoto($guid, $student['image_240'], 75).'<br/>';
-                        echo formatName('', $student['preferredName'], $student['surname'], 'Student', true);
+                        echo Format::userPhoto($student['image_240'], 75).'<br/>';
+                        echo Format::name('', $student['preferredName'], $student['surname'], 'Student', true);
                         echo '</a><br/>';
                         echo $student['formGroupName'];
                     echo '</td>';

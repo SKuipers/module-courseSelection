@@ -45,13 +45,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         $actionURL = $session->get('absoluteURL').'/modules/'.$session->get('module').'/offerings_manage_addProcess.php';
     }
 
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='".$session->get('absoluteURL')."'>".__('Home')."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q']).'/'.getModuleEntry($_GET['q'], $connection2, $guid)."'>".__(getModuleName($_GET['q']))."</a> > <a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/offerings_manage.php'>".__('Manage Course Offerings', 'Course Selection')."</a> > </div><div class='trailEnd'>".$actionName.'</div>';
-    echo "</div>" ;
-
+	$page->breadcrumbs
+		->add(__m('Manage Course Offerings'), 'offerings_manage.php')
+		->add(__m($actionName));
+   
     if (isset($_GET['return'])) {
         $editLink = (isset($_GET['editID']))? $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/offerings_manage_addEdit.php&courseSelectionOfferingID='.$_GET['editID'] : '';
-        returnProcess($guid, $_GET['return'], $editLink, null);
+        $page->return->setEditLink($editLink);
     }
 
     $form = Form::create('offeringsAddEdit', $actionURL);

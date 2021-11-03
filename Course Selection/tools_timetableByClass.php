@@ -4,10 +4,11 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\Form;
-use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Services\Format;
+use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Forms\DatabaseFormFactory;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 
@@ -20,13 +21,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 } else {
     $page->breadcrumbs->add(__('Edit Timetable by Class'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
     $settingGateway = $container->get(SettingGateway::class);
 
+	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $gibbonCourseClassID = $_GET['gibbonCourseClassID'] ?? '';
     $gibbonTTID = $_GET['gibbonTTID'] ?? '';

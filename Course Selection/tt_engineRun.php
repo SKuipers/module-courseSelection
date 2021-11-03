@@ -7,6 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 namespace CourseSelection\Timetable;
 
 use CourseSelection\BackgroundProcess;
+use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
@@ -40,7 +41,8 @@ $classResults = $timetableGateway->selectTimetabledClassesBySchoolYear($gibbonSc
 $classData = ($classResults && $classResults->rowCount() > 0)? $classResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
 // Build a set of students information
-$studentOrder = getSettingByScope($connection2, 'Course Selection', 'studentOrder');
+$settingGateway = $container->get(SettingGateway::class);
+$studentOrder = $settingGateway->getSettingByScope('Course Selection', 'studentOrder');
 $studentResults = $timetableGateway->selectApprovedStudentsBySchoolYear($gibbonSchoolYearID, $studentOrder);
 $studentData = ($studentResults && $studentResults->rowCount() > 0)? $studentResults->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE) : array();
 
@@ -113,18 +115,18 @@ $factory = new EngineFactory();
 
 // Engine Settings
 $settings = $factory->createSettings();
-$settings->timetableConflictTollerance = getSettingByScope($connection2, 'Course Selection', 'timetableConflictTollerance');
+$settings->timetableConflictTollerance = $settingGateway->getSettingByScope('Course Selection', 'timetableConflictTollerance');
 $settings->optimalWeight = 1.0;
 $settings->maximumOptimalResults = 0;
-$settings->minimumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMinimum');
-$settings->targetStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentTarget');
-$settings->maximumStudents = getSettingByScope($connection2, 'Course Selection', 'classEnrolmentMaximum');
+$settings->minimumStudents = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMinimum');
+$settings->targetStudents = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentTarget');
+$settings->maximumStudents = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMaximum');
 
-$settings->genderBalancePriority = getSettingByScope($connection2, 'Course Selection', 'genderBalancePriority');
-$settings->targetEnrolmentPriority = getSettingByScope($connection2, 'Course Selection', 'targetEnrolmentPriority');
-$settings->coreCoursePriority = getSettingByScope($connection2, 'Course Selection', 'coreCoursePriority');
-$settings->avoidConflictPriority = getSettingByScope($connection2, 'Course Selection', 'avoidConflictPriority');
-$settings->autoResolveConflicts = getSettingByScope($connection2, 'Course Selection', 'autoResolveConflicts');
+$settings->genderBalancePriority = $settingGateway->getSettingByScope('Course Selection', 'genderBalancePriority');
+$settings->targetEnrolmentPriority = $settingGateway->getSettingByScope('Course Selection', 'targetEnrolmentPriority');
+$settings->coreCoursePriority = $settingGateway->getSettingByScope('Course Selection', 'coreCoursePriority');
+$settings->avoidConflictPriority = $settingGateway->getSettingByScope('Course Selection', 'avoidConflictPriority');
+$settings->autoResolveConflicts = $settingGateway->getSettingByScope('Course Selection', 'autoResolveConflicts');
 
 $settings->heuristic = 'Class Size';
 $settings->validator = 'Conflict';

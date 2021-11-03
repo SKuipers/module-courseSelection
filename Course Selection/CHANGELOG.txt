@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v1.1.04
+-------
+Removed deprecated function calls
+
 v1.1.03
 -------
 Fix the namespace for Session class in SchoolYearNavigation class
