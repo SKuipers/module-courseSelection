@@ -8,8 +8,8 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
+use CourseSelection\SchoolYearNavigation;
 
 // Module Bootstrap
 require 'module.php';
@@ -32,12 +32,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     $actionCopyFrom = $_GET['actionCopyFrom'] ?? '';
     $actionCopyTo = $_GET['actionCopyTo'] ?? '';
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     if ($actionCopyFrom == 'Requests') {
         $gibbonSchoolYearIDCopyTo = $gibbonSchoolYearID;
     } else if (empty($gibbonSchoolYearIDCopyTo)) {
+        $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
         $nextSchoolYear = $navigation->selectNextSchoolYearByID($gibbonSchoolYearID);
         $gibbonSchoolYearIDCopyTo = $nextSchoolYear['gibbonSchoolYearID'] ?? '';
     }

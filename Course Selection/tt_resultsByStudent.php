@@ -8,7 +8,6 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\TimetableGateway;
-use CourseSelection\SchoolYearNavigation;
 
 // Module Bootstrap
 require 'module.php';
@@ -30,8 +29,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
     $sort = $_GET['sort'] ?? 'surname';
     $allCourses = $_GET['allCourses'] ?? false;
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
     $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort, $gibbonCourseClassID);

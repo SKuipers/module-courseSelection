@@ -7,7 +7,6 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
@@ -25,8 +24,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 

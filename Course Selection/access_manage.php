@@ -5,7 +5,6 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\AccessGateway;
 
 // Module Bootstrap
@@ -23,8 +22,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     echo "<div class='linkTop'>";
     echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/access_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";

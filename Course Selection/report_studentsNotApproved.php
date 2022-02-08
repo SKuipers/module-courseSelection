@@ -7,7 +7,6 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
@@ -26,8 +25,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $sort = $_GET['sort'] ?? 'surname';
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     echo '<p>';
     echo __("This report shows students who have completed the course selection process but their courses have not yet been approved.");

@@ -6,10 +6,8 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
-use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 
 // Module Bootstrap
@@ -29,10 +27,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     $gibbonCourseClassID = $_GET['gibbonCourseClassID'] ?? '';
     $gibbonTTID = $_GET['gibbonTTID'] ?? '';
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
-
-
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
+    
     // SELECT TIMETABLE & CLASS
     $form = Form::create('timetableByClass', $session->get('absoluteURL').'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));

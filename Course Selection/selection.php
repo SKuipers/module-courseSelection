@@ -8,7 +8,6 @@ use Gibbon\Forms\Form;
 use CourseSelection\Domain\Access;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\AccessGateway;
 use CourseSelection\Domain\OfferingsGateway;
 use CourseSelection\Domain\SelectionsGateway;
@@ -28,8 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
 

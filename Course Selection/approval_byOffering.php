@@ -8,7 +8,6 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\ToolsGateway;
 use CourseSelection\Domain\OfferingsGateway;
 use CourseSelection\Domain\SelectionsGateway;
@@ -36,8 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
     $enableCourseGrades = $settingGateway->getSettingByScope('Course Selection', 'enableCourseGrades');
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     // SELECT OFFERING
     $form = Form::create('courseApprovalByOffering', $session->get('absoluteURL').'/index.php', 'get');

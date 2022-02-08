@@ -6,7 +6,6 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
@@ -27,8 +26,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
     $min = $_GET['min'] ?? $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMinimum');
     $max = $_GET['max'] ?? $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMaximum');
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     echo '<h2>';
     echo __('Filter');

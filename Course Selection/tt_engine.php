@@ -8,7 +8,6 @@ use Gibbon\Forms\Form;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\TimetableGateway;
 use CourseSelection\Domain\SelectionsGateway;
-use CourseSelection\SchoolYearNavigation;
 use CourseSelection\BackgroundProcess;
 use Illuminate\Support\Collection;
 
@@ -48,8 +47,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
-    $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
-    echo $navigation->getYearPicker($gibbonSchoolYearID);
+    $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
