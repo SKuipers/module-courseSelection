@@ -25,14 +25,14 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    echo "<div class='linkTop'>";
+    echo "<p class='text-right mb-2 text-xs'>";
         $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
         $nextYear = $navigation->getNextYear($gibbonSchoolYearID);
         if (!empty($nextYear)) {
             echo "<a href='" . $session->get('absoluteURL') . '/modules/'.$session->get('module')."/meta_manage_copyProcess.php?gibbonSchoolYearID=$gibbonSchoolYearID&gibbonSchoolYearIDNext=".$nextYear['gibbonSchoolYearID']."' onclick='return confirm(\"Are you sure you want to do this? All meta data from this year will be copied.\")'>" . __('Copy All To Next Year') . "<img style='margin-left: 5px' title='" . __('Copy All To Next Year') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/copy.png'/></a> | ";
         }
         echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/meta_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
-    echo '</div>';
+    echo '</p>';
 
     $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
     $metaDataList = $gateway->selectAllBySchoolYear($gibbonSchoolYearID);

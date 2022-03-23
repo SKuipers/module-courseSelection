@@ -24,9 +24,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    echo "<div class='linkTop'>";
+    echo "<p class='text-right mb-2 text-xs'>";
     echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/access_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
-    echo '</div>';
+    echo '</p>';
 
     $gateway = $container->get('CourseSelection\Domain\AccessGateway');
     $accessList = $gateway->selectAllBySchoolYear($gibbonSchoolYearID);
