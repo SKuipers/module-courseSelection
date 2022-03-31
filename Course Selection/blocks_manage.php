@@ -4,6 +4,8 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
+use Gibbon\Services\Format;
+use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\BlocksGateway;
 use CourseSelection\SchoolYearNavigation;
@@ -31,51 +33,44 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         if (!empty($nextYear)) {
             echo "<a href='" . $session->get('absoluteURL') . '/modules/'.$session->get('module')."/blocks_manage_copyProcess.php?gibbonSchoolYearID=$gibbonSchoolYearID&gibbonSchoolYearIDNext=".$nextYear['gibbonSchoolYearID']."' onclick='return confirm(\"Are you sure you want to do this? All course blocks, but not their requests, will be copied.\")'>" . __('Copy All To Next Year') . "<img style='margin-left: 5px' title='" . __('Copy All To Next Year') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/copy.png'/></a> | ";
         }
-        echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/blocks_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
     echo '</p>';
 
     $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
-    $blocks = $gateway->selectAllBySchoolYear($gibbonSchoolYearID);
 
-    if ($blocks->rowCount() == 0) {
-        echo '<div class="error">';
-        echo __("There are no records to display.") ;
-        echo '</div>';
-    } else {
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+    // QUERY
+    $criteria = $gateway->newQueryCriteria(true)
+        ->sortBy(['name'])
+        ->pageSize(50)
+        ->fromPOST();
 
-        echo '<tr class="head">';
-            echo '<th>';
-                echo __('School Year');
-            echo '</th>';
-            echo '<th>';
-                echo __('Department');
-            echo '</th>';
-            echo '<th>';
-                echo __('Name');
-            echo '</th>';
-            echo '<th>';
-                echo __('Courses');
-            echo '</th>';
-            echo '<th style="width: 80px;">';
-                echo __('Actions');
-            echo '</th>';
-        echo '</tr>';
+    $blocks = $gateway->queryAllBySchoolYear($criteria, $gibbonSchoolYearID);
 
-        while ($block = $blocks->fetch()) {
-            echo '<tr>';
-                echo '<td>'.$block['schoolYearName'].'</td>';
-                echo '<td>'.$block['departmentName'].'</td>';
-                echo '<td>'.$block['name'].'</td>';
-                echo '<td>'.$block['courseCount'].'</td>';
-                echo '<td>';
-                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/blocks_manage_addEdit.php&courseSelectionBlockID=".$block['courseSelectionBlockID']."'><img title='".__('Edit')."' src='./themes/".$session->get('gibbonThemeName')."/img/config.png'/></a> &nbsp;";
+    // TABLE
+    $table = DataTable::createPaginated('blocks', $criteria);
+    $table->setTitle(__('View'));
 
-                    echo "<a class='thickbox' href='".$session->get('absoluteURL')."/fullscreen.php?q=/modules/".$session->get('module')."/blocks_manage_delete.php&courseSelectionBlockID=".$block['courseSelectionBlockID']."&width=650&height=200'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
-                echo '</td>';
-            echo '</tr>';
-        }
+    $table->addHeaderAction('add', __('Add'))
+        ->addParam('gibbonSchoolYearID', $gibbonSchoolYearID)
+        ->setURL('/modules/Course Selection/blocks_manage_addEdit.php')
+        ->displayLabel();
 
-        echo '</table>';
-    }
+    $table->addColumn('schoolYearName', __('School Year'));
+
+    $table->addColumn('departmentName', __('Departments'));
+
+    $table->addColumn('name', __('Name'));
+
+    $table->addColumn('courseCount', __('Courses'));
+
+    $actions = $table->addActionColumn()
+        ->addParam('courseSelectionBlockID')
+        ->addParam('gibbonSchoolYearID', $gibbonSchoolYearID)
+        ->format(function ($resource, $actions) {
+            $actions->addAction('edit', __('Edit'))
+                ->setURL('/modules/Course Selection/blocks_manage_addEdit.php');
+            $actions->addAction('delete', __('Delete'))
+                ->setURL('/modules/Course Selection/blocks_manage_delete.php');
+        });
+
+    echo $table->render($blocks);
 }

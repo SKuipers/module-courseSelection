@@ -16,9 +16,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
 } else {
     //Proceed!
     $data = array();
-    $data['courseSelectionOfferingID'] = $_POST['courseSelectionOfferingID'] ?? '';
+    $data['courseSelectionOfferingID'] = $_POST['data']['courseSelectionOfferingID'] ?? '';
 
-    $courseSelectionBlockIDList = json_decode($_POST['blocklist']);
+    $courseSelectionBlockIDList = json_decode($_POST['order']);
 
     if (empty($data['courseSelectionOfferingID']) || empty($courseSelectionBlockIDList)) {
         exit;

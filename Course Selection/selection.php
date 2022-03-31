@@ -149,6 +149,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             echo "</div>" ;
         }
 
-    
+
     }
 }

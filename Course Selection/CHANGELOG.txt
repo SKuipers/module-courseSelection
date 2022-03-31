@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v1.2.02
+-------
+Refactoring of tables
+
 v1.2.01
 -------
 Refactoring of linkTop divs
