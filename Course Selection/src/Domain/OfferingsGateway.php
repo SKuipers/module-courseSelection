@@ -53,6 +53,23 @@ class OfferingsGateway extends QueryableGateway
         return $this->runQuery($query, $criteria);
     }
 
+    public function selectAllBySchoolYear($gibbonSchoolYearID)
+    {
+        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
+        $sql = "SELECT courseSelectionOffering.*, gibbonSchoolYear.name as schoolYearName, GROUP_CONCAT(CONCAT(restrictYear.name, ' - ', gibbonYearGroup.nameShort) ORDER BY restrictYear.sequenceNumber, gibbonYearGroup.sequenceNumber SEPARATOR '<br/>') as yearGroupNames
+                FROM courseSelectionOffering
+                JOIN gibbonSchoolYear ON (courseSelectionOffering.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
+                LEFT JOIN courseSelectionOfferingRestriction ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID)
+                LEFT JOIN gibbonSchoolYear AS restrictYear ON (restrictYear.gibbonSchoolYearID=courseSelectionOfferingRestriction.gibbonSchoolYearID)
+                LEFT JOIN gibbonYearGroup ON (gibbonYearGroup.gibbonYearGroupID=courseSelectionOfferingRestriction.gibbonYearGroupID)
+                WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
+                GROUP BY courseSelectionOfferingID
+                ORDER BY sequenceNumber";
+        $result = $this->db()->select($sql, $data);
+
+        return $result;
+    }
+
     public function selectOne($courseSelectionOfferingID)
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID);
