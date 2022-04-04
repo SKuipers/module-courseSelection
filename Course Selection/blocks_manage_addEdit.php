@@ -5,6 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Tables\DataTable;
 use Gibbon\Forms\DatabaseFormFactory;
 use CourseSelection\Domain\BlocksGateway;
 
@@ -104,37 +105,25 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 
         $courses = $gateway->selectAllCoursesByBlock($values['courseSelectionBlockID']);
 
-        if ($courses->rowCount() == 0) {
-            echo '<div class="error">';
-            echo __("There are no records to display.") ;
-            echo '</div>';
-        } else {
-            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+        // DATA TABLE
+        $table = DataTable::create('courses');
+        $table->setTitle(__('Manage Courses'));
 
-            echo '<tr class="head">';
-                echo '<th>';
-                    echo __('Short Name');
-                echo '</th>';
-                echo '<th>';
-                    echo __('Name');
-                echo '</th>';
-                echo '<th style="width: 80px;">';
-                    echo __('Actions');
-                echo '</th>';
-            echo '</tr>';
+        $table->addColumn('courseNameShort', __('Short Name'));
+        $table->addColumn('courseName', __('Name'));
 
-            while ($course = $courses->fetch()) {
-                echo '<tr>';
-                    echo '<td>'.$course['courseNameShort'].'</td>';
-                    echo '<td>'.$course['courseName'].'</td>';
-                    echo '<td>';
-                        echo "<a href='".$session->get('absoluteURL')."/modules/".$session->get('module')."/blocks_manage_course_deleteProcess.php?courseSelectionBlockID=".$course['courseSelectionBlockID']."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
-                    echo '</td>';
-                echo '</tr>';
-            }
+        $table->addActionColumn()
+            ->addParam('courseSelectionBlockID')
+            ->addParam('gibbonCourseID')
+            ->format(function ($values, $actions) {
+                $actions->addAction('deleteDirect', __('Delete'))
+                    ->setIcon('garbage')
+                    ->setURL('/modules/Course Selection/blocks_manage_course_deleteProcess.php')
+                    ->addConfirmation(__('Are you sure you want to delete this record? Unsaved changes will be lost.'))
+                    ->directLink();
+            });
 
-            echo '</table>';
-        }
+        echo $table->render($courses->fetchAll());
 
         $form = Form::create('blocksCourseAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/blocks_manage_course_addProcess.php');
 

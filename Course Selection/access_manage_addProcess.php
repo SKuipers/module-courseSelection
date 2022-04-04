@@ -42,11 +42,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         $insertID = $gateway->insert($data);
 
         if (empty($insertID)) {
-            $URL .= '&return=error2';
+            $URL .= '&return=error2&gibbonSchoolYearID='.$data['gibbonSchoolYearID'];
             header("Location: {$URL}");
             exit;
         } else {
-            $URL .= "&return=success0&editID=$insertID";
+            $URL .= "&return=success0&editID=$insertID&gibbonSchoolYearID=".$data['gibbonSchoolYearID'];
             header("Location: {$URL}");
             exit;
         }

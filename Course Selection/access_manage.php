@@ -4,6 +4,8 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
+use Gibbon\Services\Format;
+use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\AccessGateway;
 
@@ -24,54 +26,44 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    echo "<p class='text-right mb-2 text-xs'>";
-    echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/access_manage_addEdit.php&gibbonSchoolYearID=".$gibbonSchoolYearID."'>".__('Add')."<img style='margin-left: 5px' title='".__('Add')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
-    echo '</p>';
-
     $gateway = $container->get('CourseSelection\Domain\AccessGateway');
-    $accessList = $gateway->selectAllBySchoolYear($gibbonSchoolYearID);
 
-    if ($accessList->rowCount() == 0) {
-        echo '<div class="error">';
-        echo __("There are no records to display.") ;
-        echo '</div>';
-    } else {
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+    // QUERY
+    $criteria = $gateway->newQueryCriteria(true)
+        ->sortBy(['dateStart', 'dateEnd'])
+        ->pageSize(50)
+        ->fromPOST();
 
-        echo '<tr class="head">';
-            echo '<th>';
-                echo __('School Year');
-            echo '</th>';
-            echo '<th>';
-                echo __('Dates');
-            echo '</th>';
-            echo '<th>';
-                echo __('Roles');
-            echo '</th>';
-            echo '<th>';
-                echo __('Type');
-            echo '</th>';
-            echo '<th style="width: 80px;">';
-                echo __('Actions');
-            echo '</th>';
-        echo '</tr>';
+    $blocks = $gateway->queryAllBySchoolYear($criteria, $gibbonSchoolYearID);
 
-        while ($access = $accessList->fetch()) {
-            echo '<tr>';
-                echo '<td>'.$access['gibbonSchoolYearName'].'</td>';
-                echo '<td>';
-                    echo date('M j', strtotime($access['dateStart'])).' - '.date('M j, Y', strtotime($access['dateEnd']));
-                echo '</td>';
-                echo '<td>'.$access['roleGroupNames'].'</td>';
-                echo '<td>'.$access['accessType'].'</td>';
-                echo '<td>';
-                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/access_manage_addEdit.php&courseSelectionAccessID=".$access['courseSelectionAccessID']."'><img title='".__('Edit')."' src='./themes/".$session->get('gibbonThemeName')."/img/config.png'/></a> &nbsp;";
+    // TABLE
+    $table = DataTable::createPaginated('blocks', $criteria);
+    $table->setTitle(__('View'));
 
-                    echo "<a class='thickbox' href='".$session->get('absoluteURL')."/fullscreen.php?q=/modules/".$session->get('module')."/access_manage_delete.php&courseSelectionAccessID=".$access['courseSelectionAccessID']."&width=650&height=200'><img title='".__('Delete')."' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a>";
-                echo '</td>';
-            echo '</tr>';
-        }
+    $table->addHeaderAction('add', __('Add'))
+        ->addParam('gibbonSchoolYearID', $gibbonSchoolYearID)
+        ->setURL('/modules/Course Selection/access_manage_addEdit.php')
+        ->displayLabel();
 
-        echo '</table>';
-    }
+    $table->addColumn('schoolYearName', __('School Year'));
+
+    $table->addColumn('dates', __('Date'))
+        ->format(function ($values) {
+            return Format::date($values['dateStart'])." - ".Format::date($values['dateEnd']);
+        })->notSortable();
+
+    $table->addColumn('roleGroupNames', __('Roles'));
+    $table->addColumn('accessType', __('Type'));
+
+    $actions = $table->addActionColumn()
+        ->addParam('courseSelectionAccessID')
+        ->addParam('gibbonSchoolYearID', $gibbonSchoolYearID)
+        ->format(function ($resource, $actions) {
+            $actions->addAction('edit', __('Edit'))
+                ->setURL('/modules/Course Selection/access_manage_addEdit.php');
+            $actions->addAction('delete', __('Delete'))
+                ->setURL('/modules/Course Selection/access_manage_delete.php');
+        });
+
+    echo $table->render($blocks);
 }

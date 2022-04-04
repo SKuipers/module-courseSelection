@@ -30,7 +30,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
-    
+
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     // SELECT COURSE
@@ -127,14 +127,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
                     echo '</td>';
                 echo '</tr>';
             }
-
-            // if ($count == 0) {
-            //     echo '<tr>';
-            //         echo '<td colspan="5">';
-
-            //         echo '</td>';
-            //     echo '</tr>';
-            // }
 
             echo '</table>';
 

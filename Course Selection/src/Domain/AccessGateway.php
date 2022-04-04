@@ -6,6 +6,9 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection\Domain;
 
+use Gibbon\Domain\Traits\TableAware;
+use Gibbon\Domain\QueryCriteria;
+use Gibbon\Domain\QueryableGateway;
 use Gibbon\Contracts\Database\Connection;
 
 /**
@@ -24,35 +27,34 @@ use Gibbon\Contracts\Database\Connection;
  * @uses  gibbonModule
  * @uses  gibbonPermission
  */
-class AccessGateway
+class AccessGateway extends QueryableGateway
 {
-    protected $pdo;
+    use TableAware;
 
-    public function __construct(Connection $pdo)
+    private static $tableName = 'courseSelectionAccess';
+    private static $primaryKey = 'courseSelectionAccessID';
+    private static $searchableColumns = [];
+
+    public function queryAllBySchoolYear($criteria, $gibbonSchoolYearID)
     {
-        $this->pdo = $pdo;
-    }
+        $query = $this
+            ->newQuery()
+            ->cols(['courseSelectionAccess.*', 'gibbonSchoolYear.name as schoolYearName', "GROUP_CONCAT(DISTINCT gibbonRole.name SEPARATOR ', ') as roleGroupNames"])
+            ->from($this->getTableName())
+            ->innerJoin('gibbonSchoolYear', 'courseSelectionAccess.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID')
+            ->leftJoin('gibbonRole', 'FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList)')
+            ->groupBy(['courseSelectionAccess.courseSelectionAccessID'])
+            ->where('courseSelectionAccess.gibbonSchoolYearID=:gibbonSchoolYearID')
+            ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
-    public function selectAllBySchoolYear($gibbonSchoolYearID)
-    {
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as gibbonSchoolYearName, GROUP_CONCAT(DISTINCT gibbonRole.name SEPARATOR ', ') as roleGroupNames
-                FROM courseSelectionAccess
-                JOIN gibbonSchoolYear ON (courseSelectionAccess.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID)
-                LEFT JOIN gibbonRole ON (FIND_IN_SET(gibbonRole.gibbonRoleID, courseSelectionAccess.gibbonRoleIDList))
-                WHERE courseSelectionAccess.gibbonSchoolYearID=:gibbonSchoolYearID
-                GROUP BY courseSelectionAccessID
-                ORDER BY dateStart, dateEnd";
-        $result = $this->pdo->executeQuery($data, $sql);
-
-        return $result;
+        return $this->runQuery($query, $criteria);
     }
 
     public function selectOne($courseSelectionAccessID)
     {
         $data = array('courseSelectionAccessID' => $courseSelectionAccessID);
         $sql = "SELECT courseSelectionAccess.*, gibbonSchoolYear.name as gibbonSchoolYearName FROM courseSelectionAccess JOIN gibbonSchoolYear ON (courseSelectionAccess.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID) WHERE courseSelectionAccessID=:courseSelectionAccessID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -60,26 +62,26 @@ class AccessGateway
     public function insert(array $data)
     {
         $sql = "INSERT INTO courseSelectionAccess SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonRoleIDList=:gibbonRoleIDList, dateStart=:dateStart, dateEnd=:dateEnd, accessType=:accessType";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->insert($sql, $data);
 
-        return $this->pdo->getConnection()->lastInsertID();
+        return $this->db()->getConnection()->lastInsertID();
     }
 
     public function update(array $data)
     {
         $sql = "UPDATE courseSelectionAccess SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonRoleIDList=:gibbonRoleIDList, dateStart=:dateStart, dateEnd=:dateEnd, accessType=:accessType WHERE courseSelectionAccessID=:courseSelectionAccessID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->update($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     public function delete($courseSelectionAccessID)
     {
         $data = array('courseSelectionAccessID' => $courseSelectionAccessID);
         $sql = "DELETE FROM courseSelectionAccess WHERE courseSelectionAccessID=:courseSelectionAccessID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->delete($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     public function getAccessRolesWithSelectionPermission()
@@ -95,7 +97,7 @@ class AccessGateway
                 LEFT JOIN gibbonPermission ON (gibbonPermission.gibbonRoleID=gibbonRole.gibbonRoleID AND gibbonPermission.gibbonActionID=actions.gibbonActionID)
                 GROUP BY gibbonRole.gibbonRoleID
                 HAVING COUNT(DISTINCT gibbonPermission.permissionID) > 0";
-        $result = $this->pdo->executeQuery(array(), $sql);
+        $result = $this->db()->select($sql, []);
 
         return $result;
     }
@@ -111,10 +113,9 @@ class AccessGateway
                 WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID
                 AND gibbonSchoolYear.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND courseSelectionAccess.dateEnd >= :date
-                ORDER BY courseSelectionAccess.dateEnd, (CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC"; 
-                
-                //(CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC,
-        $result = $this->pdo->executeQuery($data, $sql);
+                ORDER BY courseSelectionAccess.dateEnd, (CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC";
+
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -132,7 +133,7 @@ class AccessGateway
                 AND gibbonPerson.gibbonPersonID=:gibbonPersonID
                 AND courseSelectionAccess.dateEnd >= :date
                 ORDER BY courseSelectionAccess.dateEnd, (CASE WHEN accessType='Select' THEN 2 WHEN accessType='Request' THEN 1 ELSE 0 END) DESC";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
