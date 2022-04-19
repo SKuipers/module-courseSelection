@@ -6,6 +6,9 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection\Domain;
 
+use Gibbon\Domain\QueryCriteria;
+use Gibbon\Domain\QueryableGateway;
+use Gibbon\Domain\Traits\TableAware;
 use Gibbon\Contracts\Database\Connection;
 
 /**
@@ -26,14 +29,13 @@ use Gibbon\Contracts\Database\Connection;
  * @uses  gibbonStudentEnrolment
  *
  */
-class SelectionsGateway
+class SelectionsGateway extends QueryableGateway
 {
-    protected $pdo;
+    use TableAware;
 
-    public function __construct(Connection $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    private static $tableName = 'courseSelectionChoice';
+    private static $primaryKey = 'courseSelectionChoiceID';
+    private static $searchableColumns = [];
 
     // CHOICES
 
@@ -51,34 +53,34 @@ class SelectionsGateway
                 AND (courseSelectionChoice.courseSelectionBlockID=courseSelectionOfferingBlock.courseSelectionBlockID OR courseSelectionChoice.courseSelectionBlockID IS NULL)
                 GROUP BY courseSelectionChoice.gibbonCourseID
                 ORDER BY courseSelectionChoice.status";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
 
-    public function selectChoicesByCourse($gibbonCourseID, $excludeStatusList = array())
+    public function queryChoicesByCourse($criteria, $gibbonCourseID, $excludeStatusList = [])
     {
-        $data = array('gibbonCourseID' => $gibbonCourseID, 'exclude' => implode(',', $excludeStatusList));
-        $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonPerson.surname, gibbonPerson.preferredName, courseSelectionChoice.status, courseSelectionChoice.gibbonPersonIDSelected, courseSelectionChoice.timestampSelected, selectedPerson.gibbonPersonID as selectedPersonID, selectedPerson.surname as selectedSurname, selectedPerson.preferredName as selectedPreferredName, courseSelectionChoiceOffering.courseSelectionOfferingID, gibbonFormGroup.nameShort as formGroupName, courseSelectionBlock.courseSelectionBlockID, courseSelectionBlock.countable as blockIsCountable
-                FROM courseSelectionChoice
-                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
-                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
-                LEFT JOIN courseSelectionChoiceOffering ON (
-                    courseSelectionChoiceOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID
-                    AND courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID
-                )
-                LEFT JOIN courseSelectionBlock ON (courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
-                JOIN gibbonPerson AS selectedPerson ON (selectedPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDSelected)
-                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
-                JOIN gibbonFormGroup ON (gibbonFormGroup.gibbonFormGroupID=gibbonStudentEnrolment.gibbonFormGroupID)
-                WHERE courseSelectionChoice.gibbonCourseID=:gibbonCourseID
-                AND courseSelectionChoice.status NOT IN (:exclude)
-                AND gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current')
-                GROUP BY courseSelectionChoice.gibbonPersonIDStudent
-                ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $excludeStatusList = implode(',', $excludeStatusList);
 
-        return $result;
+        $query = $this
+            ->newQuery()
+            ->cols(['gibbonPerson.gibbonPersonID', 'gibbonPerson.surname', 'gibbonPerson.preferredName', 'courseSelectionChoice.status', 'courseSelectionChoice.gibbonPersonIDSelected', 'courseSelectionChoice.timestampSelected', 'selectedPerson.gibbonPersonID as selectedPersonID', 'selectedPerson.surname as selectedSurname', 'selectedPerson.preferredName as selectedPreferredName', 'courseSelectionChoiceOffering.courseSelectionOfferingID', 'gibbonFormGroup.nameShort as formGroupName', 'courseSelectionBlock.courseSelectionBlockID', 'courseSelectionBlock.countable as blockIsCountable'])
+            ->from($this->getTableName())
+            ->innerJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent')
+            ->innerJoin('gibbonCourse', 'gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID')
+            ->leftJoin('courseSelectionChoiceOffering', 'courseSelectionChoiceOffering.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID AND courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID')
+            ->leftJoin('courseSelectionBlock', 'courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID')
+            ->innerJoin('gibbonPerson AS selectedPerson', 'selectedPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDSelected')
+            ->innerJoin('gibbonStudentEnrolment', 'gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->innerJoin('gibbonFormGroup', 'gibbonFormGroup.gibbonFormGroupID=gibbonStudentEnrolment.gibbonFormGroupID')
+            ->groupBy(['courseSelectionChoice.gibbonPersonIDStudent'])
+            ->where('courseSelectionChoice.gibbonCourseID=:gibbonCourseID')
+            ->bindValue('gibbonCourseID', $gibbonCourseID)
+            ->where('courseSelectionChoice.status NOT IN (:exclude)')
+            ->where('gibbonStudentEnrolment.gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status=\'Current\')')
+            ->bindValue('exclude', $excludeStatusList);
+
+        return $this->runQuery($query, $criteria);
     }
 
     public function selectChoicesByOfferingAndPerson($courseSelectionOfferingID, $gibbonPersonIDStudent)
@@ -100,7 +102,7 @@ class SelectionsGateway
                 AND courseSelectionChoice.status <> 'Recommended'
                 GROUP BY courseSelectionChoice.courseSelectionChoiceID
                 ORDER BY courseSelectionOfferingBlock.sequenceNumber, gibbonCourse.name";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -113,7 +115,7 @@ class SelectionsGateway
                 LEFT JOIN courseSelectionApproval ON (courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID)
                 WHERE gibbonCourseID=:gibbonCourseID
                 AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -122,13 +124,13 @@ class SelectionsGateway
     {
         $data = array('courseSelectionOfferingID' => $courseSelectionOfferingID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
         $sql = "SELECT courseSelectionChoice.gibbonCourseID, courseSelectionChoice.*, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, (
-                    SELECT COUNT(*) as count FROM courseSelectionBlockCourse 
-                    JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlockCourse.courseSelectionBlockID) 
-                    WHERE courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID 
+                    SELECT COUNT(*) as count FROM courseSelectionBlockCourse
+                    JOIN courseSelectionOfferingBlock ON (courseSelectionOfferingBlock.courseSelectionBlockID=courseSelectionBlockCourse.courseSelectionBlockID)
+                    WHERE courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID
                     AND courseSelectionOfferingBlock.courseSelectionOfferingID=:courseSelectionOfferingID
                 ) AS offeringBlockCount
                 FROM courseSelectionChoice
-                JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=courseSelectionChoice.gibbonSchoolYearID) 
+                JOIN courseSelectionOffering ON (courseSelectionOffering.gibbonSchoolYearID=courseSelectionChoice.gibbonSchoolYearID)
                 JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
                 WHERE courseSelectionChoice.gibbonPersonIDStudent=:gibbonPersonIDStudent
                 AND courseSelectionOffering.courseSelectionOfferingID=:courseSelectionOfferingID
@@ -137,7 +139,7 @@ class SelectionsGateway
                 GROUP BY courseSelectionChoice.gibbonCourseID
                 HAVING (offeringBlockCount = 0)
                 ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -145,26 +147,26 @@ class SelectionsGateway
     public function insertChoice(array $data)
     {
         $sql = "INSERT INTO courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonCourseID=:gibbonCourseID, courseSelectionBlockID=:courseSelectionBlockID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, notes=:notes";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->insert($sql, $data);
 
-        return $this->pdo->getConnection()->lastInsertID();
+        return $this->db()->getConnection()->lastInsertID();
     }
 
     public function updateChoice(array $data)
     {
         $sql = "UPDATE courseSelectionChoice SET gibbonSchoolYearID=:gibbonSchoolYearID, status=:status, gibbonPersonIDSelected=:gibbonPersonIDSelected, timestampSelected=:timestampSelected, courseSelectionBlockID=:courseSelectionBlockID, notes=:notes WHERE gibbonPersonIDStudent=:gibbonPersonIDStudent AND gibbonCourseID=:gibbonCourseID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->update($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     public function deleteChoice($courseSelectionChoiceID)
     {
         $data = array('courseSelectionChoiceID' => $courseSelectionChoiceID);
         $sql = "DELETE FROM courseSelectionChoice WHERE courseSelectionChoiceID=:courseSelectionChoiceID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->delete($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     public function updateUnselectedChoicesBySchoolYearAndPerson($gibbonSchoolYearID, $gibbonPersonIDStudent, $courseIDList)
@@ -190,9 +192,9 @@ class SelectionsGateway
                     AND courseSelectionApproval.courseSelectionChoiceID IS NULL";
         }
 
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->update($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     // APPROVAL
@@ -200,18 +202,18 @@ class SelectionsGateway
     public function insertApproval(array $data)
     {
         $sql = "INSERT INTO courseSelectionApproval SET courseSelectionChoiceID=:courseSelectionChoiceID, gibbonPersonIDApproved=:gibbonPersonIDApproved, timestampApproved=:timestampApproved ON DUPLICATE KEY UPDATE gibbonPersonIDApproved=:gibbonPersonIDApproved, timestampApproved=:timestampApproved";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->insert($sql, $data);
 
-        return $this->pdo->getConnection()->lastInsertID();
+        return $this->db()->getConnection()->lastInsertID();
     }
 
     public function deleteApproval($courseSelectionChoiceID)
     {
         $data = array('courseSelectionChoiceID' => $courseSelectionChoiceID);
         $sql = "DELETE FROM courseSelectionApproval WHERE courseSelectionChoiceID=:courseSelectionChoiceID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->delete($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     // LOG
@@ -230,7 +232,7 @@ class SelectionsGateway
                 WHERE courseSelectionLog.gibbonSchoolYearID=:gibbonSchoolYearID
                 ORDER BY courseSelectionLog.timestampChanged DESC
                 LIMIT {$limit} OFFSET {$offset}";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -238,9 +240,9 @@ class SelectionsGateway
     public function insertLog(array $data)
     {
         $sql = "INSERT INTO courseSelectionLog SET gibbonSchoolYearID=:gibbonSchoolYearID, courseSelectionOfferingID=:courseSelectionOfferingID, gibbonPersonIDStudent=:gibbonPersonIDStudent, gibbonPersonIDChanged=:gibbonPersonIDChanged, timestampChanged=:timestampChanged, action=:action";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->insert($sql, $data);
 
-        return $this->pdo->getConnection()->lastInsertID();
+        return $this->db()->getConnection()->lastInsertID();
     }
 
     // OFFERINGS
@@ -249,7 +251,7 @@ class SelectionsGateway
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
         $sql = "SELECT courseSelectionOfferingID, gibbonSchoolYearID, gibbonPersonIDStudent FROM courseSelectionChoiceOffering WHERE gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -257,18 +259,18 @@ class SelectionsGateway
     public function insertChoiceOffering(array $data)
     {
         $sql = "INSERT INTO courseSelectionChoiceOffering SET gibbonSchoolYearID=:gibbonSchoolYearID, gibbonPersonIDStudent=:gibbonPersonIDStudent, courseSelectionOfferingID=:courseSelectionOfferingID ON DUPLICATE KEY UPDATE courseSelectionOfferingID=:courseSelectionOfferingID";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->insert($sql, $data);
 
-        return $this->pdo->getConnection()->lastInsertID();
+        return $this->db()->getConnection()->lastInsertID();
     }
 
     public function deleteChoiceOffering($gibbonSchoolYearID, $gibbonPersonIDStudent)
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
         $sql = "DELETE FROM courseSelectionChoiceOffering WHERE gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPersonIDStudent=:gibbonPersonIDStudent";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->delete($sql, $data);
 
-        return $this->pdo->getQuerySuccess();
+        return $this->db()->getQuerySuccess();
     }
 
     // MISC
@@ -307,7 +309,7 @@ class SelectionsGateway
             $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
         }
 
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -336,7 +338,7 @@ class SelectionsGateway
             $sql .= " ORDER BY gibbonPerson.surname, gibbonPerson.preferredName";
         }
 
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -350,7 +352,7 @@ class SelectionsGateway
                 WHERE gibbonPerson.gibbonPersonID=:gibbonPersonID
                 ORDER BY gibbonStudentEnrolment.gibbonSchoolYearID DESC
                 LIMIT 1";
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }
@@ -380,7 +382,7 @@ class SelectionsGateway
             $sql .= " ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
         }
 
-        $result = $this->pdo->executeQuery($data, $sql);
+        $result = $this->db()->select($sql, $data);
 
         return $result;
     }

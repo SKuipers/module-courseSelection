@@ -6,9 +6,9 @@ Copyright (C) 2017, Sandra Kuipers
 
 namespace CourseSelection\Domain;
 
-use Gibbon\Domain\Traits\TableAware;
 use Gibbon\Domain\QueryCriteria;
 use Gibbon\Domain\QueryableGateway;
+use Gibbon\Domain\Traits\TableAware;
 use Gibbon\Contracts\Database\Connection;
 
 /**

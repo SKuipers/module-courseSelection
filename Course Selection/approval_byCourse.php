@@ -6,6 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
+use Gibbon\Tables\DataTable;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\ToolsGateway;
@@ -54,83 +55,69 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     // LIST STUDENTS
     if (!empty($gibbonCourseID)) {
-        $studentChoicesResults = $selectionsGateway->selectChoicesByCourse($gibbonCourseID, array('Removed'));
+        // QUERY
+        $criteria = $selectionsGateway->newQueryCriteria(true)
+            ->sortBy(['gibbonPerson.surname', 'gibbonPerson.preferredName'])
+            ->pageSize(50)
+            ->fromPOST();
 
-        if ($studentChoicesResults->rowCount() == 0) {
-            echo '<div class="error">';
-            echo __("There are no records to display.") ;
-            echo '</div>';
-        } else {
+        $studentChoicesResults = $selectionsGateway->queryChoicesByCourse($criteria, $gibbonCourseID, array('Removed'));
 
-            echo '<br/><p>';
-            echo sprintf(__('Showing %1$s student course selections:'), $studentChoicesResults->rowCount());
-            echo '</p>';
+        $table = DataTable::create('requests');
+        $table->setTitle(__m('Course Requests'));
 
-            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+        $table->addColumn('name', __('Name'))
+           ->format(Format::using('nameLinked', ['gibbonPersonID', '', 'preferredName', 'surname', 'Student']));
 
-            echo '<tr class="head">';
-                echo '<th>';
-                    echo __('Student');
-                echo '</th>';
-                echo '<th>';
-                    echo __('Form Group');
-                echo '</th>';
-                echo '<th>';
-                    echo __('Status');
-                echo '</th>';
-                echo '<th>';
-                    echo __('Selected By');
-                echo '</th>';
-                echo '<th style="width: 80px;">';
-                    echo __('Actions');
-                echo '</th>';
-            echo '</tr>';
+        $table->addColumn('formGroupName', __('Form Group'));
 
-            while ($student = $studentChoicesResults->fetch()) {
-                switch ($student['status']) {
-                    case 'Removed': $class = 'error'; break;
-                    case 'Approved': $class = 'success'; break;
-                    default: $class = ''; break;
+        $table->addColumn('status', __('Status'))
+            ->format(function ($values) {
+                $return = $values['status'];
+
+                if (!($values['blockIsCountable'] == 'Y' || empty($values['courseSelectionBlockID']))) {
+                    $return .= ' <i>('.__('Alternate').')</i>';
                 }
 
-                echo '<tr class="'.$class.'">';
-                    echo '<td>';
-                        echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$student['gibbonPersonID'].'" target="_blank">';
-                        echo Format::name('', $student['preferredName'], $student['surname'], 'Student', true);
-                        echo '</a>';
-                    echo '</td>';
-                    echo '<td>'.$student['formGroupName'].'</td>';
-                    echo '<td>'.$student['status'];
-                    if (!($student['blockIsCountable'] == 'Y' || empty($student['courseSelectionBlockID']))) {
-                        echo ' <i>('.__('Alternate').')</i>';
+                return $return;
+            });
+
+            $table->addColumn('selectedBy', __('Selected By'))
+                ->format(function ($values) {
+                    $return = '<span title="'.date('M j, Y \a\t g:i a', strtotime($values['timestampSelected'])).'">';
+                    if ($values['selectedPersonID'] == $values['gibbonPersonID']) {
+                        $return .= 'Student';
+                    } else {
+                        $return .= Format::name('', $values['selectedPreferredName'], $values['selectedSurname'], 'Student', false);
                     }
-                    echo '</td>';
-                    echo '<td>';
+                    $return .= '</span>';
 
-                        echo '<span title="'.date('M j, Y \a\t g:i a', strtotime($student['timestampSelected'])).'">';
-                        if ($student['selectedPersonID'] == $student['gibbonPersonID']) {
-                            echo 'Student';
-                        } else {
-                            echo Format::name('', $student['selectedPreferredName'], $student['selectedSurname'], 'Student', false);
-                        }
-                        echo '</span>';
-                    echo '</td>';
-                    echo '<td>';
-                        if (!empty($student['courseSelectionOfferingID'])) {
-                            echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a> &nbsp;";
+                    return $return;
+                });
 
-                            echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/approval_byOffering.php&sidebar=false&courseSelectionOfferingID=".$student['courseSelectionOfferingID']."&gibbonSchoolYearID=".$gibbonSchoolYearID."#".$student['gibbonPersonID']."'><img title='".__('Go to Approval')."' src='./themes/".$session->get('gibbonThemeName')."/img/page_right.png'/></a>";
-                        } else {
-                            echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/selection.php&sidebar=false&gibbonPersonIDStudent=".$student['gibbonPersonID']."'><img title='".__('View')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
-                        }
+            $actions = $table->addActionColumn()
+                ->addParam('courseSelectionOfferingID')
+                ->addParam('sidebar', 'false')
+                ->addParam('gibbonSchoolYearID', $gibbonSchoolYearID)
+                ->format(function($values, $actions) use ($session) {
+                   if (!empty($values['courseSelectionOfferingID'])) {
+                       $actions->addAction('view', __('View'))
+                           ->setURL('/modules/' . $session->get('module') . '/selectionChoices.php')
+                           ->addParam('gibbonPersonIDStudent', $values['gibbonPersonID'])
+                           ->addParam('courseSelectionOfferingID', $values['courseSelectionOfferingID']);
 
-                    echo '</td>';
-                echo '</tr>';
-            }
+                       $actions->addAction('page_right', __('Go to Approval'))
+                           ->setURL('/modules/' . $session->get('module') . '/approval_byOffering.php', $values['gibbonPersonID'])
+                           ->addParam('gibbonPersonIDStudent', $values['gibbonPersonID'])
+                           ->addParam('courseSelectionOfferingID', $values['courseSelectionOfferingID'])
+                           ->setIcon('page_right');
+                    } else {
+                       $actions->addAction('view', __('View'))
+                           ->setURL('/modules/' . $session->get('module') . '/selection.php')
+                           ->addParam('gibbonPersonIDStudent', $values['gibbonPersonID']);
+                   }
+               });
 
-            echo '</table>';
-
-
-        }
+        echo $table->render($studentChoicesResults);
     }
 }
