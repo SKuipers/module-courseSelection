@@ -93,7 +93,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
                 echo '</a></p>';
             }
         }
-        
+
 		$settingGateway = $container->get(SettingGateway::class);
         $enableCourseGrades = $settingGateway->getSettingByScope('Course Selection', 'enableCourseGrades');
         $infoTextBefore = $settingGateway->getSettingByScope('Course Selection', 'infoTextSelectionBefore');

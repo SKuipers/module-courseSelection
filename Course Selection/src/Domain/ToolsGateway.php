@@ -58,7 +58,7 @@ class ToolsGateway
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
         if ($grouped) {
-            $sql = "SELECT gibbonYearGroup.name as grouping, gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
+            $sql = "SELECT gibbonYearGroup.name as `grouping`, gibbonCourse.gibbonCourseID as value, CONCAT(gibbonCourse.nameShort, ' - ', gibbonCourse.name) as name
                 FROM gibbonCourse
                 JOIN gibbonYearGroup ON (FIND_IN_SET(gibbonYearGroup.gibbonYearGroupID, gibbonCourse.gibbonYearGroupIDList))
                 WHERE gibbonSchoolYearID=:gibbonSchoolYearID
