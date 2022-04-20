@@ -218,23 +218,22 @@ class SelectionsGateway extends QueryableGateway
 
     // LOG
 
-    public function selectAllLogsBySchoolYear($gibbonSchoolYearID, $page = 1, $limit = 50)
+    public function queryAllLogsBySchoolYear($criteria, $gibbonSchoolYearID)
     {
-        $offset = ($page > 1)? ( ($page-1) * $limit) : 0;
 
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
-        $sql = "SELECT courseSelectionLog.*, gibbonSchoolYear.name as schoolYearName, courseSelectionOffering.name as offeringName, gibbonPersonStudent.surname AS studentSurname, gibbonPersonStudent.preferredName AS studentPreferredName, gibbonPersonChanged.surname AS changedSurname, gibbonPersonChanged.preferredName AS changedPreferredName
-                FROM courseSelectionLog
-                JOIN courseSelectionOffering ON (courseSelectionOffering.courseSelectionOfferingID=courseSelectionLog.courseSelectionOfferingID)
-                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=courseSelectionLog.gibbonSchoolYearID)
-                JOIN gibbonPerson AS gibbonPersonStudent ON (gibbonPersonStudent.gibbonPersonID=courseSelectionLog.gibbonPersonIDStudent)
-                LEFT JOIN gibbonPerson AS gibbonPersonChanged ON (gibbonPersonChanged.gibbonPersonID=courseSelectionLog.gibbonPersonIDChanged)
-                WHERE courseSelectionLog.gibbonSchoolYearID=:gibbonSchoolYearID
-                ORDER BY courseSelectionLog.timestampChanged DESC
-                LIMIT {$limit} OFFSET {$offset}";
-        $result = $this->db()->select($sql, $data);
+        $query = $this
+            ->newQuery()
+            ->cols(['courseSelectionLog.*', 'gibbonSchoolYear.name as schoolYearName', 'courseSelectionOffering.name as offeringName', 'gibbonPersonStudent.surname AS studentSurname', 'gibbonPersonStudent.preferredName AS studentPreferredName', 'gibbonPersonChanged.surname AS changedSurname', 'gibbonPersonChanged.preferredName AS changedPreferredName'])
+            ->from('courseSelectionLog')
+            ->innerJoin('courseSelectionOffering', 'courseSelectionOffering.courseSelectionOfferingID=courseSelectionLog.courseSelectionOfferingID')
+            ->innerJoin('gibbonSchoolYear', 'gibbonSchoolYear.gibbonSchoolYearID=courseSelectionLog.gibbonSchoolYearID')
+            ->innerJoin('gibbonPerson AS gibbonPersonStudent', 'gibbonPersonStudent.gibbonPersonID=courseSelectionLog.gibbonPersonIDStudent')
+            ->leftJoin('gibbonPerson AS gibbonPersonChanged', 'gibbonPersonChanged.gibbonPersonID=courseSelectionLog.gibbonPersonIDChanged')
+            ->where('courseSelectionLog.gibbonSchoolYearID=:gibbonSchoolYearID')
+            ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
-        return $result;
+        return $this->runQuery($query, $criteria);
+
     }
 
     public function insertLog(array $data)

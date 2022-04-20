@@ -6,6 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
+use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\SelectionsGateway;
 
@@ -28,52 +29,37 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
 
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
 
-    $logs = $selectionsGateway->selectAllLogsBySchoolYear($gibbonSchoolYearID, 1, 100);
+    // QUERY
+    $criteria = $selectionsGateway->newQueryCriteria(true)
+        ->sortBy(['courseSelectionLog.timestampChanged'], 'DESC')
+        ->pageSize(50)
+        ->fromPOST();
 
-    if ($logs->rowCount() == 0) {
-        echo '<div class="error">';
-        echo __("There are no records to display.") ;
-        echo '</div>';
-    } else {
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+    $logs = $selectionsGateway->queryAllLogsBySchoolYear($criteria, $gibbonSchoolYearID);
 
-        echo '<tr class="head">';
-            echo '<th>';
-                echo __('Course Offering');
-            echo '</th>';
-            echo '<th>';
-                echo __('Student');
-            echo '</th>';
-            echo '<th>';
-                echo __('Type');
-            echo '</th>';
-            echo '<th>';
-                echo __('Date');
-            echo '</th>';
-            echo '<th style="width: 80px;">';
-                echo __('Actions');
-            echo '</th>';
-        echo '</tr>';
+    // TABLE
+    $table = DataTable::createPaginated('blocks', $criteria);
 
-        while ($log = $logs->fetch()) {
-            echo '<tr>';
-                echo '<td>'.$log['offeringName'].'</td>';
-                echo '<td>';
-                    echo '<a href="'.$session->get('absoluteURL').'/index.php?q=/modules/Students/student_view_details.php&gibbonPersonID='.$log['gibbonPersonIDStudent'].'&allStudents=on" target="_blank">';
-                    echo Format::name('', $log['studentPreferredName'], $log['studentSurname'], 'Student', true);
-                    echo '</a>';
-                echo '</td>';
-                echo '<td>'.$log['action'].'</td>';
-                echo '<td>';
-                    echo date('M j, Y \a\t g:i a', strtotime($log['timestampChanged']));
-                echo '</td>';
-                echo '<td>';
-                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/selectionChoices.php&sidebar=false&gibbonPersonIDStudent=".$log['gibbonPersonIDStudent']."&courseSelectionOfferingID=".$log['courseSelectionOfferingID']."'><img title='".__('View')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
+    $table->addColumn('offeringName', __('Course Offering'));
 
-                echo '</td>';
-            echo '</tr>';
-        }
+    $table->addColumn('name', __('Name'))
+       ->format(Format::using('nameLinked', ['gibbonPersonIDStudent', '', 'studentPreferredName', 'studentSurname', 'Student']));
 
-        echo '</table>';
-    }
+    $table->addColumn('action', __('Action'));
+
+    $table->addColumn('dates', __('Date'))
+        ->format(function ($values) {
+            return Format::dateTime($values['timestampChanged']);
+        })->notSortable();
+
+    $actions = $table->addActionColumn()
+        ->addParam('gibbonPersonIDStudent')
+        ->addParam('courseSelectionOfferingID')
+        ->addParam('sidebar', 'false')
+        ->format(function ($resource, $actions) {
+            $actions->addAction('view', __('View'))
+                ->setURL('/modules/Course Selection/selectionChoices.php');
+        });
+
+    echo $table->render($logs);
 }
