@@ -220,7 +220,6 @@ class SelectionsGateway extends QueryableGateway
 
     public function queryAllLogsBySchoolYear($criteria, $gibbonSchoolYearID)
     {
-
         $query = $this
             ->newQuery()
             ->cols(['courseSelectionLog.*', 'gibbonSchoolYear.name as schoolYearName', 'courseSelectionOffering.name as offeringName', 'gibbonPersonStudent.surname AS studentSurname', 'gibbonPersonStudent.preferredName AS studentPreferredName', 'gibbonPersonChanged.surname AS changedSurname', 'gibbonPersonChanged.preferredName AS changedPreferredName'])
@@ -233,7 +232,6 @@ class SelectionsGateway extends QueryableGateway
             ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID);
 
         return $this->runQuery($query, $criteria);
-
     }
 
     public function insertLog(array $data)
@@ -274,6 +272,30 @@ class SelectionsGateway extends QueryableGateway
 
     // MISC
 
+    public function queryStudentsWithIncompleteSelections($criteria, $gibbonSchoolYearID)
+    {
+        $query = $this
+            ->newQuery()
+            ->cols(['gibbonPerson.gibbonPersonID', 'gibbonPerson.surname', 'gibbonPerson.preferredName', 'courseSelectionOffering.courseSelectionOfferingID', 'gibbonFormGroup.nameShort AS formGroupName', 'COUNT(DISTINCT courseSelectionChoice.gibbonCourseID) AS choiceCount', 'selectedOffering.minSelect', 'selectedOffering.maxSelect', 'selectedOffering.courseSelectionOfferingID AS selectedOfferingID', 'selectedOffering.name AS selectedOfferingName', 'COUNT(DISTINCT courseSelectionApproval.courseSelectionChoiceID) AS approvalCount'])
+            ->from('gibbonPerson')
+            ->innerJoin('gibbonStudentEnrolment', 'gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID')
+            ->innerJoin('gibbonFormGroup', 'gibbonStudentEnrolment.gibbonFormGroupID=gibbonFormGroup.gibbonFormGroupID')
+            ->innerJoin('courseSelectionOfferingRestriction', '(courseSelectionOfferingRestriction.gibbonSchoolYearID=gibbonStudentEnrolment.gibbonSchoolYearID AND courseSelectionOfferingRestriction.gibbonYearGroupID=gibbonStudentEnrolment.gibbonYearGroupID)')
+            ->innerJoin('courseSelectionOffering', 'courseSelectionOffering.courseSelectionOfferingID=courseSelectionOfferingRestriction.courseSelectionOfferingID')
+            ->leftJoin('courseSelectionChoice', "courseSelectionChoice.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID AND courseSelectionChoice.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID AND courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended'")
+            ->leftJoin('courseSelectionChoiceOffering', 'courseSelectionChoiceOffering.gibbonPersonIDStudent=gibbonPerson.gibbonPersonID AND courseSelectionChoiceOffering.gibbonSchoolYearID=courseSelectionOffering.gibbonSchoolYearID')
+            ->leftJoin('courseSelectionOffering as selectedOffering', 'selectedOffering.courseSelectionOfferingID=courseSelectionChoiceOffering.courseSelectionOfferingID')
+            ->leftJoin('courseSelectionApproval', 'courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID')
+            ->where('courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID')
+            ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID)
+            ->where("gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected'")
+            ->having('approvalCount<choiceCount AND choiceCount>0')
+            ->groupBy(['gibbonPerson.gibbonPersonID']);
+
+        return $this->runQuery($query, $criteria);
+    }
+
+    // It ought to be possible to remove this method once table refactoring is complete
     public function selectStudentsWithIncompleteSelections($gibbonSchoolYearID, $orderBy = 'surname')
     {
         $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID);
@@ -295,7 +317,6 @@ class SelectionsGateway extends QueryableGateway
                 WHERE courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
                 GROUP BY gibbonPerson.gibbonPersonID
-
         ";
 
         if ($orderBy == 'choiceCount') {
