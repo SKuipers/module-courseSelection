@@ -356,33 +356,23 @@ class SelectionsGateway extends QueryableGateway
         return $result;
     }
 
-    public function selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $orderBy = 'nameShort', $countable = 'Y')
+    public function queryChoiceCountsBySchoolYear($criteria, $gibbonSchoolYearID, $countable = 'Y')
     {
-        $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'countable' => $countable);
-        $sql = "SELECT COUNT(DISTINCT CASE WHEN courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable='Y') THEN courseSelectionChoice.gibbonPersonIDStudent END) as count, gibbonCourse.gibbonCourseID, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort
-                FROM courseSelectionChoice
-                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID)
-                JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent)
-                LEFT JOIN courseSelectionBlock ON (courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID)
-                WHERE (courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable='Y'))
-                AND courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID
-                AND (courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended')
-                AND (gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')
-                GROUP BY gibbonCourse.gibbonCourseID
-        ";
+        $query = $this
+            ->newQuery()
+            ->cols(['COUNT(DISTINCT CASE WHEN courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable=\'Y\') THEN courseSelectionChoice.gibbonPersonIDStudent END) as count', 'gibbonCourse.gibbonCourseID', 'gibbonCourse.name as courseName', 'gibbonCourse.nameShort as courseNameShort'])
+            ->from($this->getTableName())
+            ->innerJoin('gibbonCourse', 'gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID')
+            ->innerJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent')
+            ->leftJoin('courseSelectionBlock', 'courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID')
+            ->where('courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable=\'Y\')')
+            ->bindValue('countable', $countable)
+            ->where('courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID')
+            ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID)
+            ->where("courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended'")
+            ->where("gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected'")
+            ->groupBy(['gibbonCourse.gibbonCourseID']);
 
-        if ($orderBy == 'count') {
-            $sql .= " ORDER BY count DESC, gibbonCourse.nameShort, gibbonCourse.name";
-        } else if ($orderBy == 'order') {
-            $sql .= " ORDER BY gibbonCourse.orderBy, gibbonCourse.nameShort, gibbonCourse.name";
-        } else if ($orderBy == 'name') {
-            $sql .= " ORDER BY gibbonCourse.name, gibbonCourse.nameShort";
-        } else {
-            $sql .= " ORDER BY gibbonCourse.nameShort, gibbonCourse.name";
-        }
-
-        $result = $this->db()->select($sql, $data);
-
-        return $result;
+        return $this->runQuery($query, $criteria);
     }
 }

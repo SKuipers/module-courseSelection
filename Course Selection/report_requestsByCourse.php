@@ -5,6 +5,8 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
+use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
 use CourseSelection\Domain\SelectionsGateway;
 
@@ -52,116 +54,45 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
 
     echo $form->getOutput();
 
-    echo '<h2>';
-    echo __('Course Requests');
-    echo '</h2>';
-
     $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
-    $courses = $selectionsGateway->selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $sort);
 
-    if ($courses->rowCount() == 0) {
-        echo '<div class="error">';
-        echo __("There are no records to display.") ;
-        echo '</div>';
+    // QUERY
+    $criteria = $selectionsGateway->newQueryCriteria(true)
+        ->pageSize(50)
+        ->fromPOST();
+    if ($sort == 'count') {
+        $criteria->sortBy(['count'], 'DESC')
+            ->sortBy(['gibbonCourse.nameShort', 'gibbonCourse.name']);
+    } else if ($sort == 'order') {
+        $criteria->sortBy(['gibbonCourse.orderBy', 'gibbonCourse.nameShort', 'gibbonCourse.name']);
+    } else if ($sort == 'name') {
+        $criteria->sortBy(['gibbonCourse.name', 'gibbonCourse.nameShort']);
     } else {
-
-        echo '<div class="paginationTop">';
-        echo __('Records').': '.$courses->rowCount();
-        echo '</div>';
-
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
-        echo '<tr class="head">';
-            echo '<th>';
-                echo __('Course');
-            echo '</th>';
-            echo '<th>';
-                echo __('Name');
-            echo '</th>';
-            echo '<th>';
-                echo __('Requests');
-            echo '</th>';
-            echo '<th style="width: 80px;">';
-                echo __('Actions');
-            echo '</th>';
-        echo '</tr>';
-
-        $count = 0;
-        while ($course = $courses->fetch()) {
-            $trClass = '';
-
-            if (!empty($min) && $course['count'] < $min) $trClass = 'warning';
-            if (!empty($max) && $course['count'] > $max) $trClass = 'warning';
-
-            echo '<tr class="'.$trClass.'">';
-                echo '<td>'.$course['courseNameShort'].'</td>';
-                echo '<td>'.$course['courseName'].'</td>';
-                echo '<td>'.$course['count'].'</td>';
-
-                echo '<td>';
-                    echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
-                echo '</td>';
-            echo '</tr>';
-
-            $count++;
-        }
-
-        echo '</table>';
-
-        echo '<h2>';
-        echo __('Alternate Course Requests');
-        echo '</h2>';
-
-        // Count alternate course choices separately
-        $alternates = $selectionsGateway->selectChoiceCountsBySchoolYear($gibbonSchoolYearID, $sort, 'N');
-        
-        if ($alternates->rowCount() == 0) {
-            echo '<div class="error">';
-            echo __("There are no records to display.") ;
-            echo '</div>';
-        } else {
-    
-            echo '<div class="paginationTop">';
-            echo __('Records').': '.$alternates->rowCount();
-            echo '</div>';
-    
-            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
-            echo '<tr class="head">';
-                echo '<th>';
-                    echo __('Course');
-                echo '</th>';
-                echo '<th>';
-                    echo __('Name');
-                echo '</th>';
-                echo '<th>';
-                    echo __('Requests');
-                echo '</th>';
-                echo '<th style="width: 80px;">';
-                    echo __('Actions');
-                echo '</th>';
-            echo '</tr>';
-    
-            $count = 0;
-            while ($course = $alternates->fetch()) {
-                $trClass = '';
-    
-                if (!empty($min) && $course['count'] < $min) $trClass = 'warning';
-                if (!empty($max) && $course['count'] > $max) $trClass = 'warning';
-    
-                echo '<tr class="'.$trClass.'">';
-                    echo '<td>'.$course['courseNameShort'].'</td>';
-                    echo '<td>'.$course['courseName'].'</td>';
-                    echo '<td>'.$course['count'].'</td>';
-    
-                    echo '<td>';
-                        echo "<a href='".$session->get('absoluteURL')."/index.php?q=/modules/".$session->get('module')."/approval_byCourse.php&sidebar=false&gibbonSchoolYearID=".$gibbonSchoolYearID."&gibbonCourseID=".$course['gibbonCourseID']."'><img title='".__('View Course Selections')."' src='./themes/".$session->get('gibbonThemeName')."/img/plus.png'/></a>";
-                    echo '</td>';
-                echo '</tr>';
-    
-                $count++;
-            }
-    
-            echo '</table>';
-        }
-
+        $criteria->sortBy(['gibbonCourse.nameShort', 'gibbonCourse.name']);
     }
+
+    $courses = $selectionsGateway->queryChoiceCountsBySchoolYear($criteria, $gibbonSchoolYearID);
+
+    // TABLE
+    $table = DataTable::createPaginated('courses', $criteria);
+    $table->setTitle(__('Course Requests'));
+
+    $table->modifyRows(function ($course, $row) use ($min, $max) {
+        return (!empty($min) && ($course['count'] < $min OR $course['count'] > $max)) ? $row->addClass('warning') : $row;
+    });
+
+    $table->addColumn('courseNameShort', __('Course'));
+    $table->addColumn('courseName', __('Name'));
+    $table->addColumn('count', __('Requests'));
+
+    $actions = $table->addActionColumn()
+        ->addParam('gibbonCourseID')
+        ->addParam('gibbonSchoolYearID', $gibbonSchoolYearID)
+        ->addParam('sidebar', 'false')
+        ->format(function ($resource, $actions) {
+            $actions->addAction('view', __('View'))
+                ->setURL('/modules/Course Selection/approval_byCourse.php');
+        });
+
+    echo $table->render($courses);
 }
