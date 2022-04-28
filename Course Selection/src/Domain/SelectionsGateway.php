@@ -288,7 +288,7 @@ class SelectionsGateway extends QueryableGateway
             ->leftJoin('courseSelectionApproval', 'courseSelectionApproval.courseSelectionChoiceID=courseSelectionChoice.courseSelectionChoiceID')
             ->where('courseSelectionOffering.gibbonSchoolYearID=:gibbonSchoolYearID')
             ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID)
-            ->where("gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected'")
+            ->where("(gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')")
             ->having('approvalCount<choiceCount AND choiceCount>0')
             ->groupBy(['gibbonPerson.gibbonPersonID']);
 
@@ -386,12 +386,12 @@ class SelectionsGateway extends QueryableGateway
             ->innerJoin('gibbonCourse', 'gibbonCourse.gibbonCourseID=courseSelectionChoice.gibbonCourseID')
             ->innerJoin('gibbonPerson', 'gibbonPerson.gibbonPersonID=courseSelectionChoice.gibbonPersonIDStudent')
             ->leftJoin('courseSelectionBlock', 'courseSelectionChoice.courseSelectionBlockID=courseSelectionBlock.courseSelectionBlockID')
-            ->where('courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable=\'Y\')')
+            ->where('(courseSelectionBlock.countable=:countable OR (courseSelectionChoice.courseSelectionBlockID IS NULL AND :countable=\'Y\'))')
             ->bindValue('countable', $countable)
             ->where('courseSelectionChoice.gibbonSchoolYearID=:gibbonSchoolYearID')
             ->bindValue('gibbonSchoolYearID', $gibbonSchoolYearID)
             ->where("courseSelectionChoice.status <> 'Removed' AND courseSelectionChoice.status <> 'Recommended'")
-            ->where("gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected'")
+            ->where("(gibbonPerson.status = 'Full' OR gibbonPerson.status = 'Expected')")
             ->groupBy(['gibbonCourse.gibbonCourseID']);
 
         return $this->runQuery($query, $criteria);
