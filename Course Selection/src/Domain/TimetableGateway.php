@@ -215,13 +215,6 @@ class TimetableGateway
                 WHERE gibbonCourse.gibbonSchoolYearID=:gibbonSchoolYearID
                 AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
                 AND gibbonCourseClassPerson.role = 'Student'
-                AND gibbonCourse.nameShort NOT LIKE '%Advis%'
-                AND gibbonCourse.nameShort NOT LIKE '%TAP'
-                AND gibbonCourse.nameShort NOT LIKE '%HOME%'
-                AND gibbonCourse.nameShort NOT LIKE '%ECA%'
-                AND (FIND_IN_SET('014', gibbonCourse.gibbonYearGroupIDList)
-                    OR FIND_IN_SET('015', gibbonCourse.gibbonYearGroupIDList)
-                    OR FIND_IN_SET('016', gibbonCourse.gibbonYearGroupIDList) )
                 GROUP BY gibbonCourseClass.gibbonCourseClassID, gibbonTTDay.gibbonTTDayID
                 ORDER BY gibbonCourse.nameShort, gibbonCourseClass.nameShort
         ";
@@ -238,8 +231,7 @@ class TimetableGateway
                 JOIN gibbonTTColumn ON (gibbonTTDay.gibbonTTColumnID=gibbonTTColumn.gibbonTTColumnID) 
                 JOIN gibbonTTColumnRow ON (gibbonTTColumnRow.gibbonTTColumnID=gibbonTTDay.gibbonTTColumnID)
                 WHERE gibbonTTDay.gibbonTTID=:gibbonTTID
-                AND gibbonTTColumnRow.type='Lesson'
-                AND gibbonTTDay.nameShort LIKE '%MF'
+                AND (gibbonTTColumnRow.type='Lesson' || gibbonTTColumnRow.type='Other')
                 ORDER BY gibbonTTDay.gibbonTTDayID, gibbonTTColumnRow.timeStart, gibbonTTColumnRow.name";
 
         return $this->pdo->select($sql, $data);

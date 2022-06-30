@@ -360,6 +360,26 @@ $actionRows[] = [
 ];
 
 $actionRows[] = [
+    'name'                      => 'Upcoming Timetable_myChildren',
+    'precedence'                => '1',
+    'category'                  => 'Courses',
+    'description'               => '',
+    'URLList'                   => 'upcomingTimetable.php',
+    'entryURL'                  => 'upcomingTimetable.php',
+    'entrySidebar'              => 'Y',
+    'menuShow'                  => 'Y',
+    'defaultPermissionAdmin'    => 'N',
+    'defaultPermissionTeacher'  => 'N',
+    'defaultPermissionStudent'  => 'N',
+    'defaultPermissionParent'   => 'N',
+    'defaultPermissionSupport'  => 'N',
+    'categoryPermissionStaff'   => 'N',
+    'categoryPermissionStudent' => 'N',
+    'categoryPermissionParent'  => 'Y',
+    'categoryPermissionOther'   => 'N',
+];
+
+$actionRows[] = [
     'name'                      => 'Approve Requests by Course',
     'precedence'                => '0',
     'category'                  => 'Approval',

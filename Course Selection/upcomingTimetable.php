@@ -10,6 +10,7 @@ use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 use Gibbon\Services\Format;
+use Gibbon\Domain\Students\StudentGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -42,6 +43,39 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
             $row->addSubmit();
 
         echo $form->getOutput();
+    } else if ($highestGroupedAction == 'Upcoming Timetable_myChildren') {
+
+        // Can view family children
+        $children = $container->get(StudentGateway::class)
+            ->selectAnyStudentsByFamilyAdult($session->get('gibbonSchoolYearID'), $session->get('gibbonPersonID'))
+            ->fetchAll();
+        $children = Format::nameListArray($children, 'Student', false, true);
+        $gibbonPersonIDStudent = $_REQUEST['gibbonPersonID'] ?? key($children);
+
+        if (empty($children[$gibbonPersonIDStudent])) {
+            $gibbonPersonIDStudent = null;
+        }
+
+        // FORM
+        $form = Form::create('filter', $session->get('absoluteURL').'/index.php', 'get');
+        $form->setTitle(__m('Choose Student'));
+
+        $form->setFactory(DatabaseFormFactory::create($pdo));
+        $form->setClass('noIntBorder fullWidth');
+        $form->addHiddenValue('q', '/modules/Course Selection/upcomingTimetable.php');
+
+        $row = $form->addRow();
+        $row->addLabel('gibbonPersonID', __('Person'));
+        $row->addSelectPerson('gibbonPersonID')
+            ->fromArray($children)
+            ->required()
+            ->placeholder()
+            ->selected($gibbonPersonIDStudent);
+
+        $row = $form->addRow();
+            $row->addSearchSubmit($session, __('Clear Filters'));
+
+        echo $form->getOutput();
     } else if ($highestGroupedAction == 'Upcoming Timetable_my') {
         $gibbonPersonIDStudent = $session->get('gibbonPersonID');
     }
@@ -58,7 +92,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     $gibbonTTID = $timetables[0]['gibbonTTID'] ?? null;
 
     if (empty($gibbonTTID)) {
-        $page->addError(__m('A relevant timetable could not be located for this student in the target school year.'));
+        echo Format::alert(__m('A relevant timetable could not be located for this student in the target school year.'), 'error');
         return;
     }
 
@@ -66,17 +100,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     $courses = $timetableGateway->selectEnroledCoursesBySchoolYearAndStudent($gibbonSchoolYearID, $gibbonPersonIDStudent)->fetchGrouped();
 
     $table = DataTable::create('timetable');
+    $table->addMetaData('class', 'overflow-x-scroll');
 
     $timetableData = new DataSet($timetableDays);
 
     $timetableData->transform(function (&$ttDay) use (&$courses) {
         foreach ($ttDay as $index => $values) {
             $ttDayRow = $values['gibbonTTDayID'].'-'.$values['gibbonTTColumnRowID'];
-            if (isset($courses[$ttDayRow])) {
-                $ttDay[$index]['courseClass'] = $courses[$ttDayRow];
-            }
+            $ttDay[$index]['courseClass'] = $courses[$ttDayRow] ?? '';
         }
     });
+    $timetableData = $timetableData->toArray();
 
     foreach (array_keys($timetableDays) as $index => $ttRow) {
         $table->addColumn('period', '')
@@ -88,9 +122,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
 
     $canAccessTT = isActionAccessible($guid, $connection2, '/modules/Timetable Admin/courseEnrolment_manage_class_edit.php');
     foreach (current($timetableDays) as $index => $ttDay) {
+
+        // Omit the timetable days that have no classes at all
+        $ttDays = array_column($timetableData, $index);
+        $classes = array_filter(array_column($ttDays, 'courseClass'));
+        if (empty($classes)) continue;
+
         $table->addColumn($ttDay['nameShort'], str_replace('MF', '', $ttDay['nameShort']))
             ->context('primary')
-            ->width('23%')
+            // ->width('23%')
             ->format(function ($values) use ($index, $canAccessTT) {
                 $name = $url = $title = '';
                 $class = ' block px-4 border border-gray-500 border-solid flex flex-col justify-center';
@@ -122,5 +162,5 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
             });
     }
 
-    echo $table->render(new DataSet(array_values($timetableData->toArray())));
+    echo $table->render(new DataSet(array_values($timetableData)));
 }

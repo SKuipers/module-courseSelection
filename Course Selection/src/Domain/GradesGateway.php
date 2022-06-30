@@ -38,7 +38,42 @@ class GradesGateway
     public function selectStudentReportGradesByDepartments($gibbonDepartmentIDList, $gibbonPersonIDStudent)
     {
         $data = array('gibbonDepartmentIDList' => $gibbonDepartmentIDList, 'gibbonPersonIDStudent' => $gibbonPersonIDStudent);
-        $sql = "(SELECT gradeID as grade, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, arrReport.reportName, arrReport.reportID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+        $sql = "
+            (SELECT DISTINCT gibbonReportingValue.value as grade, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, gibbonReportingCycle.name as reportName, gibbonReportingCycle.gibbonReportingCycleID as reportID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+                FROM gibbonCourse
+                JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
+                JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
+                JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonCourseClassPerson.gibbonPersonID)
+                JOIN gibbonSchoolYear AS enrolmentYear ON (enrolmentYear.gibbonSchoolYearID=gibbonStudentEnrolment.gibbonSchoolYearID)
+                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
+                LEFT JOIN gibbonReportingCriteria ON (gibbonReportingCriteria.gibbonCourseID=gibbonCourse.gibbonCourseID AND gibbonReportingCriteria.target='Per Student' AND gibbonReportingCriteria.gibbonReportingCriteriaTypeID = 12 )
+                LEFT JOIN gibbonReportingCriteriaType ON (gibbonReportingCriteriaType.gibbonReportingCriteriaTypeID=gibbonReportingCriteria.gibbonReportingCriteriaTypeID  )                
+                LEFT JOIN gibbonReportingValue ON (gibbonReportingValue.gibbonReportingCriteriaID=gibbonReportingCriteria.gibbonReportingCriteriaID
+                    AND gibbonReportingValue.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID 
+                    AND gibbonReportingValue.gibbonPersonIDStudent=gibbonCourseClassPerson.gibbonPersonID)
+                LEFT JOIN gibbonReportingProgress ON (gibbonReportingProgress.gibbonReportingScopeID=gibbonReportingCriteria.gibbonReportingScopeID AND gibbonReportingProgress.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonReportingProgress.gibbonPersonIDStudent=gibbonReportingValue.gibbonPersonIDStudent)
+                LEFT JOIN gibbonReportingCycle ON (gibbonReportingCycle.gibbonReportingCycleID=gibbonReportingCriteria.gibbonReportingCycleID)
+
+                WHERE enrolmentYear.status='Current'
+                AND FIND_IN_SET(gibbonCourse.gibbonDepartmentID, :gibbonDepartmentIDList)
+                AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonIDStudent
+                AND gibbonCourseClass.reportable='Y'
+                AND gibbonCourse.nameShort NOT LIKE '%ECA%'
+                AND gibbonCourse.nameShort NOT LIKE '%HOMEROOM%'
+                AND gibbonCourse.nameShort NOT LIKE '%Advisor%'
+                AND gibbonCourse.nameShort NOT LIKE '%TAP'
+                AND (gibbonSchoolYear.gibbonSchoolYearID=enrolmentYear.gibbonSchoolYearID OR (gibbonSchoolYear.gibbonSchoolYearID <= enrolmentYear.gibbonSchoolYearID AND gibbonReportingCriteria.name LIKE 'Final%'))
+            )
+            UNION ALL
+            (SELECT DISTINCT grade, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, 'Final', 0 as reportID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
+                FROM arrLegacyGrade
+                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=arrLegacyGrade.gibbonCourseID)
+                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
+                WHERE arrLegacyGrade.gibbonPersonID=:gibbonPersonIDStudent
+                AND FIND_IN_SET(gibbonCourse.gibbonDepartmentID, :gibbonDepartmentIDList)
+                AND arrLegacyGrade.reportTerm='Final'
+                ) ORDER BY schoolYearName, courseOrder, courseNameShort";
+/*            SELECT gradeID as grade, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, arrReport.reportName, arrReport.reportID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
                 FROM gibbonCourse
                 JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND gibbonCourseClassPerson.role='Student')
@@ -57,15 +92,8 @@ class GradesGateway
                 GROUP BY gibbonCourse.gibbonCourseID
                 ORDER BY arrReport.schoolYearID DESC, arrReport.reportNum DESC, arrCriteria.criteriaType DESC
             ) UNION ALL (
-            SELECT DISTINCT grade, gibbonSchoolYear.name as schoolYearName, gibbonSchoolYear.status as schoolYearStatus, gibbonCourse.name as courseName, gibbonCourse.nameShort as courseNameShort, 'Final', 0 as reportID, (CASE WHEN gibbonCourse.orderBy > 0 THEN gibbonCourse.orderBy ELSE 80 end) as courseOrder
-                FROM arrLegacyGrade
-                JOIN gibbonCourse ON (gibbonCourse.gibbonCourseID=arrLegacyGrade.gibbonCourseID)
-                JOIN gibbonSchoolYear ON (gibbonSchoolYear.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID)
-                WHERE arrLegacyGrade.gibbonPersonID=:gibbonPersonIDStudent
-                AND FIND_IN_SET(gibbonCourse.gibbonDepartmentID, :gibbonDepartmentIDList)
-                AND arrLegacyGrade.reportTerm='Final'
-                ) ORDER BY schoolYearName, courseOrder, courseNameShort";
-
+                */
+                
         return $this->pdo->executeQuery($data, $sql);
     }
 

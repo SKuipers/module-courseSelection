@@ -230,8 +230,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             $courses = array();
             $courseResults = $toolsGateway->selectAllCoursesBySchoolYear($access['gibbonSchoolYearID']);
             if ($courseResults && $courseResults->rowCount() > 0) {
-                while ($row = $courseResults->fetch()) {
-                    $courses[$row['grouping']][$row['value']] = $row['name'];
+                while ($result = $courseResults->fetch()) {
+                    $courses[$result['groupBy']][$result['value']] = $result['name'];
                 }
             }
 

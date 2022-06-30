@@ -3,6 +3,7 @@ CHANGELOG
 v1.2.02
 -------
 Refactoring of tables
+Added a permission for parents to view upcoming timetable
 
 v1.2.01
 -------

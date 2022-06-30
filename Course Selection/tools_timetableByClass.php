@@ -20,7 +20,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
     $page->breadcrumbs->add(__('Edit Timetable by Class'));
 
     $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
-    $settingGateway = $container->get(SettingGateway::class);
 
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
