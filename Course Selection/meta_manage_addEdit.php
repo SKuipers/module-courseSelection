@@ -7,8 +7,8 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\MetaDataGateway;
-use CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Domain\MetaDataGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -19,8 +19,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $metaDataGateway = $container->get('CourseSelection\Domain\MetaDataGateway');
-    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
+    $metaDataGateway = $container->get(MetaDataGateway::class);
+    $toolsGateway = $container->get(ToolsGateway::class);
 
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');

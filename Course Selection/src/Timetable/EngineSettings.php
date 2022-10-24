@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
+namespace Gibbon\Module\CourseSelection\Timetable;
 
 /**
  * Timetabling Engine: Settings

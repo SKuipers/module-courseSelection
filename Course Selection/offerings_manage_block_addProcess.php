@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         header("Location: {$URL}");
         exit;
     } else {
-        $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
+        $gateway = $container->get(OfferingsGateway::class);
 
         $partialFail = false;
         foreach ($courseSelectionBlockIDList as $courseSelectionBlockID) {

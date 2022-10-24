@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable\Evaluators;
+namespace Gibbon\Module\CourseSelection\Timetable\Evaluators;
 
 /**
  * Evaluator that weights based on gender balance, class size, etc.

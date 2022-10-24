@@ -7,7 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
-use CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
 
 
 // Module Bootstrap
@@ -19,7 +19,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $gateway = $container->get('CourseSelection\Domain\AccessGateway');
+    $gateway = $container->get(AccessGateway::class);
 
     $values = array(
         'courseSelectionAccessID' => '',

@@ -5,8 +5,8 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Services\Format;
-use CourseSelection\Domain\GradesGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\GradesGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -22,8 +22,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
 
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
-    $gradesGateway = $container->get('CourseSelection\Domain\GradesGateway');
+    $selectionsGateway = $container->get(SelectionsGateway::class);
+    $gradesGateway = $container->get(GradesGateway::class);
 
     $studentResults = $selectionsGateway->selectStudentDetails($gibbonPersonIDStudent);
     $studentEnrolmentResults = $gradesGateway->selectStudentEnrolmentByStudent($gibbonPersonIDStudent);

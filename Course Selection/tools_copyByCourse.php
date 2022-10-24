@@ -8,8 +8,8 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\ToolsGateway;
-use CourseSelection\SchoolYearNavigation;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\SchoolYearNavigation;
 
 // Module Bootstrap
 require 'module.php';
@@ -23,7 +23,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 	$page->breadcrumbs
     	->add(__m('Copy Selections By Course'));
 
-    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
+    $toolsGateway = $container->get(ToolsGateway::class);
 
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');

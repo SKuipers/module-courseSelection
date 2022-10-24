@@ -4,11 +4,11 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable\Evaluators;
+namespace Gibbon\Module\CourseSelection\Timetable\Evaluators;
 
-use CourseSelection\Timetable\EngineEnvironment;
-use CourseSelection\Timetable\EngineSettings;
-use CourseSelection\DecisionTree\NodeEvaluator;
+use Gibbon\Module\CourseSelection\Timetable\EngineEnvironment;
+use Gibbon\Module\CourseSelection\Timetable\EngineSettings;
+use Gibbon\Module\CourseSelection\DecisionTree\NodeEvaluator;
 
 /**
  * Implementation of the NodeEvaluator interface for the Timetabling Engine

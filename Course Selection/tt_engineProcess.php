@@ -6,8 +6,8 @@ Copyright (C) 2017, Sandra Kuipers
 
 include '../../gibbon.php';
 
-use CourseSelection\BackgroundProcess;
-use CourseSelection\Domain\SettingsGateway;
+use Gibbon\Module\CourseSelection\BackgroundProcess;
+use Gibbon\Module\CourseSelection\Domain\SettingsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         header("Location: {$URL}");
         exit;
     } else {
-        $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
+        $settingsGateway = $container->get(SettingsGateway::class);
 
         // Save any changes made to timetabling settings
         $studentOrder = $_POST['studentOrder'] ?? 'yearGroupDesc';

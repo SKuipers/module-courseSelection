@@ -1,6 +1,6 @@
 <?php
 
-namespace CourseSelection;
+namespace Gibbon\Module\CourseSelection;
 
 /**
  * Background Processor

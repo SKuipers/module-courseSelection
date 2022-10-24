@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -23,7 +23,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     if (empty($courseSelectionOfferingID) || empty($gibbonPersonIDStudent) || empty($courseSelectionChoiceID)) {
         die(false);
     } else {
-        $gateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+        $gateway = $container->get(SelectionsGateway::class);
         if ($status === 'true') {
             $data = array();
             $data['courseSelectionChoiceID'] = $courseSelectionChoiceID;

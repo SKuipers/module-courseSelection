@@ -6,16 +6,16 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
-use CourseSelection\Domain\Access;
+use Gibbon\Module\CourseSelection\Domain\Access;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\AccessGateway;
-use CourseSelection\Domain\OfferingsGateway;
-use CourseSelection\Domain\BlocksGateway;
-use CourseSelection\Domain\SelectionsGateway;
-use CourseSelection\Domain\GradesGateway;
-use CourseSelection\Domain\ToolsGateway;
-use CourseSelection\Form\CourseSelectionFormFactory;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Module\CourseSelection\Domain\BlocksGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\GradesGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Form\CourseSelectionFormFactory;
 
 // Module Bootstrap
 require 'module.php';
@@ -51,11 +51,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         return;
     }
 
-    $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
-    $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
-    $blocksGateway = $container->get('CourseSelection\Domain\BlocksGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
-    $gradesGateway = $container->get('CourseSelection\Domain\GradesGateway');
+    $accessGateway = $container->get(AccessGateway::class);
+    $offeringsGateway = $container->get(OfferingsGateway::class);
+    $blocksGateway = $container->get(BlocksGateway::class);
+    $selectionsGateway = $container->get(SelectionsGateway::class);
+    $gradesGateway = $container->get(GradesGateway::class);
 
     $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $session->get('gibbonPersonID'));
 
@@ -212,7 +212,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         }
 
         if ($highestGroupedAction == 'Course Selection_all') {
-            $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
+            $toolsGateway = $container->get(ToolsGateway::class);
 
             echo '<h3>';
             echo __('Add a Course Selection');

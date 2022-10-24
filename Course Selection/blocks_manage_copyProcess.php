@@ -5,7 +5,9 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\BlocksGateway;
+use Gibbon\Module\CourseSelection\Domain\BlocksGateway;
+
+$_POST['address'] = '/modules/Course Selection/blocks_manage.php';
 
 include '../../gibbon.php';
 
@@ -31,7 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         exit;
     } else {
 
-        $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
+        $gateway = $container->get(BlocksGateway::class);
 
         $updated = $gateway->copyAllBySchoolYear($gibbonSchoolYearID, $gibbonSchoolYearIDNext);
 

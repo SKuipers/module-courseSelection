@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\MetaDataGateway;
+use Gibbon\Module\CourseSelection\Domain\MetaDataGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         exit;
     } else {
 
-        $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
+        $gateway = $container->get(MetaDataGateway::class);
 
         $deleted = $gateway->delete($courseSelectionMetaDataID);
 

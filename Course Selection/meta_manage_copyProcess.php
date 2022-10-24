@@ -5,7 +5,9 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\MetaDataGateway;
+use Gibbon\Module\CourseSelection\Domain\MetaDataGateway;
+
+$_POST['address'] = '/modules/Course Selection/meta_manage.php';
 
 include '../../gibbon.php';
 
@@ -31,7 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         exit;
     } else {
 
-        $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
+        $gateway = $container->get(MetaDataGateway::class);
 
         $updated = $gateway->copyAllBySchoolYear($gibbonSchoolYearID, $gibbonSchoolYearIDNext);
 

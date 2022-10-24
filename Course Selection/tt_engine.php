@@ -6,9 +6,9 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Forms\Form;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\TimetableGateway;
-use CourseSelection\Domain\SelectionsGateway;
-use CourseSelection\BackgroundProcess;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\BackgroundProcess;
 use Illuminate\Support\Collection;
 
 // Module Bootstrap
@@ -49,8 +49,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $timetableGateway = $container->get(TimetableGateway::class);
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $engineResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID);
 

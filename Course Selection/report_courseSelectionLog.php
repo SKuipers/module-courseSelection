@@ -8,7 +8,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_co
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     // QUERY
     $criteria = $selectionsGateway->newQueryCriteria(true)

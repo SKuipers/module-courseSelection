@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\BackgroundProcess;
+use Gibbon\Module\CourseSelection\BackgroundProcess;
 
 // Module Bootstrap
 require 'module.php';

@@ -5,7 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 
 require_once '../../gibbon.php';
 
@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
         header("Location: {$URL}");
         exit;
     } else {
-        $gateway = $container->get('CourseSelection\Domain\ToolsGateway');
+        $gateway = $container->get(ToolsGateway::class);
 
         $deleted = $gateway->deleteTTDayRowClass($gibbonTTDayRowClassID);
 

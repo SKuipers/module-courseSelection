@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable\Validators;
+namespace Gibbon\Module\CourseSelection\Timetable\Validators;
 
 /**
  * Validator that only looks for completion of the node decisions

@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Domain;
+namespace Gibbon\Module\CourseSelection\Domain;
 
 use Gibbon\Domain\Traits\TableAware;
 use Gibbon\Domain\QueryCriteria;
@@ -77,7 +77,7 @@ class BlocksGateway extends QueryableGateway
                 FROM courseSelectionBlock WHERE courseSelectionBlock.gibbonSchoolYearID=:gibbonSchoolYearID";
         $result = $this->db()->insert($sql, $data);
 
-        $partialSuccess = $this->getQuerySuccess();
+        $partialSuccess = $this->db()->getQuerySuccess();
         if ($partialSuccess) {
             $data = array('gibbonSchoolYearID' => $gibbonSchoolYearID, 'gibbonSchoolYearIDNext' => $gibbonSchoolYearIDNext );
             $sql = "INSERT INTO courseSelectionBlockCourse (courseSelectionBlockID, gibbonCourseID)

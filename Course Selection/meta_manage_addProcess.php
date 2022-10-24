@@ -5,7 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\MetaDataGateway;
+use Gibbon\Module\CourseSelection\Domain\MetaDataGateway;
 
 require_once '../../gibbon.php';
 
@@ -37,7 +37,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/meta_mana
         header("Location: {$URL}");
         exit;
     } else {
-        $gateway = $container->get('CourseSelection\Domain\MetaDataGateway');
+        $gateway = $container->get(MetaDataGateway::class);
 
         $insertID = $gateway->insert($data);
 

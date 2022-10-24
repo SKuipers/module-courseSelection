@@ -4,12 +4,12 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
+namespace Gibbon\Module\CourseSelection\Timetable;
 
-use CourseSelection\BackgroundProcess;
+use Gibbon\Module\CourseSelection\BackgroundProcess;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\TimetableGateway;
-use CourseSelection\Domain\SettingsGateway;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
+use Gibbon\Module\CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
 
 include '../../gibbon.php';
@@ -33,8 +33,8 @@ setCurrentSchoolYear($guid, $connection2);
 $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;
 
 $processor = new BackgroundProcess($session->get('absolutePath').'/uploads/engine');
-$timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-$settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
+$timetableGateway = $container->get(TimetableGateway::class);
+$settingsGateway = $container->get(SettingsGateway::class);
 
 // Build a set of class information for the school year
 $classResults = $timetableGateway->selectTimetabledClassesBySchoolYear($gibbonSchoolYearID);

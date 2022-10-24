@@ -5,7 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\TimetableGateway;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 
 include '../../gibbon.php';
 
@@ -29,7 +29,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
         header("Location: {$URL}");
         exit;
     } else {
-        $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+        $timetableGateway = $container->get(TimetableGateway::class);
 
         // First delete any timetabling results
         $deleted = $timetableGateway->deleteAllResultsBySchoolYear($gibbonSchoolYearID);

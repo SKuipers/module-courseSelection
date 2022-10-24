@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\DecisionTree;
+namespace Gibbon\Module\CourseSelection\DecisionTree;
 
 /**
  * Interface for evaluating a node's weight

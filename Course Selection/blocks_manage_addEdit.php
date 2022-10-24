@@ -7,7 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\DatabaseFormFactory;
-use CourseSelection\Domain\BlocksGateway;
+use Gibbon\Module\CourseSelection\Domain\BlocksGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -18,7 +18,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
+    $gateway = $container->get(BlocksGateway::class);
 
     $values = array(
         'courseSelectionBlockID' => '',
@@ -99,10 +99,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     echo $form->getOutput();
 
     if ($action == 'edit' && !empty($values['courseSelectionBlockID'])) {
-        echo '<h3>';
-        echo __('Manage Courses');
-        echo '</h3>';
-
         $courses = $gateway->selectAllCoursesByBlock($values['courseSelectionBlockID']);
 
         // DATA TABLE

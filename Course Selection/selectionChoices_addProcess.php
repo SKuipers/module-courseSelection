@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -24,7 +24,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 } else {
     //Proceed!
     $partialFail = false;
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selectionChoices.php', $connection2);
     if ($highestGroupedAction != 'Course Selection_all') {

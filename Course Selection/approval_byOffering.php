@@ -8,9 +8,9 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\ToolsGateway;
-use CourseSelection\Domain\OfferingsGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -24,9 +24,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 	$page->breadcrumbs
 	 	->add(__m('Course Approval by Offering'));
 
-    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
-    $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $toolsGateway = $container->get(ToolsGateway::class);
+    $offeringsGateway = $container->get(OfferingsGateway::class);
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $courseSelectionOfferingID = $_REQUEST['courseSelectionOfferingID'] ?? '';
     $showRemoved = $_GET['showRemoved'] ?? 'N';

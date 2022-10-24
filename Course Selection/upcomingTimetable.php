@@ -86,7 +86,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     // Cancel out early if there's no valid student selected
     if (empty($gibbonSchoolYearID) || empty($gibbonPersonIDStudent)) return;
 
-    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+    $timetableGateway = $container->get(TimetableGateway::class);
     $timetables = $timetableGateway->selectRelevantTimetablesByPerson($gibbonSchoolYearID, $gibbonPersonIDStudent)->fetchAll();
 
     $gibbonTTID = $timetables[0]['gibbonTTID'] ?? null;

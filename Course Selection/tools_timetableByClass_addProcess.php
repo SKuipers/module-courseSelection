@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-use CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 use Gibbon\Domain\System\SettingGateway;
 
 require_once '../../gibbon.php';

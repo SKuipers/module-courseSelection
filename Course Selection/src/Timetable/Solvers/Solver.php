@@ -4,12 +4,12 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable\Solvers;
+namespace Gibbon\Module\CourseSelection\Timetable\Solvers;
 
-use CourseSelection\DecisionTree\DecisionTree;
-use CourseSelection\DecisionTree\NodeHeuristic;
-use CourseSelection\DecisionTree\NodeValidator;
-use CourseSelection\DecisionTree\NodeEvaluator;
+use Gibbon\Module\CourseSelection\DecisionTree\DecisionTree;
+use Gibbon\Module\CourseSelection\DecisionTree\NodeHeuristic;
+use Gibbon\Module\CourseSelection\DecisionTree\NodeValidator;
+use Gibbon\Module\CourseSelection\DecisionTree\NodeEvaluator;
 
 /**
  * Problem solver for the Timetabling Engine: impemented as a decision tree

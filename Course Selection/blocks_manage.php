@@ -7,8 +7,8 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\BlocksGateway;
-use CourseSelection\SchoolYearNavigation;
+use Gibbon\Module\CourseSelection\Domain\BlocksGateway;
+use Gibbon\Module\CourseSelection\SchoolYearNavigation;
 
 // Module Bootstrap
 require 'module.php';
@@ -35,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         }
     echo '</p>';
 
-    $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
+    $gateway = $container->get(BlocksGateway::class);
 
     // QUERY
     $criteria = $gateway->newQueryCriteria(true)

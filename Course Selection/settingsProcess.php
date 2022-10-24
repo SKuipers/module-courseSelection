@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\SettingsGateway;
+use Gibbon\Module\CourseSelection\Domain\SettingsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -20,7 +20,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
 } else {
     //Proceed!
     $partialFail = false;
-    $settingsGateway = $container->get('CourseSelection\Domain\SettingsGateway');
+    $settingsGateway = $container->get(SettingsGateway::class);
 
     $activeSchoolYear = $_POST['activeSchoolYear'] ?? $session->get('gibbonSchoolYearID');
     $partialFail &= !$settingsGateway->update('Course Selection', 'activeSchoolYear', $activeSchoolYear);

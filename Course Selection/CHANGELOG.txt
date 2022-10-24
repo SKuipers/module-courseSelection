@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+v1.2.03
+-------
+Updated namespaces and class autoloading
+Fixed error when copying blocks to next year
+
 v1.2.02
 -------
 Refactoring of tables

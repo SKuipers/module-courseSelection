@@ -4,11 +4,11 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable\Heuristics;
+namespace Gibbon\Module\CourseSelection\Timetable\Heuristics;
 
-use CourseSelection\Timetable\EngineEnvironment;
-use CourseSelection\Timetable\EngineSettings;
-use CourseSelection\DecisionTree\NodeHeuristic;
+use Gibbon\Module\CourseSelection\Timetable\EngineEnvironment;
+use Gibbon\Module\CourseSelection\Timetable\EngineSettings;
+use Gibbon\Module\CourseSelection\DecisionTree\NodeHeuristic;
 
 /**
  * Implementation of the NodeHeuristic interface for the Timetabling Engine

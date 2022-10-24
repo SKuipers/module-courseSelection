@@ -4,9 +4,9 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
+namespace Gibbon\Module\CourseSelection\Timetable;
 
-use CourseSelection\DecisionTree\DecisionTree;
+use Gibbon\Module\CourseSelection\DecisionTree\DecisionTree;
 
 /**
  * Timetabling Engine

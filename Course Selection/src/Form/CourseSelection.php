@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Form;
+namespace Gibbon\Module\CourseSelection\Form;
 
 use Gibbon\Forms\Input\Input;
 

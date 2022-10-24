@@ -7,7 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\TimetableGateway;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+    $timetableGateway = $container->get(TimetableGateway::class);
     $studentResults = $timetableGateway->selectStudentResultsBySchoolYear($gibbonSchoolYearID, $sort, $gibbonCourseClassID);
 
     if (!$studentResults || $studentResults->rowCount() == 0) {

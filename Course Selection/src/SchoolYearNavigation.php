@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection;
+namespace Gibbon\Module\CourseSelection;
 
 use Gibbon\Contracts\Services\Session;
 use Gibbon\Contracts\Database\Connection;

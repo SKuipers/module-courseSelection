@@ -6,8 +6,8 @@ Copyright (C) 2017, Sandra Kuipers
 
 include '../../gibbon.php';
 
-use CourseSelection\BackgroundProcess;
-use CourseSelection\Domain\SettingsGateway;
+use Gibbon\Module\CourseSelection\BackgroundProcess;
+use Gibbon\Module\CourseSelection\Domain\SettingsGateway;
 
 // Module Bootstrap
 require 'module.php';

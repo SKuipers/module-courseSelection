@@ -7,7 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -26,7 +26,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
-    $gateway = $container->get('CourseSelection\Domain\AccessGateway');
+    $gateway = $container->get(AccessGateway::class);
 
     // QUERY
     $criteria = $gateway->newQueryCriteria(true)

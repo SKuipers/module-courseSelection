@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         exit;
     } else {
 
-        $gateway = $container->get('CourseSelection\Domain\AccessGateway');
+        $gateway = $container->get(AccessGateway::class);
 
         $deleted = $gateway->delete($courseSelectionAccessID);
 

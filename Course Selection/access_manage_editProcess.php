@@ -5,7 +5,7 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Services\Format;
-use CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
 
 require_once '../../gibbon.php';
 
@@ -40,7 +40,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/access_ma
         exit;
     } else {
 
-        $gateway = $container->get('CourseSelection\Domain\AccessGateway');
+        $gateway = $container->get(AccessGateway::class);
 
         $updated = $gateway->update($data);
 

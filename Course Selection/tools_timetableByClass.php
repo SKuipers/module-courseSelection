@@ -8,7 +8,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -19,7 +19,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 } else {
     $page->breadcrumbs->add(__('Edit Timetable by Class'));
 
-    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
+    $toolsGateway = $container->get(ToolsGateway::class);
 
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');

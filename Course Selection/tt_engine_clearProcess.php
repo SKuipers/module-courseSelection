@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\TimetableGateway;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -27,7 +27,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
         exit;
     } else {
 
-        $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
+        $timetableGateway = $container->get(TimetableGateway::class);
 
         $deleted = $timetableGateway->deleteAllResultsBySchoolYear($gibbonSchoolYearID);
 

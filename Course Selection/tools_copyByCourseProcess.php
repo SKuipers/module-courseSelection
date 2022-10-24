@@ -6,7 +6,7 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -24,8 +24,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
 } else {
     //Proceed!
     $partialFail = false;
-    $timetableGateway = $container->get('CourseSelection\Domain\TimetableGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $timetableGateway = $container->get(TimetableGateway::class);
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $gibbonSchoolYearIDCopyTo = $_POST['gibbonSchoolYearIDCopyTo'] ?? '';
     $gibbonCourseIDCopyTo = $_POST['gibbonCourseIDCopyTo'] ?? '';

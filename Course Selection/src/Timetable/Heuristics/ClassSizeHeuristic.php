@@ -4,7 +4,7 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable\Heuristics;
+namespace Gibbon\Module\CourseSelection\Timetable\Heuristics;
 
 /**
  * Timetabling Heuristic that orders the results to fill empty classes first

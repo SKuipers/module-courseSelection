@@ -6,9 +6,9 @@ Copyright (C) 2017, Sandra Kuipers
 
 require_once '../../gibbon.php';
 
-use CourseSelection\Domain\Access;
-use CourseSelection\Domain\AccessGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\Access;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
         exit;
     }
 
-    $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
+    $accessGateway = $container->get(AccessGateway::class);
 
     $accessRequest = $accessGateway->getAccessByOfferingAndPerson($courseSelectionOfferingID, $session->get('gibbonPersonID'));
 
@@ -62,7 +62,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
             exit;
         } else {
             $partialFail = false;
-            $gateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+            $gateway = $container->get(SelectionsGateway::class);
 
             $courseSelectionsList = array();
             $courseSelections = $_POST['courseSelection'] ?? array();

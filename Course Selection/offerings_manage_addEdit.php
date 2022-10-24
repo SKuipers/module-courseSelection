@@ -7,7 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\DatabaseFormFactory;
-use CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -18,7 +18,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
+    $gateway = $container->get(OfferingsGateway::class);
 
     $values = array(
         'courseSelectionOfferingID' => '',

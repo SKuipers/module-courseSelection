@@ -4,19 +4,19 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
-namespace CourseSelection\Timetable;
+namespace Gibbon\Module\CourseSelection\Timetable;
 
-use CourseSelection\Timetable\Solvers\Solver;
-use CourseSelection\Timetable\Validators\Validator;
-use CourseSelection\Timetable\Evaluators\Evaluator;
-use CourseSelection\Timetable\Heuristics\Heuristic;
-use CourseSelection\Timetable\Validators\SimpleValidator;
-use CourseSelection\Timetable\Validators\ConflictValidator;
-use CourseSelection\Timetable\Evaluators\SimpleEvaluator;
-use CourseSelection\Timetable\Evaluators\WeightedEvaluator;
-use CourseSelection\Timetable\Heuristics\SimpleHeuristic;
-use CourseSelection\Timetable\Heuristics\ClassSizeHeuristic;
-use CourseSelection\Timetable\Heuristics\RandomizeHeuristic;
+use Gibbon\Module\CourseSelection\Timetable\Solvers\Solver;
+use Gibbon\Module\CourseSelection\Timetable\Validators\Validator;
+use Gibbon\Module\CourseSelection\Timetable\Evaluators\Evaluator;
+use Gibbon\Module\CourseSelection\Timetable\Heuristics\Heuristic;
+use Gibbon\Module\CourseSelection\Timetable\Validators\SimpleValidator;
+use Gibbon\Module\CourseSelection\Timetable\Validators\ConflictValidator;
+use Gibbon\Module\CourseSelection\Timetable\Evaluators\SimpleEvaluator;
+use Gibbon\Module\CourseSelection\Timetable\Evaluators\WeightedEvaluator;
+use Gibbon\Module\CourseSelection\Timetable\Heuristics\SimpleHeuristic;
+use Gibbon\Module\CourseSelection\Timetable\Heuristics\ClassSizeHeuristic;
+use Gibbon\Module\CourseSelection\Timetable\Heuristics\RandomizeHeuristic;
 
 /**
  * Timetabling Engine: Factory

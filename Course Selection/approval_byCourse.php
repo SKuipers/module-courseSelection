@@ -9,8 +9,8 @@ use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\ToolsGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -24,8 +24,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 	$page->breadcrumbs
          ->add(__m('Course Approval by Class'));
 
-    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $toolsGateway = $container->get(ToolsGateway::class);
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
 

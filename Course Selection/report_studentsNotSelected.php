@@ -7,7 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Services\Format;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -53,7 +53,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
     echo __('Report Data');
     echo '</h2>';
 
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $students = $selectionsGateway->selectStudentsWithIncompleteSelections($gibbonSchoolYearID, $sort);
 

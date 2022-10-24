@@ -23,7 +23,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_tim
 	$settingGateway = $container->get(SettingGateway::class);
     $gibbonSchoolYearID = $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
-    $toolsGateway = $container->get('CourseSelection\Domain\ToolsGateway');
+    $toolsGateway = $container->get(ToolsGateway::class);
     $timetableResults = $toolsGateway->selectTimetablesBySchoolYear($gibbonSchoolYearID);
 
     $schoolYearGateway = $container->get(SchoolYearGateway::class);

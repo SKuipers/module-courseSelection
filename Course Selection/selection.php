@@ -5,12 +5,12 @@ Copyright (C) 2017, Sandra Kuipers
 */
 
 use Gibbon\Forms\Form;
-use CourseSelection\Domain\Access;
+use Gibbon\Module\CourseSelection\Domain\Access;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\Domain\AccessGateway;
-use CourseSelection\Domain\OfferingsGateway;
-use CourseSelection\Domain\SelectionsGateway;
+use Gibbon\Module\CourseSelection\Domain\AccessGateway;
+use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -56,9 +56,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     // Cancel out early if there's no valid student selected
     if (empty($gibbonPersonIDStudent)) return;
 
-    $accessGateway = $container->get('CourseSelection\Domain\AccessGateway');
-    $offeringsGateway = $container->get('CourseSelection\Domain\OfferingsGateway');
-    $selectionsGateway = $container->get('CourseSelection\Domain\SelectionsGateway');
+    $accessGateway = $container->get(AccessGateway::class);
+    $offeringsGateway = $container->get(OfferingsGateway::class);
+    $selectionsGateway = $container->get(SelectionsGateway::class);
 
     $accessRequest = $accessGateway->getAccessByPerson($gibbonSchoolYearID, $session->get('gibbonPersonID'));
 

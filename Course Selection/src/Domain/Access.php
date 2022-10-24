@@ -1,6 +1,6 @@
 <?php
 
-namespace CourseSelection\Domain;
+namespace Gibbon\Module\CourseSelection\Domain;
 
 /**
  * Access

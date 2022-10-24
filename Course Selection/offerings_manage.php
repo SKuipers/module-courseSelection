@@ -7,8 +7,8 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Services\Format;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\System\SettingGateway;
-use CourseSelection\SchoolYearNavigation;
-use CourseSelection\Domain\OfferingsGateway;
+use Gibbon\Module\CourseSelection\SchoolYearNavigation;
+use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
 
 // Module Bootstrap
 require 'module.php';
@@ -35,7 +35,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
         }
     echo '</p>';
 
-    $gateway = $container->get('CourseSelection\Domain\OfferingsGateway');
+    $gateway = $container->get(OfferingsGateway::class);
 
     // QUERY
     $criteria = $gateway->newQueryCriteria(true)

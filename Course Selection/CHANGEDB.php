@@ -271,3 +271,9 @@ $sql[$count][0]="1.2.02" ;
 $sql[$count][1]="
 INSERT IGNORE INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Course Selection'), 'Upcoming Timetable_myChildren', 0, 'Courses', '', 'upcomingTimetable.php', 'upcomingTimetable.php', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'Y', 'N');end
 ";
+
+//v1.2.03
+$count++;
+$sql[$count][0]="1.2.03" ;
+$sql[$count][1]="
+";

@@ -11,7 +11,7 @@ $autoloader = require __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/moduleFunctions.php';
 
 // Add module namespace to Gibbon autoloader
-$autoloader->addPsr4('CourseSelection\\', $session->get('absolutePath').'/modules/Course Selection/src/');
+// $autoloader->addPsr4('CourseSelection\\', $session->get('absolutePath').'/modules/Course Selection/src/');
 
 // Register the core services as instances
 $container->share('Gibbon\Contracts\Database\Connection', $pdo);
