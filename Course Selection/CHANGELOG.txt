@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v1.2.05
+-------
+Fixed missing setting in manifest file
+
 v1.2.04
 -------
 Fixed error related to updated namespaces
