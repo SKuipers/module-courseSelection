@@ -289,3 +289,11 @@ $count++;
 $sql[$count][0]="1.2.05" ;
 $sql[$count][1]="
 ";
+
+//v1.2.06
+$count++;
+$sql[$count][0]="1.2.06" ;
+$sql[$count][1]="
+INSERT IGNORE INTO gibbonSetting (scope ,name ,nameDisplay ,description ,value) VALUES ('Course Selection', 'studentOrder', 'Student Order', '', 'yearGroupDesc');end
+
+";

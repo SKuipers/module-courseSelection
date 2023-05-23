@@ -243,10 +243,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addLabel('', __('Timetabling Failures'));
             $row->addTextField('')->readonly()->setValue(strval($stats['incompleteResults']));
 
-        $row = $form->addRow();
-            $row->addContent('');
-            $row->addButton('View Results by Course', "window.location='".$session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_resultsByCourse.php'."'");
-            $row->addButton('View Results by Student', "window.location='".$session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_resultsByStudent.php'."'")->addClass('shortWidth');
+        $col = $form->addRow()->addColumn()->addClass('flex flex-row justify-around');
+            $col->addButton('View Results by Course', "window.location='".$session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_resultsByCourse.php'."'")->addClass('');
+            $col->addButton('View Results by Student', "window.location='".$session->get('absoluteURL').'/index.php?q=/modules/Course Selection/tt_resultsByStudent.php'."'")->addClass('');
 
         $row = $form->addRow()->addHeading(__('Engine Stats'));
 
@@ -289,7 +288,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addAlert($alert, $alertStatus);
 
         $row = $form->addRow();
-            $thickboxGoLive = "onclick=\"tb_show('','".$session->get('absoluteURL')."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_goLive.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";
+            $thickboxGoLive = "onclick=\"tb_show('','".$session->get('absoluteURL')."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_goLive.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=350',false)\"";
             $row->addContent('<input type="button" value="'.__('Go Live!').'" class="shortWidth" style="background: #444444;color:#ffffff;" '.$thickboxGoLive.'>')->setClass('right');
 
         echo $form->getOutput();
@@ -309,7 +308,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
 
         $row = $form->addRow();
             $thickboxClear = "onclick=\"tb_show('','".$session->get('absoluteURL')."/fullscreen.php?q=/modules/Course%20Selection/tt_engine_clear.php&gibbonSchoolYearID=".$gibbonSchoolYearID."&width=650&height=200',false)\"";
-            $row->addContent('<input type="button" value="'.__('Clear All Results').'" class="shortWidth" style="background: #B10D0D;color:#ffffff;" '.$thickboxClear.'>')->setClass('right');
+            $row->addContent('<input type="button" value="'.__('Clear All Results').'" class="" style="background: #B10D0D;color:#ffffff;" '.$thickboxClear.'>')->setClass('right');
 
         echo $form->getOutput();
 

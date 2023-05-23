@@ -33,11 +33,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_engine
             $row->addContent(__('This operation cannot be undone.').' '.__('Taking the timetable live will turn all results into student enrolments for the selected school year. After going live the new student enrolments can be managed as usual from the Timetable Admin module.'));
 
         $row = $form->addRow();
-            $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('I LOVE GIBBON')) )->addClass('mediumWidth');
+            $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('GO LIVE')) )->addClass('mediumWidth');
             $row->addTextField('confirm')
                 ->addValidation('Validate.Presence')
                 ->addValidation('Validate.Inclusion',
-                    'within: [\''.__('I LOVE GIBBON').'\'], failureMessage: "'.__(' Please enter the text exactly as it is displayed to confirm this action.').'", partialMatch: false, caseSensitive: false')
+                    'within: [\''.__('GO LIVE').'\'], failureMessage: "'.__(' Please enter the text exactly as it is displayed to confirm this action.').'", partialMatch: false, caseSensitive: false')
                 ->addValidationOption('onlyOnSubmit: true');
 
         $form->addRow()->addSubmit();

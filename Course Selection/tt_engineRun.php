@@ -12,6 +12,8 @@ use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 use Gibbon\Module\CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
 
+$_POST['address'] = '/modules/Course Selection/tt_engine.php';
+
 include '../../gibbon.php';
 
 // Module Bootstrap

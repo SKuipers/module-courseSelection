@@ -75,17 +75,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/settings.
     $setting = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMinimum', true);
     $row = $form->addRow();
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
-        $row->addNumber($setting['name'])->setValue($setting['value']);
+        $row->addNumber($setting['name'])->required()->setValue($setting['value']);
 
     $setting = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentTarget', true);
     $row = $form->addRow();
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
-        $row->addNumber($setting['name'])->setValue($setting['value']);
+        $row->addNumber($setting['name'])->required()->setValue($setting['value']);
 
     $setting = $settingGateway->getSettingByScope('Course Selection', 'classEnrolmentMaximum', true);
     $row = $form->addRow();
         $row->addLabel($setting['name'], __($setting['nameDisplay']))->description(__($setting['description']));
-        $row->addNumber($setting['name'])->setValue($setting['value']);
+        $row->addNumber($setting['name'])->required()->setValue($setting['value']);
 
     $form->addRow()->addHeading(__('Reporting Integration'));
 

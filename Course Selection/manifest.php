@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="1.2.05" ;
+$version="1.2.06" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 

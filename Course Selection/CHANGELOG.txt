@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+v1.2.06
+-------
+Fix missing namespace include in Timetabling Engine script
+Fix button size and alignment on Timetabling Engine page
+Fixed missing setting in CHANGEDB file for module updates
+
 v1.2.05
 -------
 Fixed missing setting in manifest file
