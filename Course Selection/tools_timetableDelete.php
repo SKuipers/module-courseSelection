@@ -7,6 +7,7 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Forms\Form;
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Domain\School\SchoolYearGateway;
+use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 
 // Module Bootstrap
 require 'module.php';

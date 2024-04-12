@@ -4,6 +4,8 @@ Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
 
+$_POST['address'] = '/modules/Course Selection/blocks_manage_addEdit.php';
+
 require_once '../../gibbon.php';
 
 use Gibbon\Module\CourseSelection\Domain\BlocksGateway;
