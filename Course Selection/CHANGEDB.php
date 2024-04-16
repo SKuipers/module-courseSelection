@@ -297,3 +297,10 @@ $sql[$count][1]="
 INSERT IGNORE INTO gibbonSetting (scope ,name ,nameDisplay ,description ,value) VALUES ('Course Selection', 'studentOrder', 'Student Order', '', 'yearGroupDesc');end
 
 ";
+
+//v1.2.07
+$count++;
+$sql[$count][0]="1.2.07" ;
+$sql[$count][1]="
+ALTER TABLE `courseSelectionBlockCourse` ADD `sequenceNumber` INT(3) UNSIGNED ZEROFILL NULL AFTER `gibbonCourseID`;end
+";
