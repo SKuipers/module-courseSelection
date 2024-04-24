@@ -302,5 +302,5 @@ INSERT IGNORE INTO gibbonSetting (scope ,name ,nameDisplay ,description ,value) 
 $count++;
 $sql[$count][0]="1.2.07" ;
 $sql[$count][1]="
-ALTER TABLE `courseSelectionBlockCourse` ADD `sequenceNumber` INT(3) UNSIGNED ZEROFILL NULL AFTER `gibbonCourseID`;end
+ALTER TABLE `courseSelectionBlockCourse` ADD `sequenceNumber` INT(3) UNSIGNED NULL AFTER `gibbonCourseID`;end
 ";

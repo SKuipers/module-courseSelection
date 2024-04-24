@@ -12,7 +12,7 @@ $description="Student Course Request and Timetabling Engine" ;
 $entryURL="selection.php" ;
 $type="Additional" ;
 $category="Learn" ;
-$version="1.2.06" ;
+$version="1.2.07" ;
 $author="Sandra Kuipers" ;
 $url="https://github.com/SKuipers" ;
 
@@ -40,6 +40,7 @@ $moduleTables[] = "CREATE TABLE `courseSelectionBlock` (
 $moduleTables[] = "CREATE TABLE `courseSelectionBlockCourse` (
   `courseSelectionBlockID` int(10) unsigned zerofill NOT NULL,
   `gibbonCourseID` int(8) unsigned zerofill NOT NULL,
+  `sequenceNumber` INT(3) UNSIGNED NULL,
   PRIMARY KEY (`courseSelectionBlockID`,`gibbonCourseID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;" ;
 
