@@ -106,7 +106,7 @@ class BlocksGateway extends QueryableGateway
                 FROM courseSelectionBlockCourse
                 JOIN gibbonCourse ON (courseSelectionBlockCourse.gibbonCourseID=gibbonCourse.gibbonCourseID)
                 WHERE courseSelectionBlockID=:courseSelectionBlockID
-                ORDER BY gibbonCourse.name, gibbonCourse.nameShort";
+                ORDER BY courseSelectionBlockCourse.sequenceNumber, gibbonCourse.name, gibbonCourse.nameShort";
 
         return $this->db()->select($sql, $data);
     }

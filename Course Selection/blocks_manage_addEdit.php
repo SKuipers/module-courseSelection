@@ -18,7 +18,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $gateway = $container->get(BlocksGateway::class);
+    $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
+
+    $count = 0;
 
     $values = array(
         'courseSelectionBlockID' => '',
@@ -29,6 +31,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         'minSelect'              => '0',
         'maxSelect'              => '1',
         'countable'              => 'Y',
+        'courseSelectionOfferingID' => '',
+        'sequenceNumber'            => $gateway->getNextSequenceNumber()
     );
 
     $gibbonDepartmentIDList = '';
@@ -99,11 +103,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     echo $form->getOutput();
 
     if ($action == 'edit' && !empty($values['courseSelectionBlockID'])) {
+        echo '<h3>';
+        echo __('Manage Courses');
+        echo '</h3>';
+
         $courses = $gateway->selectAllCoursesByBlock($values['courseSelectionBlockID']);
 
         // DATA TABLE
         $table = DataTable::create('courses');
         $table->setTitle(__('Manage Courses'));
+
+        $table->addDraggableColumn('gibbonCourseID', $session->get('absoluteURL').'/modules/Course Selection/blocks_manage_orderAjax.php', ['courseSelectionBlockID' => $values['courseSelectionBlockID']]);
 
         $table->addColumn('courseNameShort', __('Short Name'));
         $table->addColumn('courseName', __('Name'));
