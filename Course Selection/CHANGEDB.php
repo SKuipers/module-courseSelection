@@ -304,3 +304,9 @@ $sql[$count][0]="1.2.07" ;
 $sql[$count][1]="
 ALTER TABLE `courseSelectionBlockCourse` ADD `sequenceNumber` INT(3) UNSIGNED NULL AFTER `gibbonCourseID`;end
 ";
+
+//v1.2.08
+$count++;
+$sql[$count][0]="1.2.08" ;
+$sql[$count][1]="
+";

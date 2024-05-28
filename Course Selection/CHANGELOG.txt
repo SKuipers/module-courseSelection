@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+
+v1.2.08
+-------
+Fixed PHP error from missing TimetableGateway class in Upcoming Timetable
+
 v1.2.07
 -------
 Added SquenceNumber to CourseSelectionBlock

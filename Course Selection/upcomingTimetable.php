@@ -11,6 +11,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 use Gibbon\Services\Format;
 use Gibbon\Domain\Students\StudentGateway;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 
 // Module Bootstrap
 require 'module.php';

@@ -10,6 +10,7 @@ use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 use Gibbon\Services\Format;
+use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 
 // Module Bootstrap
 require 'module.php';
