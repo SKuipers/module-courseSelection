@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.2.09
+-------
+Fix PHP error in drag-drop course blocks
+
 v1.2.08
 -------
 Fixed PHP error from missing TimetableGateway class in Upcoming Timetable

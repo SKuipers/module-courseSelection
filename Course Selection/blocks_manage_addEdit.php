@@ -18,7 +18,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         echo __('You do not have access to this action.');
     echo "</div>" ;
 } else {
-    $gateway = $container->get('CourseSelection\Domain\BlocksGateway');
+    $gateway = $container->get(BlocksGateway::class);
 
     $count = 0;
 
@@ -28,11 +28,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         'gibbonDepartmentIDList' => '',
         'name'                   => '',
         'description'            => '',
-        'minSelect'              => '0',
-        'maxSelect'              => '1',
         'countable'              => 'Y',
-        'courseSelectionOfferingID' => '',
-        'sequenceNumber'            => $gateway->getNextSequenceNumber()
     );
 
     $gibbonDepartmentIDList = '';
@@ -134,6 +130,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
         $form = Form::create('blocksCourseAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/blocks_manage_course_addProcess.php');
 
         $form->addHiddenValue('courseSelectionBlockID', $values['courseSelectionBlockID']);
+        $form->addHiddenValue('sequenceNumber', $gateway->getNextSequenceNumber($values['courseSelectionBlockID']));
         $form->addHiddenValue('address', $session->get('address'));
 
         if (!empty($values['gibbonDepartmentIDList'])) {

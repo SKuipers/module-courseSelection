@@ -37,7 +37,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
 
     $form = Form::create('action', $session->get('absoluteURL').'/index.php', 'get');
 
-    $form->setClass('noIntBorder fullWidth');
+    $form->setClass('noIntBorder w-full');
     $form->addHiddenValue('q', '/modules/Course Selection/report_studentsNotSelected.php');
 
     $row = $form->addRow();
@@ -62,7 +62,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_st
         echo __("There are no records to display.") ;
         echo '</div>';
     } else {
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+        echo '<table class="w-full colorOddEven" cellspacing="0">';
 
         echo '<tr class="head">';
             echo '<th>';

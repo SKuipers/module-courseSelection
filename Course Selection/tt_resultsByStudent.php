@@ -45,7 +45,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
         $form = Form::create('resultsByStudent', $session->get('absoluteURL').'/index.php', 'get');
 
-        $form->setClass('noIntBorder fullWidth');
+        $form->setClass('noIntBorder w-full');
         $form->addHiddenValue('q', '/modules/Course Selection/tt_resultsByStudent.php');
         $form->addHiddenValue('gibbonCourseClassID', $gibbonCourseClassID);
 
@@ -72,7 +72,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
         echo __('Records').': '.count($students);
         echo '</div>';
 
-        echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+        echo '<table class="w-full colorOddEven" cellspacing="0">';
 
         echo '<tr class="head">';
             echo '<th width="22%">';

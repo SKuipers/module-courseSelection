@@ -98,6 +98,14 @@ class BlocksGateway extends QueryableGateway
     }
 
     // BLOCK COURSES
+    public function getNextSequenceNumber($courseSelectionBlockID)
+    {
+        $data = ['courseSelectionBlockID' => $courseSelectionBlockID];
+        $sql = "SELECT MAX(sequenceNumber) FROM courseSelectionBlockCourse WHERE courseSelectionBlockID=:courseSelectionBlockID";
+        $result = $this->db()->select($sql, $data);
+
+        return ($result && $result->rowCount() > 0)? $result->fetchColumn(0)+1 : 1;
+    }
 
     public function selectAllCoursesByBlock($courseSelectionBlockID)
     {
@@ -110,10 +118,18 @@ class BlocksGateway extends QueryableGateway
 
         return $this->db()->select($sql, $data);
     }
+    
+    public function updateBlockOrder(array $data)
+    {
+        $sql = "UPDATE courseSelectionBlockCourse SET sequenceNumber=:sequenceNumber WHERE courseSelectionBlockID=:courseSelectionBlockID AND gibbonCourseID=:gibbonCourseID";
+        $result = $this->db()->update($sql, $data);
+
+        return $this->db()->getQuerySuccess();
+    }
 
     public function insertCourse(array $data)
     {
-        $sql = "INSERT INTO courseSelectionBlockCourse SET courseSelectionBlockID=:courseSelectionBlockID, gibbonCourseID=:gibbonCourseID";
+        $sql = "INSERT INTO courseSelectionBlockCourse SET courseSelectionBlockID=:courseSelectionBlockID, gibbonCourseID=:gibbonCourseID, sequenceNumber=:sequenceNumber";
         $result = $this->db()->insert($sql, $data);
 
         return $this->db()->getConnection()->lastInsertID();

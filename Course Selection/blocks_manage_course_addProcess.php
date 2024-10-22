@@ -23,6 +23,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     //Proceed!
     $data = array();
     $data['courseSelectionBlockID'] = $_POST['courseSelectionBlockID'] ?? '';
+    $data['sequenceNumber'] = $_POST['sequenceNumber'] ?? '';
     $gibbonCourseIDList = $_POST['gibbonCourseID'] ?? '';
 
     if (empty($data['courseSelectionBlockID']) || empty($gibbonCourseIDList)) {

@@ -36,7 +36,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/report_re
 
     $form = Form::create('action', $session->get('absoluteURL').'/index.php', 'get');
 
-    $form->setClass('noIntBorder fullWidth');
+    $form->setClass('noIntBorder w-full');
     $form->addHiddenValue('q', '/modules/Course Selection/report_requestsByCourse.php');
 
     $row = $form->addRow();

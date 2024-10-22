@@ -87,7 +87,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
             echo sprintf(__('Showing %1$s student course selections:'), $studentChoicesResults->rowCount());
             echo '</p>';
 
-            echo '<table class="fullWidth colorOddEven" cellspacing="0">';
+            echo '<table class="w-full colorOddEven" cellspacing="0">';
 
             while ($student = $studentChoicesResults->fetch()) {
 

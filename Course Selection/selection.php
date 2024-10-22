@@ -111,7 +111,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
             $form = Form::create('selection', $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/selectionChoices.php&sidebar=false');
 
-            $form->setClass('fullWidth');
+            $form->setClass('w-full');
             $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
             $form->addHiddenValue('gibbonPersonIDStudent', $gibbonPersonIDStudent);
