@@ -18,22 +18,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
 } else {
 
     //Proceed!
-    $data = array();
-    $data['courseSelectionBlockID'] = $_POST['data']['courseSelectionBlockID'] ?? '';
+    $courseSelectionBlockID = $_POST['courseSelectionBlockID'] ?? '';
+    $courseList = $_POST['order'] ?? [];
 
-    $courseList = json_decode($_POST['order']);
-
-    if (empty($data['courseSelectionBlockID']) || empty($courseList)) {
+    if (empty($courseSelectionBlockID) || empty($courseList)) {
         exit;
     } else {
         $gateway = $container->get(BlocksGateway::class);
 
         $count = 1;
         foreach ($courseList as $gibbonCourseID) {
-            $data['gibbonCourseID'] = $gibbonCourseID;
-            $data['sequenceNumber'] = $count;
-
-            $updated = $gateway->updateBlockOrder($data);
+            $updated = $gateway->updateBlockOrder($courseSelectionBlockID, $gibbonCourseID, $count);
             $count++;
         }
     }

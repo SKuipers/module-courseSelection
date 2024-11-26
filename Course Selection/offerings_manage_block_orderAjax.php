@@ -17,23 +17,17 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/offerings
     exit;
 } else {
     //Proceed!
-    $data = array();
-    $data['courseSelectionOfferingID'] = $_POST['data']['courseSelectionOfferingID'] ?? '';
+    $courseSelectionOfferingID = $_POST['courseSelectionOfferingID'] ?? '';
+    $courseSelectionBlockIDList = $_POST['order'] ?? [];
 
-    $courseSelectionBlockIDList = json_decode($_POST['order']);
-
-    if (empty($data['courseSelectionOfferingID']) || empty($courseSelectionBlockIDList)) {
+    if (empty($courseSelectionOfferingID) || empty($courseSelectionBlockIDList)) {
         exit;
     } else {
         $gateway = $container->get(OfferingsGateway::class);
 
         $count = 1;
         foreach ($courseSelectionBlockIDList as $courseSelectionBlockID) {
-
-            $data['courseSelectionBlockID'] = $courseSelectionBlockID;
-            $data['sequenceNumber'] = $count;
-
-            $inserted = $gateway->updateBlockOrder($data);
+            $inserted = $gateway->updateBlockOrder($courseSelectionOfferingID, $courseSelectionBlockID, $count);
             $count++;
         }
     }

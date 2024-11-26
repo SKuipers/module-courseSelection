@@ -237,12 +237,12 @@ class OfferingsGateway extends QueryableGateway
         return $this->db()->getConnection()->lastInsertID();
     }
 
-    public function updateBlockOrder(array $data)
+    public function updateBlockOrder($courseSelectionOfferingID, $courseSelectionBlockID, $sequenceNumber)
     {
+        $data = ['courseSelectionOfferingID' => $courseSelectionOfferingID, 'courseSelectionBlockID' => $courseSelectionBlockID, 'sequenceNumber' => $sequenceNumber];
         $sql = "UPDATE courseSelectionOfferingBlock SET sequenceNumber=:sequenceNumber WHERE courseSelectionOfferingID=:courseSelectionOfferingID AND courseSelectionBlockID=:courseSelectionBlockID";
-        $result = $this->db()->update($sql, $data);
 
-        return $this->db()->getQuerySuccess();
+        return $this->db()->select($sql, $data);
     }
 
     public function deleteBlock($courseSelectionOfferingID, $courseSelectionBlockID)

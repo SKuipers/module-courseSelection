@@ -130,21 +130,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background: #FFD263;
 }
 
-.drag-handle {
-    cursor: move;
-    height: 2px;
-    width: 21px;
-    max-width: 21px;
-    min-width: 21px;
-    background: transparent;
-    margin: 0px 12px 0px 0px;
-    border-color: #bbbbbb;
-    border-style: dotted;
-    border-width: 3px 0px 3px 0px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
 #offeringBlocks .ui-sortable-helper {
     display: table;
     margin: 0;

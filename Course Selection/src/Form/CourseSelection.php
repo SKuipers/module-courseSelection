@@ -100,12 +100,12 @@ class CourseSelection extends Input
     protected function getIsChecked($value)
     {
         if (empty($value) || empty($this->selectedChoices)) {
-            return '';
+            return null;
         }
 
         $status = $this->getChoiceStatus($value);
 
-        return ($status == 'Required' || $status == 'Approved' || $status == 'Requested' || $status == 'Selected')? 'checked' : '';
+        return ($status == 'Required' || $status == 'Approved' || $status == 'Requested' || $status == 'Selected')? 'checked' : null;
     }
 
     protected function getElement()

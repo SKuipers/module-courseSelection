@@ -119,12 +119,12 @@ class BlocksGateway extends QueryableGateway
         return $this->db()->select($sql, $data);
     }
     
-    public function updateBlockOrder(array $data)
+    public function updateBlockOrder($courseSelectionBlockID, $gibbonCourseID, $sequenceNumber)
     {
+        $data = ['courseSelectionBlockID' => $courseSelectionBlockID, 'gibbonCourseID' => $gibbonCourseID, 'sequenceNumber' => $sequenceNumber];
         $sql = "UPDATE courseSelectionBlockCourse SET sequenceNumber=:sequenceNumber WHERE courseSelectionBlockID=:courseSelectionBlockID AND gibbonCourseID=:gibbonCourseID";
-        $result = $this->db()->update($sql, $data);
 
-        return $this->db()->getQuerySuccess();
+        return $this->db()->select($sql, $data);
     }
 
     public function insertCourse(array $data)

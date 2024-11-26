@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.2.10
+-------
+Fix drag-and-drop course blocks and course offerings
+
 v1.2.09
 -------
 Fix PHP error in drag-drop course blocks

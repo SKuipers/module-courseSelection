@@ -99,10 +99,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/blocks_ma
     echo $form->getOutput();
 
     if ($action == 'edit' && !empty($values['courseSelectionBlockID'])) {
-        echo '<h3>';
-        echo __('Manage Courses');
-        echo '</h3>';
-
         $courses = $gateway->selectAllCoursesByBlock($values['courseSelectionBlockID']);
 
         // DATA TABLE

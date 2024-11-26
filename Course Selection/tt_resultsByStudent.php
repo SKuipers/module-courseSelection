@@ -123,7 +123,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tt_result
 
                 $conflictCount = 0;
                 if (!empty($studentClasses) && !empty($student['classNameShort'])) {
-                    usort($studentClasses, function($a, $b) { return strnatcmp($a['classNameShort'], $b['classNameShort']); } );
+                    usort($studentClasses, function($a, $b) { return strnatcmp($a['classNameShort'] ?? '', $b['classNameShort'] ?? ''); } );
 
                     foreach ($studentClasses as $class) {
                         $status = ($class['status'] != 'Complete')? ($class['flag'] == 'Full'? 'Failed' : 'Conflict') : '';
