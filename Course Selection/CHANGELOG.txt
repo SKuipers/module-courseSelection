@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.2.11
+-------
+Replaced $gibbon->session to $session as "$gibbon->session" is deprecated
+
 v1.2.10
 -------
 Fix drag-and-drop course blocks and course offerings

@@ -15,5 +15,5 @@ require_once __DIR__ . '/moduleFunctions.php';
 
 // Register the core services as instances
 $container->share('Gibbon\Contracts\Database\Connection', $pdo);
-$container->share('Gibbon\session', $gibbon->session);
+$container->share('Gibbon\session', $session);
 $container->add('pdo', $pdo, true);
