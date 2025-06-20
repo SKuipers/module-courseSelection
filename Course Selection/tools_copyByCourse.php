@@ -37,7 +37,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/tools_cop
     if ($actionCopyFrom == 'Requests') {
         $gibbonSchoolYearIDCopyTo = $gibbonSchoolYearID;
     } else if (empty($gibbonSchoolYearIDCopyTo)) {
-        $navigation = new SchoolYearNavigation($pdo, $gibbon->session);
+        $navigation = new SchoolYearNavigation($pdo, $session);
         $nextSchoolYear = $navigation->selectNextSchoolYearByID($gibbonSchoolYearID);
         $gibbonSchoolYearIDCopyTo = $nextSchoolYear['gibbonSchoolYearID'] ?? '';
     }
