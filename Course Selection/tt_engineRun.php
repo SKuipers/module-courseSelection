@@ -12,8 +12,6 @@ use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 use Gibbon\Module\CourseSelection\Domain\SettingsGateway;
 use Illuminate\Support\Collection;
 
-$_POST['address'] = '/modules/Course Selection/tt_engine.php';
-
 include '../../gibbon.php';
 
 // Module Bootstrap
@@ -29,7 +27,6 @@ ini_set('memory_limit', '2048M');
 ini_set('max_execution_time', 900);
 set_time_limit(900);
 getSystemSettings($guid, $connection2);
-setCurrentSchoolYear($guid, $connection2);
 
 // Incoming variables from command line
 $gibbonSchoolYearID = (isset($argv[1]))? $argv[1] : null ;

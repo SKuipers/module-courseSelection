@@ -7,8 +7,6 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\CourseSelection\Domain\MetaDataGateway;
 
-$_POST['address'] = '/modules/Course Selection/meta_manage.php';
-
 include '../../gibbon.php';
 
 // Module Bootstrap

@@ -3,7 +3,8 @@ CHANGELOG
 
 v1.2.11
 -------
-Replaced $gibbon->session to $session as "$gibbon->session" is deprecated
+Replaced deprecated $gibbon->session calls with $session
+Removed unnecessary $_POST['address'] assignment
 
 v1.2.10
 -------

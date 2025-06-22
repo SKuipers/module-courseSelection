@@ -6,8 +6,6 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
-$_POST['address'] = '/modules/Course Selection/approval_byOffering.php';
-
 require_once '../../gibbon.php';
 
 // Module Bootstrap

@@ -6,8 +6,6 @@ Copyright (C) 2017, Sandra Kuipers
 
 use Gibbon\Module\CourseSelection\Domain\BlocksGateway;
 
-$_POST['address'] = '/modules/Course Selection/blocks_manage_addEdit.php';
-
 require_once '../../gibbon.php';
 
 // Module Bootstrap

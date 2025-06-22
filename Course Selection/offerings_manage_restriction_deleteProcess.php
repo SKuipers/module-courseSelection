@@ -3,7 +3,6 @@
 Gibbon: Course Selection & Timetabling Engine
 Copyright (C) 2017, Sandra Kuipers
 */
-
 require_once '../../gibbon.php';
 
 use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;

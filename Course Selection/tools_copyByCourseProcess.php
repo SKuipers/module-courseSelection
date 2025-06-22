@@ -7,8 +7,6 @@ Copyright (C) 2017, Sandra Kuipers
 use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 use Gibbon\Module\CourseSelection\Domain\TimetableGateway;
 
-$_POST['address'] = '/modules/Course Selection/tools_copyByCourse.php';
-
 require_once '../../gibbon.php';
 
 // Module Bootstrap
