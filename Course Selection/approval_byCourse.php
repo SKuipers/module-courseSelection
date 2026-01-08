@@ -12,31 +12,31 @@ use Gibbon\Domain\System\SettingGateway;
 use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
-// Module Bootstrap
+// Module includes
 require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_byCourse.php') == false) {
-    //Acess denied
-    echo "<div class='error'>" ;
-        echo __('You do not have access to this action.');
-    echo "</div>" ;
+    // Access denied
+    $page->addError(__('You do not have access to this action.'));
 } else {
 	$page->breadcrumbs
          ->add(__m('Course Approval by Class'));
 
+    $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
+    
     $toolsGateway = $container->get(ToolsGateway::class);
     $selectionsGateway = $container->get(SelectionsGateway::class);
-
-    $gibbonCourseID = $_GET['gibbonCourseID'] ?? '';
-
 	$settingGateway = $container->get(SettingGateway::class);
+
     $gibbonSchoolYearID = $_REQUEST['gibbonSchoolYearID'] ?? $settingGateway->getSettingByScope('Course Selection', 'activeSchoolYear');
 
     $page->navigator->addSchoolYearNavigation($gibbonSchoolYearID);
 
     // SELECT COURSE
-    $form = Form::create('courseApprovalByCourse', $session->get('absoluteURL').'/index.php', 'get');
+    $form = Form::create('filter', $session->get('absoluteURL') . '/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
+    $form->setClass('noIntBorder w-full');
+    $form->setTitle(__m('Choose Course'));
 
     $form->addHiddenValue('q', '/modules/Course Selection/approval_byCourse.php');
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
@@ -46,10 +46,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
 
     $row = $form->addRow();
         $row->addLabel('gibbonCourseID', __('Course'));
-        $row->addSelect('gibbonCourseID')->fromResults($courseResults)->required()->selected($gibbonCourseID);
+        $row->addSelect('gibbonCourseID')->fromResults($courseResults)->required()->selected($gibbonCourseID)->placeholder();
 
     $row = $form->addRow();
-        $row->addSubmit();
+       $row->addSearchSubmit($session);
 
     echo $form->getOutput();
 

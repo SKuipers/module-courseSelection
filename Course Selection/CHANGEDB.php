@@ -328,3 +328,9 @@ $count++;
 $sql[$count][0]="1.2.11" ;
 $sql[$count][1]="
 ";
+
+//v1.2.12
+$count++;
+$sql[$count][0]="1.2.12" ;
+$sql[$count][1]="
+";

@@ -17,9 +17,7 @@ require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection.php') == false) {
     //Acess denied
-    echo "<div class='error'>" ;
-        echo __('You do not have access to this action.');
-    echo "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
     $page->breadcrumbs
     	->add(__m('Course Selection'));
@@ -32,7 +30,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/selection.php', $connection2);
 
     if ($highestGroupedAction == 'Course Selection_all') {
-        $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent'])? $_REQUEST['gibbonPersonIDStudent'] : 0;
+        $gibbonPersonIDStudent = isset($_REQUEST['gibbonPersonIDStudent']) ? $_REQUEST['gibbonPersonIDStudent'] : '';
 
         $form = Form::create('selectStudent', $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/selection.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
@@ -42,7 +40,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/selection
 
         $row = $form->addRow();
             $row->addLabel('gibbonPersonIDStudent', __('Student'));
-            $row->addSelectStudent('gibbonPersonIDStudent', $session->get('gibbonSchoolYearID'), array('allStudents' => false, 'byName' => true, 'showForm' => true))->selected($gibbonPersonIDStudent);
+            $row->addSelectStudent('gibbonPersonIDStudent', $session->get('gibbonSchoolYearID'), ['allStudents' => false, 'byName' => true, 'showForm' => true])->selected($gibbonPersonIDStudent);
 
         $row = $form->addRow();
             $row->addFooter();

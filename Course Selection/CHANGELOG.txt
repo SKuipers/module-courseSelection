@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v1.2.12
+-------
+Fixed the error to use the correct class in search filters
+
 v1.2.11
 -------
 Replaced deprecated $gibbon->session calls with $session
