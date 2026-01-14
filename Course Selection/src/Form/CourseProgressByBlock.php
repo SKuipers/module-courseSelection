@@ -27,13 +27,16 @@ class CourseProgressByBlock extends Element
     {
         $output = '';
 
-
-
         $this->setAttribute('data-block', $this->block['courseSelectionBlockID']);
         $this->setAttribute('data-min', $this->block['minSelect']);
         $this->setAttribute('data-max', $this->block['maxSelect']);
 
-        $output .= '<div class="courseProgressByBlock" '.$this->getAttributeString().'>';
+        $class = 'courseProgressByBlock';
+        if (isset($this->block['minSelect']) && $this->block['minSelect'] == "0") {
+            $class .= ' complete';
+        }
+
+        $output .= '<div class="'.$class.'" '.$this->getAttributeString().'>';
 
         $output .= '<div class="indicator">';
             $output .= '<img class="valid" title="'.__('Complete').'" src="./themes/Default/img/iconTick.png" style="display:none;">';
