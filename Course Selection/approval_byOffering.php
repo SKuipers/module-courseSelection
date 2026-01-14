@@ -12,14 +12,12 @@ use Gibbon\Module\CourseSelection\Domain\ToolsGateway;
 use Gibbon\Module\CourseSelection\Domain\OfferingsGateway;
 use Gibbon\Module\CourseSelection\Domain\SelectionsGateway;
 
-// Module Bootstrap
+// Module includes
 require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_byOffering.php') == false) {
-    //Acess denied
-    echo "<div class='error'>" ;
-        echo __('You do not have access to this action.');
-    echo "</div>" ;
+    // Acess denied
+    $page->addError(__('You do not have access to this action.'));
 } else {
 	$page->breadcrumbs
 	 	->add(__m('Course Approval by Offering'));
@@ -40,6 +38,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     // SELECT OFFERING
     $form = Form::create('courseApprovalByOffering', $session->get('absoluteURL').'/index.php', 'get');
     $form->setFactory(DatabaseFormFactory::create($pdo));
+    $form->setClass('noIntBorder w-full');
+    $form->setTitle(__m('Choose Offering'));
 
     $form->addHiddenValue('q', '/modules/Course Selection/approval_byOffering.php');
     $form->addHiddenValue('gibbonSchoolYearID', $gibbonSchoolYearID);
@@ -48,9 +48,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
     $offeringsResults = $offeringsGateway->selectAllBySchoolYear($gibbonSchoolYearID);
 
     if ($offeringsResults->rowCount() == 0) {
-        echo '<div class="error">';
-        echo __("There are no records to display.") ;
-        echo '</div>';
+        $form->addRow()->addAlert(__('There are no records to display.'), 'error');
         return;
     }
 
@@ -62,7 +60,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/approval_
         $row->addSelect('courseSelectionOfferingID')->fromArray($offeringsArray)->required()->placeholder()->selected($courseSelectionOfferingID);
 
     $row = $form->addRow();
-        $row->addSubmit();
+        $row->addSearchSubmit($session);
 
     echo $form->getOutput();
 

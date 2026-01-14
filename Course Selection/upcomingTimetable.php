@@ -18,9 +18,7 @@ require 'module.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingTimetable.php') == false) {
     //Acess denied
-    echo "<div class='error'>" ;
-        echo __('You do not have access to this action.');
-    echo "</div>" ;
+    $page->addError(__('You do not have access to this action.'));
 } else {
     $page->breadcrumbs
     	->add(__m('Upcoming Timetable'));
@@ -28,7 +26,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
     $highestGroupedAction = getHighestGroupedAction($guid, '/modules/Course Selection/upcomingTimetable.php', $connection2);
 
     if ($highestGroupedAction == 'Upcoming Timetable_all') {
-        $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? 0;
+        $gibbonPersonIDStudent = $_POST['gibbonPersonIDStudent'] ?? '';
 
         $form = Form::create('selectStudent', $session->get('absoluteURL').'/index.php?q=/modules/Course Selection/upcomingTimetable.php');
         $form->setFactory(DatabaseFormFactory::create($pdo));
@@ -117,7 +115,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Course Selection/upcomingT
         $table->addColumn('period', '')
             ->width('8%')
             ->format(function ($values) use ($index) {
-                return $values[$index]['rowName'];
+                return $values[$index]['rowName'] ?? '';
             });
     }
 
