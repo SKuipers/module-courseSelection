@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+v1.3.00
+-------
+Fixed process scripts so a direct link cannot run them
 
 v1.2.12
 -------

@@ -7,5 +7,5 @@ Copyright (C) 2017, Sandra Kuipers
 /**
  * Sets version information
  */
-$moduleVersion="1.2.12" ;
+$moduleVersion="1.3.00" ;
 $coreVersion = '29.0.00';
